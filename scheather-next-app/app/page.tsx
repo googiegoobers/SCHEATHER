@@ -51,8 +51,8 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <img
-              className="max-w-[600px] max-h-[600px] object-contain"
-              src="/art.png"
+           
+              src="/image.png"
               alt="Art"
             />
           </div>

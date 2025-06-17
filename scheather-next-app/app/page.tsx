@@ -23,13 +23,16 @@ export default function Home() {
             >
               Contacts
             </a>
-            <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
-              Login
-            </button>
-             <Link href="/auth/signup" passHref>
-            <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
-              Sign Up
-            </button>
+            <Link href="/auth/login" passHref>
+              <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
+                Login
+              </button>
+            </Link>
+
+            <Link href="/auth/signup" passHref>
+              <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
+                Sign Up
+              </button>
             </Link>
           </div>
         </div>
@@ -88,7 +91,7 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <img
-           
+
               src="/image.png"
               alt="Art"
             />

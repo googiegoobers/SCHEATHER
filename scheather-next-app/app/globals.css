@@ -16,3 +16,34 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.rotate-gradient {
+  animation: spin 3s linear infinite;
+  animation-timing-function: linear; /* Ensure constant speed */
+}
+
+rgb-button {
+  background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+  background-size: 600% 600%;
+  animation: gradient 5s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

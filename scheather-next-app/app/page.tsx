@@ -1,4 +1,5 @@
 import "./globals.css";
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -25,9 +26,11 @@ export default function Home() {
             <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
               Login
             </button>
+             <Link href="/auth/signup" passHref>
             <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
               Sign Up
             </button>
+            </Link>
           </div>
         </div>
 

@@ -44,8 +44,45 @@ export default function Home() {
               Mini Event Planner <br />
               for Barkadas and Orgs
             </h2>
-            <button className="w-[400px] h-16 bg-orange-400 rounded-[30px] text-white text-3xl font-bold hover:bg-orange-500 transition-colors hover:cursor-pointer">
-              Get Started
+            <button
+              className="group relative cursor-pointer overflow-hidden whitespace-nowrap px-6 py-4 text-black [background:var(--bg)] [border-radius:var(--radius)]  transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center"
+              style={
+                {
+                  "--spread": "90deg",
+                  "--shimmer-color": "#FFF3E0",
+                  "--radius": "100px",
+                  "--speed": "1.5s",
+                  "--cut": "0.2em",
+                  "--bg": "#e68c3a",
+                } as React.CSSProperties
+              }
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute inset-[-100%] rotate-gradient">
+                  <div className="absolute inset-0 [background:conic-gradient(from_calc(270deg-(var(--spread)*0.5)),transparent_0,var(--shimmer-color)_var(--spread),transparent_var(--spread))]"></div>
+                </div>
+              </div>
+              <div className="absolute [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)]"></div>
+              <div className="z-10 flex items-center justify-center gap-2 w-50">
+                <span className="whitespace-pre bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-sm font-semibold leading-none tracking-tight text-white">
+                  Get Started
+                </span>
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="white"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.271 5.575C8.967 4.501 7 5.43 7 7.12v9.762c0 1.69 1.967 2.618 3.271 1.544l5.927-4.881a2 2 0 0 0 0-3.088l-5.927-4.88Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
             </button>
           </div>
 
@@ -63,7 +100,7 @@ export default function Home() {
         <div className="text-center mb-16">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium text-black">
             <span className="font-['Poppins'] capitalize ml-2">
-              Our Service & Features
+              Our Services & Features
             </span>
           </h1>
         </div>

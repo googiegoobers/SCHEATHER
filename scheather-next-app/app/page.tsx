@@ -22,7 +22,7 @@ export default function Home() {
               className="text-black text-lg hover: cursor-pointer relative inline-block after:block after:h-[2px] after:bg-black after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
               Contacts
-            </a>=
+            </a>
             <Link href="/auth/login" passHref>
               <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
                 Login
@@ -89,11 +89,7 @@ export default function Home() {
           </div>
 
           <div className="flex-1 flex justify-center">
-            <img
-
-              src="/image.png"
-              alt="Art"
-            />
+            <img src="/art.png" alt="Art" />
           </div>
         </div>
       </div>

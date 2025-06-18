@@ -1,48 +1,53 @@
 import "./globals.css";
-
 import {
   Poppins,
   Montserrat,
-  Inter,
-  Island_Moments,
-  Libre_Baskerville,
   Cedarville_Cursive,
+  Inter,
+  Roboto,
 } from "next/font/google";
+import { Metadata } from "next";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
+  display: "swap",
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-roboto",
+  display: "swap",
 });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-montserrat",
+  display: "swap",
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-inter", // optional for CSS variable use
+  display: "swap",
 });
 
-const island = Island_Moments({
+const cedarvilleCursive = Cedarville_Cursive({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-island",
+  weight: ["400"],
+  variable: "--font-cedarville-cursive",
+  display: "swap",
 });
 
-const libre = Libre_Baskerville({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-libre",
-});
-
-const cedarville = Cedarville_Cursive({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-cedarville",
-});
+export const metadata: Metadata = {
+  title: "Scheather",
+  icons: {
+    icon: "/art.png",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -52,7 +57,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${montserrat.variable} ${inter.variable} ${island.variable} ${libre.variable} ${cedarville.variable}`}
+      className={`${poppins.variable} ${inter.variable} ${montserrat.variable} ${cedarvilleCursive.variable} ${roboto.variable}`}
     >
       <body>{children}</body>
     </html>

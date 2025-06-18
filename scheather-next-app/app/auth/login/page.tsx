@@ -11,8 +11,12 @@ export default function Home() {
       <div className="w-[1036px] h-full left-[396px] top-0 absolute bg-gradient-to-r from-stone-100 to-stone-100/0 blur-[10px]" />
       <div className="w-[1920px] h-full left-[-233px] top-0 absolute bg-stone-100/0 backdrop-blur-lg" />
       <div className="w-[748px] h-[574px] left-[111px] top-[283px] absolute bg-blue-200/60 rounded-[30px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.30)]" />
-      <div className="w-[455px] h-44 left-[257px] top-[172px] absolute justify-start text-cyan-900 text-7xl font-bold font-['Montserrat']">SCHEATHER</div>
-      <div className="left-[372px] top-[786px] absolute justif y-start text-stone-900/50 text-2xl font-normal font-['Montserrat']">Forgot Password?</div>
+      <div className="w-[455px] h-44 left-[257px] top-[172px] absolute justify-start text-cyan-900 text-7xl font-bold font-['Montserrat']">
+        SCHEATHER
+      </div>
+      <div className="left-[372px] top-[786px] absolute justif y-start text-stone-900/50 text-2xl font-normal font-['Montserrat']">
+        Forgot Password?
+      </div>
       <div className="w-[605px] h-20 left-[186px] top-[472px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-8 flex items-center">
         <input
           type="password"
@@ -48,7 +52,6 @@ export default function Home() {
       >
         Log In
       </button>
-
     </div>
   );
 }

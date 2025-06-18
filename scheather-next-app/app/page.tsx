@@ -22,10 +22,12 @@ export default function Home() {
               className="text-black text-lg hover: cursor-pointer relative inline-block after:block after:h-[2px] after:bg-black after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
               Contacts
-            </a>
-            <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
-              Login
-            </button>
+            </a>=
+            <Link href="/auth/login" passHref>
+              <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
+                Login
+              </button>
+            </Link>
             <Link href="/auth/signup" passHref>
               <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
                 Sign Up
@@ -88,8 +90,8 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <img
-              className="max-w-[600px] max-h-[600px] object-contain"
-              src="/art.png"
+
+              src="/image.png"
               alt="Art"
             />
           </div>

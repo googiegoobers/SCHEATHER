@@ -61,6 +61,7 @@ const SignUpCard: React.FC = () => {
     }
   };
 
+
   return (
     
     <div className="signup-background"> 
@@ -71,6 +72,7 @@ const SignUpCard: React.FC = () => {
         className="relative z-20 flex items-center justify-center"
         style={{ minHeight: "calc(100vh - 96px)" }}
       >
+
         <div className="w-[605px] h-20 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
         <input
           type="firstName"
@@ -136,6 +138,7 @@ const SignUpCard: React.FC = () => {
           <button
             type="submit"
             className="w-72 h-20 absolute left-[335px] top-[666px] bg-cyan-900 hover:bg-cyan-800 transition duration-300 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 text-stone-100 text-3xl font-normal font-['Montserrat'] flex items-center justify-center"
+
           >
             Sign Up
           </button>

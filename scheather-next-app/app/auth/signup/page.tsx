@@ -61,11 +61,13 @@ const SignUpCard: React.FC = () => {
     }
   };
 
+
   return (
     
     <div className="signup-background"> 
     <div className="white-left">
       <div className="blue-form-bg" >
+
     <form className="vertical-form" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -119,7 +121,11 @@ const SignUpCard: React.FC = () => {
         </label>
         </div>
 
+
           <button type="submit" className="submit-btn">
+
+    
+
             Sign Up
           </button>
       

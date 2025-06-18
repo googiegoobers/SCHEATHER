@@ -1,0 +1,40 @@
+.signup-background {
+  min-height: 100vh;
+  width: 100vw;
+  background-image: url('/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+} 
+
+.blue-form-bg{
+    width: 540px;
+    height: 540px;
+    background-color: #CADFF7;
+    border-radius: 30px;  
+    position: absolute;
+    margin-top: 150px;
+    margin-left: 90px;
+    display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 2rem;
+    box-shadow{
+        color: Color(0x4C000000);
+        offset: Offset(0, 4);
+    }
+    box-shadow: offset 0px 4px 4px rgba(90, 88, 88, 0.25);
+   
+}
+
+.white-left{
+    min-height: 100vh;
+    width: 100vw;
+    background-image: url('/blurprt.png');
+    position: absolute;
+    background-repeat: no-repeat;
+}
+
+
+

@@ -1,21 +1,21 @@
-// tailwind.config.js (ES Module format)
+/** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        poppins: ["var(--font-poppins)"],
-        montserrat: ["var(--font-montserrat)"],
-        inter: ["var(--font-inter)"],
-        island: ["var(--font-island)"],
-        libre: ["var(--font-libre)"],
-        cedarville: ["var(--font-cedarville)"],
+        // Add your custom fonts here
+        'poppins': ['var(--font-poppins)', 'sans-serif'],
+        'montserrat': ['var(--font-montserrat)', 'sans-serif'],
+        'cedarville-cursive': ['var(--font-cedarville-cursive)', 'cursive'],
+        blanks: ['BlanksScript', 'cursive'],
+        roboto: ['var(--font-roboto)', 'sans-serif'],
       },
     },
   },
   plugins: [],
-};
+}

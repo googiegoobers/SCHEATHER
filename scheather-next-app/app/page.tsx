@@ -1,5 +1,5 @@
 import "./globals.css";
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -28,7 +28,6 @@ export default function Home() {
                 Login
               </button>
             </Link>
-
             <Link href="/auth/signup" passHref>
               <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
                 Sign Up
@@ -90,11 +89,7 @@ export default function Home() {
           </div>
 
           <div className="flex-1 flex justify-center">
-            <img
-
-              src="/image.png"
-              alt="Art"
-            />
+            <img src="/art.png" alt="Art" />
           </div>
         </div>
       </div>

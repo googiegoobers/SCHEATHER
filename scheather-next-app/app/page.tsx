@@ -13,7 +13,12 @@ export default function Home() {
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
       <div className="w-full h-screen relative bg-white overflow-hidden">
         {/* Header */}
-        <header className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] justify-center flex fixed top-0 z-50">
+        <header
+          className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] justify-center flex fixed top-0 z-50"
+          style={{
+            fontFamily: "Poppins",
+          }}
+        >
           <div
             className="absolute left-[80px] top-[25px] text-[color:#213E60] text-2xl"
             style={{
@@ -66,13 +71,18 @@ export default function Home() {
 
         {/* Main Content */}
         <div
-          className="flex items-center justify-center h-[calc(100vh-70px)] mt-[70px] px-[80px] bg-white/70 scroll-mt-50"
+          className="flex items-center justify-center h-[calc(100vh-70px)] mt-[70px] px-[80px] bg-white/80 scroll-mt-50"
           id="home"
         >
           <div className="flex flex-row items-center justify-between w-full max-w-7xl gap-10">
             {/* LEFT CONTENT */}
             <div className="flex-1 max-w-[800px]">
-              <h1 className="text-[color:#213E60] text-8xl mb-8 font-poppins font-bold">
+              <h1
+                className="text-[color:#213E60] text-8xl mb-8 font-bold"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
                 SCHEATHER
               </h1>
               <h3
@@ -85,7 +95,7 @@ export default function Home() {
 
               <button
                 onClick={handleClick}
-                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-6 py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center"
+                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-6 py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center "
                 style={
                   {
                     "--spread": "90deg",
@@ -102,10 +112,10 @@ export default function Home() {
                     <div className="absolute inset-0 [background:conic-gradient(from_calc(270deg-(var(--spread)*0.5)),transparent_0,var(--shimmer-color)_var(--spread),transparent_var(--spread))]"></div>
                   </div>
                 </div>
-                <div className="absolute [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)]"></div>
+                <div className="absolute [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)] "></div>
                 <div className="z-10 flex items-center justify-center gap-2 w-50">
                   <span
-                    className="whitespace-pre bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-sm font-semibold leading-none tracking-tight text-white"
+                    className="whitespace-pre bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-sm font-semibold leading-none tracking-tight text-white "
                     style={{ fontFamily: "Poppins" }}
                   >
                     Get Started
@@ -141,10 +151,10 @@ export default function Home() {
 
       <div
         id="about"
-        className="w-full min-h-screen bg-gradient-to-b from-[#162C49] to-[#6A92CC] px-4 flex flex-col justify-center items-center text-center scroll-mt-10"
+        className="w-full min-h-screen px-4 flex flex-col justify-center items-center text-center scroll-mt-10"
       >
         <div className="text-center mb-12">
-          <h2 className="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-2">
+          <h2 className="text-[color:#e68c3a] font-bold text-sm uppercase tracking-widest mb-2">
             About Us
           </h2>
           <h1
@@ -153,7 +163,10 @@ export default function Home() {
           >
             Your go to planning partner
           </h1>
-          <p className="text-[color:#f4f2ef] max-w-xl mx-auto text-base ">
+          <p
+            className="text-[color:#f4f2ef] max-w-xl mx-auto text-base "
+            style={{ fontFamily: "Poppins" }}
+          >
             Our platform helps groups effortlessly plan events by combining
             real-time weather forecasts with intuitive scheduling tools.
           </p>
@@ -171,21 +184,24 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right side – text content */}
           <div className="space-y-6 text-left">
             <h3
-              className="text-xl font-semibold text-blue"
+              className="text-xl font-semibold text-white"
               style={{ fontFamily: "Montserrat" }}
             >
               We believe in doing
             </h3>
-            <p className="text-white">
+            <p
+              className="text-white font-lg"
+              style={{ fontFamily: "Montserrat" }}
+            >
               Eliminate the stress of planning by providing a smart,
               collaborative solution.
             </p>
-            <ul className="list-disc list-inside text-white space-y-1">
+            <ul className="list-disc list-inside text-white space-y-1 font-medium">
               <li>Invite you friends, groupmates, etc.</li>
-              <li>Earn certificates & credentials that are recognized</li>
+              <li>Easier breakdown of budget for group events</li>
+              <li>Aware of the weather if under 1 week scheduling</li>
             </ul>
           </div>
         </div>
@@ -199,9 +215,9 @@ export default function Home() {
         <div className="text-center mb-16">
           <h1 className="text-3xl md:text-3xl lg:text-5xl font-medium text-[color:#213E60]">
             <span
-              className="font-poppins ml-2"
+              className="ml-2"
               style={{
-                fontFamily: "Montserrat",
+                fontFamily: "Poppins",
               }}
             >
               Our Services & Features
@@ -215,7 +231,7 @@ export default function Home() {
             <div className="bg-zinc-300 rounded-[30px] h-[200px] sm:h-[220px] md:h-[250px] lg:h-[280px] p-4 sm:p-5 md:p-6 flex flex-col justify-center items-center cursor-pointer card">
               <img src="/schedule-logo.png" alt="calendar" className="mb-4" />
               <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black">
+                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black font-mono">
                   Scheduling
                 </h3>
                 <p
@@ -233,7 +249,7 @@ export default function Home() {
             <div className="bg-zinc-300 rounded-[30px] h-[200px] sm:h-[220px] md:h-[250px] lg:h-[280px] p-4 sm:p-5 md:p-6 flex flex-col justify-center items-center cursor-pointer card">
               <img src="/wether-logo.png" alt="weather" className="mb-4" />
               <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black">
+                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black font-mono">
                   Weather Aware
                 </h3>
                 <p
@@ -251,7 +267,7 @@ export default function Home() {
             <div className="bg-zinc-300 rounded-[30px] h-[200px] sm:h-[220px] md:h-[250px] lg:h-[280px] p-4 sm:p-5 md:p-6 flex flex-col justify-center items-center md:col-span-2 lg:col-span-1 cursor-pointer card">
               <img src="/group-logo.png" alt="group" className="mb-4" />
               <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black">
+                <h3 className="text-lg sm:text-xl md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 md:mb-4 text-black font-mono">
                   Group Events
                 </h3>
                 <p

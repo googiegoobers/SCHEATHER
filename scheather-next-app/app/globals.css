@@ -73,3 +73,7 @@ html {
 #services {
   background-image: linear-gradient(to bottom, #ffffff, #f9f9f9, #f1f1f1);
 }
+
+#about {
+  background: linear-gradient(104deg, rgba(33, 62, 96, 1), rgba(23, 44, 68, 1));
+}

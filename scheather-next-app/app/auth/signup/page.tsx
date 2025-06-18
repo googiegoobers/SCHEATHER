@@ -67,84 +67,69 @@ const SignUpCard: React.FC = () => {
     <div className="signup-background"> 
     <div className="white-left">
       <div className="blue-form-bg" >
-<form
-        onSubmit={handleSubmit}
-        className="relative z-20 flex items-center justify-center"
-        style={{ minHeight: "calc(100vh - 96px)" }}
-      >
 
-        <div className="w-[605px] h-20 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-        <input
-          type="firstName"
-          name="firstName"
-          placeholder="First Name"
-          className="w-full h-full bg-transparent outline-none text-stone-900 text-3xl font-['Montserrat'] placeholder-stone-900/50"
-          value={formData.firstName}
-          onChange={handleChange}
-          required
-        />
-      </div>
-          
-          <div className="w-[605px] h-20 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-        <input
-          type="lastName"
-          name="lastName"
-          placeholder="Last Name"
-          className="w-full h-full bg-transparent outline-none text-stone-900 text-3xl font-['Montserrat'] placeholder-stone-900/50"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
-      </div>
+    <form className="vertical-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            className="input-box"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            className="input-box"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Input Email"
+            className="input-box"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Enter Password"
+            className="input-box"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-      <div className="w-[605px] h-20 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-        <input
-          type="email"
-          name="email"
-          placeholder="Input Email"
-          className="w-full h-full bg-transparent outline-none text-stone-900 text-3xl font-['Montserrat'] placeholder-stone-900/50"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-       <div className="w-[605px] h-20 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          name="password"
-          placeholder="Input Password"
-          className="w-full h-full bg-transparent outline-none text-stone-900 text-3xl font-['Montserrat'] placeholder-stone-900/50"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="w-58 h-10 left-[253px] top-[586px] absolute flex items-center gap-4">
+          <div className="w-48 h-10 left-[105px] top-[323px] absolute flex items-center gap-1">
         <input
           type="checkbox"
-          className="w-10 h-10 scale-125 bg-stone-100 rounded-[10px] border border-stone-900 accent-stone-900"
+          className="w-10 h-10 scale-50 bg-stone-100 rounded-[20px] border border-stone-900 accent-stone-900"
           checked={showPassword}
           onChange={() => setShowPassword(!showPassword)}
         />
         <label
           htmlFor="show-password"
-          className="text-stone-900/50 text-2xl font-normal font-['Montserrat'] whitespace-nowrap"
+          className="text-stone-900/50 text-1xl font-normal font-['Montserrat'] whitespace-nowrap"
         >
           Show Password
         </label>
-      </div>
+        </div>
 
-          <button
-            type="submit"
-            className="w-72 h-20 absolute left-[335px] top-[666px] bg-cyan-900 hover:bg-cyan-800 transition duration-300 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 text-stone-100 text-3xl font-normal font-['Montserrat'] flex items-center justify-center"
 
-          >
+          <button type="submit" className="submit-btn">
+
+    
+
             Sign Up
           </button>
-        {/* </div> */}
-
-         <div className="justify-start text-stone-900/50 text-2xl font-normal font-['Montserrat']">
+      
+         <div className="left-[130px] bottom-[30px] relative  justify-start text-stone-900/50 text-1xl font-normal font-['Montserrat']">
     <Link href="/auth/login" passHref>
       Do you have an account?
     </Link>
@@ -152,11 +137,7 @@ const SignUpCard: React.FC = () => {
       </form>
         </div>
     </div>
-    
-   
-      
-      
-      <div className="w-[625px] h-25 left-[190px] top-[52px] absolute justify-start text-cyan-900 text-5xl font-bold font-['Montserrat']">SCHEATHER</div>
+      <div className="w-[625px] h-25 left-[200px] top-[52px] absolute justify-start text-cyan-900 text-5xl font-bold font-['Montserrat']">SCHEATHER</div>
    
     
     </div>
@@ -164,3 +145,5 @@ const SignUpCard: React.FC = () => {
 };
 
 export default SignUpCard;
+
+

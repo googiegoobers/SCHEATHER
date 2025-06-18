@@ -1,18 +1,18 @@
 'use client'
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { auth } from '@/app/lib/firebaseConfig';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 
 
-   interface SignUpFormData {
-     firstName: string;
-     lastName: string;
-     email: string;
-     password: string;
-   }
-
-
-      import React, { useState } from 'react';
+interface SignUpFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
 
 const SignUpCard: React.FC = () => {
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -22,15 +22,39 @@ const SignUpCard: React.FC = () => {
     password: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    // Add your submit logic here (e.g., API call)
+    setError(null);
+    setSuccess(null);
+
+    try {
+      // Step 1: Create user
+      const result = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = result.user;
+
+      // Step 2: Update display name
+      await updateProfile(user, {
+        displayName: `${formData.firstName} ${formData.lastName}`,
+      });
+
+      console.log("✅ User created and profile updated!", user);
+      setSuccess("User created successfully!");
+      alert('Signup successful! \nWelcome user!');
+      // Optional: redirect or show success message here
+    } catch (err: any) {
+      console.error("❌ Error during signup:", err.message);
+      alert(`Login failed: ${err.message}`);
+      setError(err.message || "Signup failed");
+      // Optional: show error message to user
+    }
   };
 
 return (
@@ -44,6 +68,7 @@ return (
         style={{ position: 'absolute', inset: 0 }}
       />
     </div>
+
     {/* Signup Form */}
     <form
       onSubmit={handleSubmit}
@@ -59,16 +84,18 @@ return (
             className="border border-blue-300 rounded p-2 bg-white mt-1"
             value={formData.firstName}
             onChange={handleChange}
+            required
           />
         </label>
         <label className="flex flex-col text-sm font-medium text-gray-700">
           Last Name:
           <input
-            className="border border-blue-300 rounded p-2 bg-white mt-1"
             type="text"
             name="lastName"
+            className="border border-blue-300 rounded p-2 bg-white mt-1"
             value={formData.lastName}
             onChange={handleChange}
+            required
           />
         </label>
         <label className="flex flex-col text-sm font-medium text-gray-700">
@@ -79,6 +106,7 @@ return (
             className="border border-blue-300 rounded p-2 bg-white mt-1"
             value={formData.email}
             onChange={handleChange}
+            required
           />
         </label>
         <label className="flex flex-col text-sm font-medium text-gray-700">
@@ -89,6 +117,7 @@ return (
             className="border border-blue-300 rounded p-2 bg-white mt-1"
             value={formData.password}
             onChange={handleChange}
+            required
           />
         </label>
         <button

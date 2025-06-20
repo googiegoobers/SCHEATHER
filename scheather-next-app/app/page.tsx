@@ -69,7 +69,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* Hero Section */}
         <div
           className="flex items-center justify-center h-[calc(100vh-70px)] mt-[70px] px-[80px] bg-white/80 scroll-mt-50"
           id="home"

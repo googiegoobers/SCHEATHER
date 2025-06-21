@@ -45,7 +45,7 @@ const cedarvilleCursive = Cedarville_Cursive({
 export const metadata: Metadata = {
   title: "Scheather",
   icons: {
-    icon: "/hero-logo.png",
+    icon: "/logo.png",
   },
 };
 

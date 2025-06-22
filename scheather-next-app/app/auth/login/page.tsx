@@ -3,31 +3,32 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import React, { useState } from 'react';
-import { auth } from '@/app/lib/firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-
-
+import React, { useState } from "react";
+import { auth } from "@/app/lib/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Login successful:', userCredential.user);
-      alert('Login successful! \nWelcome user!');
-      // router.push('/dashboard'); // Enable your redirect here
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Login successful:", userCredential.user);
+      // alert("Login successful! \nWelcome user!");
+      router.push("/dashboard"); // Enable your redirect here
     } catch (error: any) {
-      console.error('Login error:', error.message);
+      console.error("Login error:", error.message);
       alert(`Login failed: ${error.message}`);
     }
   };
-
 
   return (
     <div className = "bg-white flex items-center justify-center inset-0 fixed overflow-hidden">
@@ -108,7 +109,7 @@ export default function Home() {
           <Link href="/auth/forgetPassword">
             <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere  text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase hover:underline cursor-pointer">Forget Password? Reset Password Here</p>
           </Link>
-
+           
          </div>
          {/*Right side of the Container*/}
          <div className="Justify-center flex m-10 max-width-100% relative">

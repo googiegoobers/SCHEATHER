@@ -25,13 +25,14 @@ body {
     transform: rotate(360deg);
   }
 }
+
 .rotate-gradient {
   animation: spin 3s linear infinite;
   animation-timing-function: linear; /* Ensure constant speed */
 }
 
-rgb-button {
-  background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+.rgb-button {
+  background: linear-gradient(45deg, #ff9a8b, #ff6a00, #ffd200);
   background-size: 600% 600%;
   animation: gradient 5s ease infinite;
 }
@@ -46,4 +47,33 @@ rgb-button {
   100% {
     background-position: 0% 50%;
   }
+}
+
+@font-face {
+  font-family: "BlanksScript";
+  src: url("/fonts/BlanksscriptpersonaluseBdit-jEM6O.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.cards img {
+  height: 125px;
+  width: 125px;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+#services {
+  background-image: linear-gradient(to bottom, #ffffff, #f9f9f9, #f1f1f1);
+}
+
+#about {
+  background: linear-gradient(104deg, rgba(33, 62, 96, 1), rgba(23, 44, 68, 1));
 }

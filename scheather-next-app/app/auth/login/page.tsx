@@ -1,33 +1,34 @@
-'use client'
+"use client";
 import styles from "./auth/login/loginpage.module.css";
 import Image from "next/image";
 import Link from "next/link";
 
-import React, { useState } from 'react';
-import { auth } from '@/app/lib/firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-
-
+import React, { useState } from "react";
+import { auth } from "@/app/lib/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Login successful:', userCredential.user);
-      alert('Login successful! \nWelcome user!');
-      // router.push('/dashboard'); // Enable your redirect here
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Login successful:", userCredential.user);
+      // alert("Login successful! \nWelcome user!");
+      router.push("/dashboard"); // Enable your redirect here
     } catch (error: any) {
-      console.error('Login error:', error.message);
+      console.error("Login error:", error.message);
       alert(`Login failed: ${error.message}`);
     }
   };
-
 
   return (
     <div className="fixed inset-0 bg-white overflow-hidden flex items-center justify-center">
@@ -37,14 +38,15 @@ export default function Home() {
       <div className="transform scale-[59%] origin-left w-full">
         {/* Your existing UI */}
         <div className="relative w-[1920px] h-[1080px]">
-
           <div className="w-[791px] h-full left-0 top-0 absolute bg-stone-100" />
           <div className="w-[1470px] h-full left-[600px] top-0 absolute bg-gradient-to-r from-stone-100 to-stone-100/0" />
           <div className="w-[1036px] h-full left-[396px] top-0 absolute bg-gradient-to-r from-stone-100 to-stone-100/0 blur-[10px]" />
           <div className="w-[1920px] h-full left-[-233px] top-0 absolute bg-gradient-to-r from-stone-100 to-stone-100/0 backdrop-blur-lg opacity-20" />
           <div className="w-[748px] h-[574px] left-[111px] top-[283px] absolute bg-blue-200/60 rounded-[30px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.30)]" />
 
-          <p className="w-[455px] h-44 left-[257px] top-[172px] absolute justify-start text-cyan-900 text-7xl font-bold font-['Montserrat']">SCHEATHER</p>
+          <p className="w-[455px] h-44 left-[257px] top-[172px] absolute justify-start text-cyan-900 text-7xl font-bold font-['Montserrat']">
+            SCHEATHER
+          </p>
           <Link href="/auth/forgetPassword">
             <p className="left-[372px] top-[786px] absolute justify-start text-stone-900/50 text-2xl font-normal font-['Montserrat'] cursor-pointer hover:underline transition duration-200">
               Forgot Password?
@@ -52,7 +54,7 @@ export default function Home() {
           </Link>
           <div className="w-[605px] h-20 left-[186px] top-[472px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-8 flex items-center">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -123,7 +123,7 @@ export default function Home() {
 
           {/* Mobile Menu */}
           <div
-            className={`lg:hidden fixed top-20 right-0 w-50 max-w-[75vw] max-h-[calc(100vh-2rem)] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 rounded-sm ${
+            className={`lg:hidden fixed top-20 right-0 w-80 max-w-[90vw] max-h-[calc(100vh-2rem)] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 rounded-sm ${
               isMenuOpen ? "translate-x-0" : "translate-x-full"
             }`}
           >

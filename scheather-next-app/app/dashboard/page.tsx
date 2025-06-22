@@ -72,9 +72,8 @@ export default function Dashboard() {
   }, [isMenuOpen]);
 
   const [weather, setWeather] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);\
-  const firstName = name ? name.split(' ')[0] : 'there';
-
+  const [error, setError] = useState<string | null>(null);
+  const firstName = name ? name.split(" ")[0] : "there";
 
   useEffect(() => {
     const fetchWeather = async (lat: number, lon: number) => {

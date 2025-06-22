@@ -21,7 +21,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 // Export the auth & storage services if needed
 export const auth = getAuth(app);
-const storage = getStorage(app);
-const db = getFirestore(app);
+export const storage = getStorage(app);
+export { app };
 
-export { app, auth, storage, db };

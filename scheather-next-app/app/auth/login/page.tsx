@@ -1,5 +1,5 @@
 'use client'
-import styles from "./loginpage.module.css";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -119,7 +119,7 @@ export default function Home() {
             />
          </div>
       </div>
-      {/*Mobile*/}
+      {/*mobile*/}
       <div>
         
       </div>

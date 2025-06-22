@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -9,27 +10,46 @@ export default function Home() {
     router.push("/auth/signup");
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  // makes the background still when opening the hamburger menu
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
       <div className="w-full h-screen relative bg-white overflow-hidden">
-        {/* Header */}
+        {/* Header*/}
         <header
-          className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] justify-center flex fixed top-0 z-50"
+          className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
           style={{
             fontFamily: "Poppins",
           }}
         >
+          {/* Brand Logo */}
           <div
-            className="absolute left-[80px] top-[25px] text-[color:#213E60] text-2xl"
+            className="text-black text-xl sm:text-2xl font-medium"
             style={{
               fontFamily: '"Cedarville Cursive", cursive',
-              fontSize: "1.5rem",
-              color: "black",
             }}
           >
             Scheather
           </div>
-          <div className="navigation right-[20px] top-[16px] flex items-center gap-8 justify-center align-middle">
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
             <a
               href="#home"
               className="text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
@@ -54,31 +74,124 @@ export default function Home() {
             >
               Contacts
             </a>
-          </div>
-          <div className="navigation absolute right-[80px] top-[16px] flex items-center gap-4 justify-center align-middle">
+          </nav>
+
+          {/* Desktop Auth Buttons */}
+          <div className="hidden lg:flex items-center gap-4">
             <Link href="/auth/login" passHref>
-              <button className="w-32 h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
+              <button className="w-24 xl:w-32 h-10 xl:h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-sm xl:text-base hover:cursor-pointer hover:bg-neutral-300 transition-colors">
                 Login
               </button>
             </Link>
             <Link href="/auth/signup" passHref>
-              <button className="w-32 h-12 bg-[color:#213E60] rounded-[30px] text-white text-base hover: cursor-pointer hover:bg-[color:#1A314E] transition-colors">
+              <button className="w-24 xl:w-32 h-10 xl:h-12 bg-[color:#213E60] rounded-[30px] text-white text-sm xl:text-base hover:cursor-pointer hover:bg-[color:#1A314E] transition-colors">
                 Sign Up
               </button>
             </Link>
+          </div>
+
+          {/* Hamburger Menu Button */}
+          <button
+            className="lg:hidden flex flex-col justify-center items-center w-8 h-5 space-y-1 focus:outline-none"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            <div
+              className={`w-6 h-0.5 bg-black transition-all duration-300 ${
+                isMenuOpen ? "rotate-45 translate-y-1.5" : ""
+              }`}
+            ></div>
+            <div
+              className={`w-6 h-0.5 bg-black transition-all duration-300 ${
+                isMenuOpen ? "opacity-0" : ""
+              }`}
+            ></div>
+            <div
+              className={`w-6 h-0.5 bg-black transition-all duration-300 ${
+                isMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
+              }`}
+            ></div>
+          </button>
+
+          {/* Mobile Menu Overlay */}
+          {isMenuOpen && (
+            <div
+              className="lg:hidden fixed inset-0 bg-black/20 z-40"
+              onClick={closeMenu}
+            ></div>
+          )}
+
+          {/* Mobile Menu */}
+          <div
+            className={`lg:hidden fixed top-20 right-0 w-80 max-w-[90vw] max-h-[calc(100vh-2rem)] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 rounded-sm ${
+              isMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          >
+            <div className="flex flex-col p-6 space-y-6">
+              <nav className="flex flex-col space-y-4">
+                <a
+                  href="#home"
+                  className="text-black text-lg py-2 border-b border-gray-100 hover:text-[#e68c3a] transition-colors "
+                  onClick={closeMenu}
+                >
+                  Home
+                </a>
+                <a
+                  href="#about"
+                  className="text-black text-lg py-2 border-b border-gray-100 hover:text-[#e68c3a] transition-colors"
+                  onClick={closeMenu}
+                >
+                  About
+                </a>
+                <a
+                  href="#services"
+                  className="text-black text-lg py-2 border-b border-gray-100 hover:text-[#e68c3a] transition-colors"
+                  onClick={closeMenu}
+                >
+                  Services
+                </a>
+                <a
+                  href="#contacts"
+                  className="text-black text-lg py-2 border-b border-gray-100 hover:text-[#e68c3a] transition-colors"
+                  onClick={closeMenu}
+                >
+                  Contacts
+                </a>
+              </nav>
+
+              {/* Mobile Auth Buttons */}
+              <div className="flex flex-col space-y-4 pt-6">
+                <Link href="/auth/login" passHref>
+                  <button
+                    className="w-full h-12 bg-neutral-200 rounded-[30px] border border-stone-100 text-black text-base active:bg-neutral-300 transition-colors"
+                    onClick={closeMenu}
+                  >
+                    Login
+                  </button>
+                </Link>
+                <Link href="/auth/signup" passHref>
+                  <button
+                    className="w-full h-12 bg-[color:#213E60] rounded-[30px] text-white text-base active:bg-[color:#1A314E] transition-colors"
+                    onClick={closeMenu}
+                  >
+                    Sign Up
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         </header>
 
         {/* Hero Section */}
         <div
-          className="flex items-center justify-center h-[calc(100vh-70px)] mt-[70px] px-[80px] bg-white/80 scroll-mt-50"
+          className="w-full min-h-screen px-4 sm:px-6 lg:px-8 pt-20 flex flex-col justify-center items-center text-center bg-white/80"
           id="home"
         >
-          <div className="flex flex-row items-center justify-between w-full max-w-7xl gap-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl gap-8 lg:gap-10">
             {/* LEFT CONTENT */}
-            <div className="flex-1 max-w-[800px]">
+            <div className="flex-1 max-w-[800px] order-2 lg:order-1 text-left">
               <h1
-                className="text-[color:#213E60] text-8xl mb-8 font-bold"
+                className="text-[color:#213E60] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl mb-6 lg:mb-8 font-bold leading-relaxed"
                 style={{
                   fontFamily: "Poppins",
                 }}
@@ -86,7 +199,7 @@ export default function Home() {
                 SCHEATHER
               </h1>
               <h3
-                className="text-4xl mb-8 font-bold italic text-[color:#141414]"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-6 lg:mb-8 font-bold italic text-[color:#141414] leading-relaxed"
                 style={{ fontFamily: "Roboto" }}
               >
                 Mini Event Planner <br />
@@ -95,7 +208,7 @@ export default function Home() {
 
               <button
                 onClick={handleClick}
-                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-6 py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center "
+                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center w-fit"
                 style={
                   {
                     "--spread": "90deg",
@@ -113,36 +226,39 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="absolute [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)] "></div>
-                <div className="z-10 flex items-center justify-center gap-2 w-50">
+                <div className="px-9 z-10 flex items-center justify-center gap-2">
                   <span
-                    className="whitespace-pre bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-sm font-semibold leading-none tracking-tight text-white "
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-xs sm:text-sm font-semibold leading-none tracking-tight text-white hover:"
                     style={{ fontFamily: "Poppins" }}
                   >
                     Get Started
+                    <svg
+                      className="w-6 h-6 sm:w-6 sm:h-6 text-gray-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="white"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 12h14m-7-7l7 7-7 7"
+                      />
+                    </svg>
                   </span>
-                  <svg
-                    className="w-6 h-6 text-gray-800 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.271 5.575C8.967 4.501 7 5.43 7 7.12v9.762c0 1.69 1.967 2.618 3.271 1.544l5.927-4.881a2 2 0 0 0 0-3.088l-5.927-4.88Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
                 </div>
               </button>
             </div>
-            <div className="flex-1 flex justify-center items-center top-9">
+
+            {/* RIGHT CONTENT - IMAGE */}
+            <div className="flex flex-col justify-center items-center flex-1 order-1 lg:order-2 w-full">
               <img
                 src="/hero-logo.png"
                 alt="Art"
-                className="w-full max-w-[600px] h-auto object-contain "
+                className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain"
               />
             </div>
           </div>
@@ -283,31 +399,44 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <footer className="w-full bg-gray-800 text-white px-8 py-6" id="contacts">
-        <div className="flex justify-between items-start">
+      <footer
+        className="w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        id="contacts"
+      >
+        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8">
           <div
-            className="text-white"
+            className="text-white text-center lg:text-left order-1 lg:order-1"
             style={{
               fontFamily: '"Cedarville Cursive", cursive',
-              fontSize: "64px",
+              fontSize: "clamp(2rem, 5vw, 4rem)",
               color: "white",
             }}
           >
             Scheather
           </div>
-          <div></div>
+          <div
+            className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
+            style={{
+              fontFamily: "Poppins",
+              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              color: "#e68c3a",
+            }}
+          >
+            You go to planning partner
+          </div>
 
-          <div className="text-left w-fit">
-            <p className="text-xl font-semibold mb-2">Contact Us</p>
+          <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">
+            <p className="text-lg sm:text-xl font-semibold mb-4">Contact Us</p>
 
-            <div className="flex items-start gap-2 mb-2">
+            {/* Phone */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke="currentColor"
-                className="w-6 h-6 mt-1"
+                className="w-6 h-6 flex-shrink-0"
               >
                 <path
                   strokeLinecap="round"
@@ -315,19 +444,18 @@ export default function Home() {
                   d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
                 />
               </svg>
-              <div>
-                <p className="text-lg">0977966554</p>
-              </div>
+              <p className="text-base sm:text-lg">0977966554</p>
             </div>
 
-            <div className="flex items-start gap-2">
+            {/* Email */}
+            <div className="flex items-center justify-center lg:justify-start gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke="currentColor"
-                className="w-6 h-6 mt-1"
+                className="w-6 h-6 flex-shrink-0"
               >
                 <path
                   strokeLinecap="round"
@@ -335,15 +463,17 @@ export default function Home() {
                   d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                 />
               </svg>
-              <div>
-                <p className="text-lg">scheather@gmail.com</p>
-              </div>
+              <p className="text-base sm:text-lg break-all sm:break-normal">
+                scheather@gmail.com
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="text-center mt-6">
-          <p>&copy; 2025 Scheather. All rights reserved.</p>
+        <div className="text-center mt-6 lg:mt-8 pt-6 border-t border-gray-700">
+          <p className="text-sm sm:text-base">
+            &copy; 2025 Scheather. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

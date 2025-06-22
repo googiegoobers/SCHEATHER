@@ -73,6 +73,7 @@ export default function Dashboard() {
 
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const firstName = name ? name.split(' ')[0] : 'there';
 
   useEffect(() => {
     const fetchWeather = async (lat: number, lon: number) => {
@@ -373,7 +374,7 @@ export default function Dashboard() {
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
                   style={{ fontFamily: "Poppins" }}
                 >
-                  WELCOME, {name}
+                  WELCOME, {firstName}!
                 </h1>
               </div>
 

@@ -228,7 +228,7 @@ export default function Home() {
                 <div className="absolute [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)] "></div>
                 <div className="px-9 z-10 flex items-center justify-center gap-2">
                   <span
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-xs sm:text-sm font-semibold leading-none tracking-tight text-white hover:"
+                    className="inline-flex items-center gap-2 px-4 py-1 bg-gradient-to-b from-white from-30% to-gray-300/80 bg-clip-text text-xl sm:text-sm font-semibold leading-none tracking-tight text-white hover:"
                     style={{ fontFamily: "Poppins" }}
                   >
                     Get Started

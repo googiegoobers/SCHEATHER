@@ -375,7 +375,7 @@ export default function Dashboard() {
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
                   style={{ fontFamily: "Poppins" }}
                 >
-                  WELCOME, {firstName}!
+                  Welcome, {firstName}!
                 </h1>
               </div>
 

@@ -365,7 +365,7 @@ export default function Dashboard() {
 
         {/* // Main content area/ */}
         <main className="pt-20 scroll-mt-50">
-          {/* Full-width yellow background */}
+          {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
             {/* Centered content with padding */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">

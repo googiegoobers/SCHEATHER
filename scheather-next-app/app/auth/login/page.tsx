@@ -107,7 +107,9 @@ export default function Home() {
           </button>
 
           <Link href="/auth/forgetPassword">
+
             <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere relative lg:mt-[10vh] text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase hover:underline cursor-pointer">Forget Password? Reset Password Here</p>
+
           </Link>
            
          </div>

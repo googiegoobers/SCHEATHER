@@ -265,9 +265,10 @@ export default function Home() {
         </div>
       </div>
 
+      {/* about section */}
       <div
         id="about"
-        className="w-full min-h-screen px-4 flex flex-col justify-center items-center text-center scroll-mt-10"
+        className="w-full min-h-screen lg:h-screen py-16 sm:py-20 lg:py-0 px-4 flex flex-col items-center lg:justify-center text-center scroll-mt-10 bg-[#213E60]"
       >
         <div className="text-center mb-12">
           <h2 className="text-[color:#e68c3a] font-bold text-sm uppercase tracking-widest mb-2">
@@ -322,10 +323,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-
+      {/* services section */}
       <div
         id="services"
-        className="w-full min-h-screen bg-white/70 px-4 flex flex-col justify-center items-center text-center"
+        className="w-full min-h-screen lg:h-screen py-16 sm:py-20 lg:py-0 bg-white/70 px-4 flex flex-col items-center lg:justify-center text-center"
       >
         {/* Title */}
         <div className="text-center mb-16">
@@ -342,7 +343,7 @@ export default function Home() {
         </div>
 
         <div className="cards max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm-gap-8 lg:gap-12">
             {/* Card 1 */}
             <div className="bg-zinc-300 rounded-[30px] h-[200px] sm:h-[220px] md:h-[250px] lg:h-[280px] p-4 sm:p-5 md:p-6 flex flex-col justify-center items-center cursor-pointer card">
               <img src="/schedule-logo.png" alt="calendar" className="mb-4" />

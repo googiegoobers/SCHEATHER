@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
+import { db } from '@/app/lib/firebaseConfig';
+import CalendarComponent from '@/app/components/Calendar';
+import EventForm from '@/app/components/EventForm';
 
 const api = {
   key: "d9e6f3e3a33ef6775a81923aa351ad00",
@@ -463,6 +466,12 @@ export default function Dashboard() {
         </div>
 
         {/* for calendar */}
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-4">Your Event Calendar</h1>
+          <EventForm />
+          <CalendarComponent />
+        </div>
+
       </div>
     </div>
   );

@@ -33,9 +33,9 @@ export default function Home() {
   return (
     <div className = "bg-white flex items-center justify-center inset-0 fixed overflow-hidden">
       {/*Inside the Container for Desktop*/} 
-      <div data-layer="Container" className="hidden lg:flex lg:w-[85vw] lg:h-[80vh] absolute bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex-row"> 
+      <div data-layer="Container" className="hidden lg:flex lg:w-[85vw] lg:h-[80vh] absolute bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex-row initial=scale1.0"> 
          {/*Left Side of the Container*/}
-         <div className="hidden lg:flex relative Justify-center flex py-10 px-25 flex-col">
+         <div className="hidden lg:flex relative Justify-center flex lg:top-[10vh] lg:px-[5vw] flex-col">
             <Link href="/">
               <h1 
               className=" text-[#223F61] text-xl sm:text-5xl font-medium"
@@ -60,7 +60,7 @@ export default function Home() {
                }}>
               Email
             </p>
-            <div data-layer="Textbox" data-blank="Default" className="lg:w-90 lg:h-16 my-2.5 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <div data-layer="Textbox" data-blank="Default" className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
               <input
                 type="email"
                 placeholder="Input Email"
@@ -77,7 +77,7 @@ export default function Home() {
                }}>
               Password
             </p>
-            <div data-layer="Textbox" data-blank="Default" className="lg:w-90 lg:h-16 my-2.5 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <div data-layer="Textbox" data-blank="Default" className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter Password"
@@ -89,7 +89,7 @@ export default function Home() {
               <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 focus:outline-none"
+              className="absolute right-4 top-1.5 focus:outline-none"
             >
               <img
                 src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
@@ -102,27 +102,89 @@ export default function Home() {
            <button
               type="button"
               onClick={handleLogin}
-              className="lg:w-45 lg:h-15 m-10 left-10 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-xl font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61]"
+              className="lg:w-[12vw] lg:h-[35px] top-10 bottom-10 left-20 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-xl font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61]"
               >Login
           </button>
 
           <Link href="/auth/forgetPassword">
-            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere  text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase hover:underline cursor-pointer">Forget Password? Reset Password Here</p>
+            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere relative lg:mt-[10vh] text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase hover:underline cursor-pointer">Forget Password? Reset Password Here</p>
           </Link>
            
          </div>
          {/*Right side of the Container*/}
-         <div className="Justify-center flex m-10 max-width-100% relative">
+         <div className="Justify-center flex m-10 relative lg:top-[1vh]">
             <img
               //img hero logo
               src="/hero-logo.png"
-              className=""
+              className="lg:px-10"
             />
          </div>
       </div>
       {/*mobile*/}
-      <div>
+      <div className="lg:hidden md:flex">
+        <div data-layer="Login 2 - Phone" className="Login2Phone w-96 h-[812px] relative bg-white overflow-hidden">
+
+          <p data-layer="Login" className="Login left-[146px] top-[26px] absolute text-center justify-start text-[#223F61] text-3xl font-bold font-['Poppins']">Login
+          </p>
+          
+          <Link href="/">
+          <img data-layer="left arrow"className="left-[55px] top-[30px] absolute" src="/left arrow.svg"/>
+          </Link>
+
+          <img data-layer="hero-logo 3" className="HeroLogo3 w-48 h-48 left-[90px] top-[111px] absolute" src="/hero-logo.png"/>
+
+          <h1 data-layer="Scheather" className="Scheather left-[85px] top-[306px] absolute justify-start text-cyan-900 text-5xl font-normal font-['Cedarville_Cursive']">Scheather</h1>
+
+          <p data-layer="Email" className="Email left-[30px] top-[421px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize">Email</p>
+               {/* email auth */}
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[27px] top-[469px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center">
+            <input
+              type="email"
+              placeholder="Input Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"/>
+          </div>
+
+          <p data-layer="Password" className="Password left-[27px] top-[523px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize">Password</p>
+               {/* password auth */}
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[27px] top-[569px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"/>
+              <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1.5 focus:outline-none"
+            >
+              <img
+                src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
+                alt="Toggle visibility"
+                className="w-[25px] h-[25px] mt-1"
+              />
+            </button>
+          </div>
+
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="w-44 h-9 left-[96px] top-[685px] absolute bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden text-base font-normal font-['Montserrat'] text-center justify-center items-center flex active:bg-[#94B7EF] active:text-[#223F61]">
+          Login
+        </button>
         
+        <Link href="/auth/forgetPassword">
+          <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[739px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] lowercase underline">
+          Forget Password? Reset Password Here
+          </p>
+        </Link>
+
+      </div>
+
       </div>
     </div>
   );

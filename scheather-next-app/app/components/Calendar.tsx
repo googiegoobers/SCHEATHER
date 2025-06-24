@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import "@/app/globals.css";
+import "./Calendar.css";
+
 import {
   Calendar,
   momentLocalizer,

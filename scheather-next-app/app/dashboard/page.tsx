@@ -78,6 +78,7 @@ export default function Dashboard() {
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const firstName = name ? name.split(" ")[0] : "there";
+
   // fetching the weather based on the user's location and finding the nearest city and read that city's weather
   useEffect(() => {
     const fetchWeatherByCity = async (lat: number, lon: number) => {
@@ -105,7 +106,6 @@ export default function Dashboard() {
           return;
         }
 
-        // Step 3: Combine
         setWeather({
           ...weatherData,
           city: cityName,
@@ -129,9 +129,6 @@ export default function Dashboard() {
       );
     }
   }, []);
-
-  //inig click sa button, "This Month", "This Week", "Today" mu stay ra ang color unless lahi nasad nga button ang gi-click
-  const [selected, setSelected] = useState("month");
 
   // this is to classify the icons to day and night
   const isDayTime = () => {
@@ -185,6 +182,7 @@ export default function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   // function to handle avatar change
   const handleAvatarChange = (path: string) => {
     localStorage.setItem("selectedAvatar", path);
@@ -318,39 +316,51 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-
-            {/* Desktop name + email */}
-            <div className="hidden sm:flex flex-col min-w-0 truncate">
-              <div className="text-black text-sm font-semibold truncate">
-                {name}
-              </div>
-              <div className="text-black text-xs truncate">{email}</div>
-            </div>
-
-            {/* Mobile-only dropdown toggle */}
-            <button
-              onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-              className="sm:hidden"
-              aria-label="Toggle profile dropdown"
-            >
-              <svg
-                className="w-5 h-5 text-black"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" />
-              </svg>
-            </button>
-
-            {/* Mobile dropdown content */}
-            {isMobileDropdownOpen && (
-              <div className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50 sm:hidden">
+            <div className="flex ">
+              {/* Desktop name + email */}
+              <div className="hidden sm:flex flex-col min-w-0 truncate">
                 <div className="text-black text-sm font-semibold truncate">
                   {name}
                 </div>
                 <div className="text-black text-xs truncate">{email}</div>
               </div>
-            )}
+
+              {/* toggle visible on all screens but name and email inside if mobile */}
+              <button
+                onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                className="ml-2"
+                aria-label="Toggle profile dropdown"
+              >
+                <svg
+                  className="w-5 h-5 text-black"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" />
+                </svg>
+              </button>
+
+              {/* Mobile dropdown content */}
+              {isMobileDropdownOpen && (
+                <div className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50   ">
+                  <div className="sm:hidden mb-2 border-b pb-2">
+                    <div className="text-black text-sm font-semibold truncate">
+                      {name}
+                    </div>
+                    <div className="text-black text-xs truncate">{email}</div>
+                  </div>
+                  {/* Logout Button */}
+                  <button
+                    className="mt-12 bg-stone-100 rounded-[30px] px-6 py-3 text-center cursor-pointer hover:bg-stone-200 transition-colors duration-300 w-full active:scale-95"
+                    onClick={handleClick}
+                  >
+                    <div className="text-cyan-900 text-xl font-poppins">
+                      Log Out
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {isMenuOpen && (
@@ -369,16 +379,6 @@ export default function Dashboard() {
                 </a>
 
                 <div className="flex-grow"></div>
-
-                {/* Logout Button: ibalhin sa profile dapit */}
-                {/* <button
-                  className="mt-12 bg-stone-100 rounded-[30px] px-6 py-3 text-center cursor-pointer hover:bg-stone-200 transition-colors duration-300 w-full active:scale-95"
-                  onClick={handleClick}
-                >
-                  <div className="text-cyan-900 text-xl font-poppins">
-                    Log Out
-                  </div>
-                </button> */}
               </aside>
             </>
           )}

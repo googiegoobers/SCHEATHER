@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import './signup.css';
+import "./signup.css";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { auth } from "@/app/lib/firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 interface SignUpFormData {
   firstName: string;
@@ -26,7 +27,9 @@ const SignUpCard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +38,7 @@ const SignUpCard: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+
   e.preventDefault();
   setError(null);
   setSuccess(null);
@@ -71,8 +75,9 @@ const SignUpCard: React.FC = () => {
   }
 };
 
-
+   
   return (
+
     <div className = "signup-background">
       {/*Inside the Container for Desktop*/} 
       <div className="form-bg"> 
@@ -239,7 +244,6 @@ const SignUpCard: React.FC = () => {
                 alt="Hero Logo"
               />
             </div>
-
       </div>
     </div>
             
@@ -248,72 +252,3 @@ const SignUpCard: React.FC = () => {
 };
 
 export default SignUpCard;
-
-
-{/*  <form className="vertical-form" onSubmit={handleSubmit}></form>
-//           <input
-//             type="text"
-//             name="firstName"
-//             placeholder="First Name"
-//             className="input-box"
-//             value={formData.firstName}
-//             onChange={handleChange}
-//             required
-//           />
-//           <input
-//             type="text"
-//             name="lastName"
-//             placeholder="Last Name"
-//             className="input-box"
-//             value={formData.lastName}
-//             onChange={handleChange}
-//             required
-//           />
-//           <input
-//             type="email"
-//             name="email"
-//             placeholder="Input Email"
-//             className="input-box"
-//             value={formData.email}
-//             onChange={handleChange}
-//             required
-//           />
-//           <input
-//             type={showPassword ? 'text' : 'password'}
-//             name="password"
-//             placeholder="Enter Password"
-//             className="input-box"
-//             value={formData.password}
-//             onChange={handleChange}
-//             required
-//           />
-
-//           <div className="w-48 h-10 left-[105px] top-[323px] absolute flex items-center gap-1">
-//         <input
-//           type="checkbox"
-//           className="w-10 h-10 scale-50 bg-stone-100 rounded-[20px] border border-stone-900 accent-stone-900"
-//           checked={showPassword}
-//           onChange={() => setShowPassword(!showPassword)}
-//         />
-//         <label
-//           htmlFor="show-password"
-//           className="text-stone-900/50 text-1xl font-normal font-['Montserrat'] whitespace-nowrap"
-//         >
-//           Show Password
-//         </label>
-//         </div>
-
-
-//           <button type="submit" className="submit-btn">
-
-    
-
-//             Sign Up
-//           </button>
-      
-//          <div className="left-[130px] bottom-[30px] relative  justify-start text-stone-900/50 text-1xl font-normal font-['Montserrat']">
-//     <Link href="/auth/login" passHref>
-//       Do you have an account?
-//     </Link>
-//     </div>
-       </form> */}

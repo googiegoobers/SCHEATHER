@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
+import { db } from '@/app/lib/firebaseConfig';
+import CalendarComponent from '@/app/components/Calendar';
+import EventForm from '@/app/components/EventForm';
 
 const api = {
   key: "d9e6f3e3a33ef6775a81923aa351ad00",
@@ -73,6 +76,7 @@ export default function Dashboard() {
 
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const firstName = name ? name.split(" ")[0] : "there";
 
   useEffect(() => {
     const fetchWeather = async (lat: number, lon: number) => {
@@ -235,6 +239,7 @@ export default function Dashboard() {
               Scheather
             </div>
           </div>
+          {/* //notification and avatar section */}
           <div className="relative flex items-center gap-2 sm:gap-4">
             <div className="relative notification-wrapper notification-icon">
               <svg
@@ -363,7 +368,7 @@ export default function Dashboard() {
 
         {/* // Main content area/ */}
         <main className="pt-20 scroll-mt-50">
-          {/* Full-width yellow background */}
+          {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
             {/* Centered content with padding */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
@@ -373,7 +378,7 @@ export default function Dashboard() {
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
                   style={{ fontFamily: "Poppins" }}
                 >
-                  WELCOME, {name}
+                  Welcome, {firstName}!
                 </h1>
               </div>
 
@@ -461,6 +466,12 @@ export default function Dashboard() {
         </div>
 
         {/* for calendar */}
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-4">Your Event Calendar</h1>
+          <EventForm />
+          <CalendarComponent />
+        </div>
+
       </div>
     </div>
   );

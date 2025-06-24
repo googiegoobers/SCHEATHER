@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
-import { db } from '@/app/lib/firebaseConfig';
-import CalendarComponent from '@/app/components/Calendar';
-import EventForm from '@/app/components/EventForm';
+import { db } from "@/app/lib/firebaseConfig";
+import CalendarComponent from "@/app/components/Calendar";
+import EventForm from "@/app/components/EventForm";
 
 const api = {
   key: "d9e6f3e3a33ef6775a81923aa351ad00",
@@ -362,28 +362,27 @@ export default function Dashboard() {
               {/* Sidebar menu */}
               <aside className="fixed top-20 left-0 max-h-[calc(100vh-2rem)] w-64 bg-[color:#213E60] z-50 p-6 rounded-tr-[10px] rounded-br-[10px] overflow-auto shadow-lg items-center flex flex-col">
                 <a>
-                  <div className="text-white text-xl mb-6">Scheather</div>
+                  <div className="text-white text-xl mb-6">Invitations</div>
                 </a>
                 <a>
-                  <div className="text-white text-xl mb-6">Scheather</div>
+                  <div className="text-white text-xl mb-6">To-do list</div>
                 </a>
 
                 <div className="flex-grow"></div>
 
-                {/* Logout Button */}
-                <button
+                {/* Logout Button: ibalhin sa profile dapit */}
+                {/* <button
                   className="mt-12 bg-stone-100 rounded-[30px] px-6 py-3 text-center cursor-pointer hover:bg-stone-200 transition-colors duration-300 w-full active:scale-95"
                   onClick={handleClick}
                 >
                   <div className="text-cyan-900 text-xl font-poppins">
                     Log Out
                   </div>
-                </button>
+                </button> */}
               </aside>
             </>
           )}
         </header>
-
         {/* // Main content area/ */}
         <main className="pt-20 scroll-mt-50">
           {/* Full-width blue background */}
@@ -449,53 +448,12 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-
-        {/* Buttons for month, week, day */}
-        <div className="flex flex-row pt-10 px-4 sm:px-6 lg:px-20 scroll-mt-50 gap-3">
-          <button
-            onClick={() => setSelected("month")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "month"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Month
-          </button>
-
-          <button
-            onClick={() => setSelected("week")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "week"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Week
-          </button>
-
-          <button
-            onClick={() => setSelected("day")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "day"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Day
-          </button>
-        </div>
-
         {/* for calendar */}
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-4">Your Event Calendar</h1>
-          <EventForm />
+          <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
+          {/* <EventForm /> */}
           <CalendarComponent />
         </div>
-
       </div>
     </div>
   );

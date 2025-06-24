@@ -19,6 +19,7 @@
     box-shadow: 0px 1vh 0.4vh 0px rgba(34, 63, 97, 0.25);
     border: 0.4vh solid #223F61;
     flex-direction: row;
+    overflow: hidden;
 }
 
 /* <div data-layer="Scheather" className="Scheather justify-start text-cyan-900 text-7xl font-normal font-['Cedarville_Cursive']">Scheather</div> */

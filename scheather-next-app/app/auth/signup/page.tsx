@@ -45,6 +45,8 @@ const SignUpCard: React.FC = () => {
 
   // Check if passwords match
   if (formData.password !== formData.confirmPassword) {
+    console.log("Passwords do not match! Try Again.");
+    alert("Signup failed! \nPasswords do not match.");
     setError("Passwords do not match.");
     return;
   }
@@ -80,7 +82,7 @@ const SignUpCard: React.FC = () => {
 
     <div className = "signup-background">
       {/*Inside the Container for Desktop*/} 
-      <div className="form-bg hidden"> 
+      <div className="form-bg hidden lg:flex"> 
          {/*Left Side of the Container*/}
          <div className="container-left-side hidden lg:flex">
           <form onSubmit={handleSubmit}>
@@ -217,6 +219,10 @@ const SignUpCard: React.FC = () => {
                 </button>
                 </div>
                   
+                {error && (
+                  <p className="text-red-500 text-sm mb-2">{error}</p>
+                )}
+
                 <button
                   type="submit"
                   className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 
@@ -350,19 +356,26 @@ const SignUpCard: React.FC = () => {
                     className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
                   />
                 </button>
+                 {error && (
+                  <p className="text-red-500 text-sm mt-2">{error}</p>
+                )}
           </div>
-
+              
           <Link href="/auth/login">
-          <p data-layer="Already have an account? Log in here" className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-cyan-900 text-xs font-normal font-['Poppins'] lowercase">Do you have an account? Log in here</p>
+          <p data-layer="Already have an account? Log in here" className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-cyan-900 text-xs font-normal font-['Poppins']">Already have an account? Log in here</p>
           </Link>
           
+           
+
           <div data-layer="Button" data-hover="Default" className="Button w-44 h-9 left-[96px] top-[685px] absolute bg-cyan-900 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden">
+               
                <button
                   type="submit"
                   className="left-[59px] top-[8.30px] absolute text-center justify-start text-stone-100 text-base font-normal font-['Montserrat']"
                 >
                 Sign up
-                </button> 
+                </button>
+                 
           </div>
         </div>
 
@@ -370,10 +383,7 @@ const SignUpCard: React.FC = () => {
           </form>
 
         </div>
-    </div>
-
-    
-            
+    </div>     
 
   );
 };

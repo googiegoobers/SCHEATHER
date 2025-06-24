@@ -108,7 +108,7 @@ export default function Home() {
 
           <Link href="/auth/forgetPassword">
 
-            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere relative lg:mt-[10vh] text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase hover:underline cursor-pointer">Forget Password? Reset Password Here</p>
+            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere relative lg:mt-[10vh] text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase cursor-pointer underline">Forget Password? Reset Password Here</p>
 
           </Link>
            
@@ -123,7 +123,7 @@ export default function Home() {
          </div>
       </div>
       {/*mobile*/}
-      <div className="lg:hidden md:flex">
+      <div className="lg:hidden md:flex overflow-auto">
         <div data-layer="Login 2 - Phone" className="Login2Phone w-96 h-[812px] relative bg-white overflow-hidden">
 
           <p data-layer="Login" className="Login left-[146px] top-[26px] absolute text-center justify-start text-[#223F61] text-3xl font-bold font-['Poppins']">Login

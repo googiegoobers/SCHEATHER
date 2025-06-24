@@ -1,10 +1,16 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { Calendar, momentLocalizer, Event as CalendarEvent } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { db } from '@/app/lib/firebaseConfig';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+"use client";
+import React, { useEffect, useState } from "react";
+import "@/app/globals.css";
+import {
+  Calendar,
+  momentLocalizer,
+  Event as CalendarEvent,
+} from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { db } from "@/app/lib/firebaseConfig";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import CustomNavCal from "./CustomNavCal";
 
 const localizer = momentLocalizer(moment);
 
@@ -21,11 +27,11 @@ const CalendarComponent: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       const snapshot = await getDocs(collection(db, "events"));
-      const eventsData = snapshot.docs.map(doc => ({
+      const eventsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         start: new Date(doc.data().start),
-        end: new Date(doc.data().end)
+        end: new Date(doc.data().end),
       })) as FirestoreEvent[];
       setEvents(eventsData);
     };
@@ -38,10 +44,10 @@ const CalendarComponent: React.FC = () => {
       const newEvent = {
         title,
         start: slotInfo.start,
-        end: slotInfo.end
+        end: slotInfo.end,
       };
       await addDoc(collection(db, "events"), newEvent);
-      setEvents(prev => [...prev, newEvent]);
+      setEvents((prev) => [...prev, newEvent]);
     }
   };
 
@@ -55,6 +61,9 @@ const CalendarComponent: React.FC = () => {
         selectable
         style={{ height: 600 }}
         onSelectSlot={handleSelectSlot}
+        components={{
+          toolbar: (props) => <CustomNavCal {...props} />,
+        }}
       />
     </div>
   );

@@ -12,6 +12,7 @@
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.14.1",
     "@lottiefiles/react-lottie-player": "^3.6.0",
+    "@types/moment": "^2.11.29",
     "date-fns": "^4.1.0",
     "firebase": "^11.9.1",
     "moment": "^2.30.1",

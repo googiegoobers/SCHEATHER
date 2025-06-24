@@ -1,4 +1,7 @@
 import "./globals.css";
+import { ClientProviders } from "./ClientProviders";
+// app/layout.tsx or app/page.tsx
+
 import {
   Poppins,
   Montserrat,
@@ -7,6 +10,7 @@ import {
   Roboto,
 } from "next/font/google";
 import { Metadata } from "next";
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -59,7 +63,11 @@ export default function RootLayout({
       lang="en"
       className={`${poppins.variable} ${inter.variable} ${montserrat.variable} ${cedarvilleCursive.variable} ${roboto.variable}`}
     >
-      <body>{children}</body>
+      <body> 
+        <ClientProviders>
+          {children}
+        </ClientProviders>
+    </body>
     </html>
   );
 }

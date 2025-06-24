@@ -62,6 +62,7 @@ export default function Dashboard() {
     router.push("/auth/login");
   };
 
+  //for the hamburger
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
@@ -77,39 +78,56 @@ export default function Dashboard() {
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const firstName = name ? name.split(" ")[0] : "there";
-
+  // fetching the weather based on the user's location and finding the nearest city and read that city's weather
   useEffect(() => {
-    const fetchWeather = async (lat: number, lon: number) => {
+    const fetchWeatherByCity = async (lat: number, lon: number) => {
       try {
-        const res = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${
-            api.key
-          }&_=${Date.now()}`
+        const geoRes = await fetch(
+          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${api.key}`
         );
+        const geoData = await geoRes.json();
 
-        const data = await res.json();
-        if (res.ok) {
-          setWeather(data);
-        } else {
-          setError(data.message || "Failed to fetch weather.");
+        if (!geoRes.ok || geoData.length === 0) {
+          setError("Could not find city for your location.");
+          return;
         }
-      } catch (err: any) {
-        setError("An error occurred while fetching the weather.");
+
+        const cityName = geoData[0].name;
+        const countryCode = geoData[0].country;
+
+        const weatherRes = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${cityName},${countryCode}&appid=${api.key}&units=metric`
+        );
+        const weatherData = await weatherRes.json();
+
+        if (!weatherRes.ok) {
+          setError("Failed to fetch weather for city.");
+          return;
+        }
+
+        // Step 3: Combine
+        setWeather({
+          ...weatherData,
+          city: cityName,
+          country: countryCode,
+        });
+      } catch (err) {
+        console.error(err);
+        setError("An error occurred.");
       }
     };
 
-    if (navigator.geolocation)
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          fetchWeather(latitude, longitude);
+          fetchWeatherByCity(latitude, longitude);
         },
-        (err) => {
-          setError(
-            "Unable to retrieve your location. Please check your browser settings."
-          );
+        () => {
+          setError("Location permission denied.");
         }
       );
+    }
   }, []);
 
   //inig click sa button, "This Month", "This Week", "Today" mu stay ra ang color unless lahi nasad nga button ang gi-click
@@ -125,7 +143,7 @@ export default function Dashboard() {
 
     return current >= sunrise && current < sunset;
   };
-
+  //fetching name and email from firebase auth
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -141,7 +159,7 @@ export default function Dashboard() {
 
   //avatars
   const [avatar, setAvatar] = useState("/avatar/cat1.jpg");
-
+  // setting the selected avatar from localStorage if available
   useEffect(() => {
     const savedAvatar = localStorage.getItem("selectedAvatar");
     if (savedAvatar) {
@@ -150,7 +168,7 @@ export default function Dashboard() {
   }, []);
 
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
-
+  //avatar dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -167,7 +185,7 @@ export default function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  // function to handle avatar change
   const handleAvatarChange = (path: string) => {
     localStorage.setItem("selectedAvatar", path);
     setAvatar(path);
@@ -370,9 +388,7 @@ export default function Dashboard() {
         <main className="pt-20 scroll-mt-50">
           {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
-            {/* Centered content with padding */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
-              {/* Left: Welcome */}
               <div className="flex">
                 <h1
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
@@ -382,7 +398,7 @@ export default function Dashboard() {
                 </h1>
               </div>
 
-              {/* Right: Weather Info */}
+              {/* Weather Info */}
               <div className="flex-1 flex justify-end items-start min-h-[16rem]">
                 {weather ? (
                   <div
@@ -392,26 +408,32 @@ export default function Dashboard() {
                   >
                     <div className="relative w-64 h-64 flex items-start justify-start">
                       <div className="absolute top-5 left-2 text-[#e68c3a] text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                        {weather?.name}
+                        {weather.city}
                       </div>
-                      <img
-                        src={
-                          iconMap[weather.weather[0].main]
-                            ? iconMap[weather.weather[0].main][
-                                isDayTime() ? "day" : "night"
-                              ]
-                            : "/icons/default.png"
-                        }
-                        alt={weather.weather[0].description}
-                        className="absolute top-2 right-2 w-24 h-24"
-                      />
-                      <div className="absolute top-10 left-2 flex items-start">
-                        <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
-                          {Math.round(weather.main.temp)}
-                        </span>
-                        <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
-                          °C
-                        </span>
+
+                      <div className="absolute top-10 left-2 flex items-start gap-4">
+                        {/* Temperature block */}
+                        <div className="flex items-start">
+                          <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
+                            {weather.main.temp.toFixed(1)}
+                          </span>
+                          <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
+                            °C
+                          </span>
+                        </div>
+
+                        {/* Weather icon */}
+                        <img
+                          src={
+                            iconMap[weather.weather[0].main]
+                              ? iconMap[weather.weather[0].main][
+                                  isDayTime() ? "day" : "night"
+                                ]
+                              : "/icons/default.png"
+                          }
+                          alt={weather.weather[0].description}
+                          className="w-28 sm:w-30 h-28 mt-2"
+                        />
                       </div>
                       <div className="absolute top-32 left-2 text-white text-2xl font-bold font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)] capitalize">
                         {weather.weather[0].description}
@@ -427,6 +449,8 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
+
+        {/* Buttons for month, week, day */}
         <div className="flex flex-row pt-10 px-4 sm:px-6 lg:px-20 scroll-mt-50 gap-3">
           <button
             onClick={() => setSelected("month")}

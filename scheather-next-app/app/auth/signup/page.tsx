@@ -27,9 +27,8 @@ const SignUpCard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const router = useRouter();
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,16 +64,16 @@ const SignUpCard: React.FC = () => {
       displayName: `${formData.firstName} ${formData.lastName}`,
     });
 
-    console.log("✅ User created and profile updated!", user);
-    setSuccess("User created successfully!");
-    alert("Signup successful! \nWelcome user!");
-    // Optional: redirect or show success message here
-  } catch (err: any) {
-    console.error("❌ Error during signup:", err.message);
-    alert(`Login failed: ${err.message}`);
-    setError(err.message || "Signup failed");
-    // Optional: show error message to user
-  }
+     console.log("✅ User created and profile updated!", user);
+      // setSuccess("User created successfully!");
+      router.push("/dashboard");
+      // Optional: redirect or show success message here
+    } catch (err: any) {
+      console.error("❌ Error during signup:", err.message);
+      alert(`Login failed: ${err.message}`);
+      setError(err.message || "Signup failed");
+      // Optional: show error message to user
+    }
 };
 
    

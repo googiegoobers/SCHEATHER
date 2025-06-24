@@ -47,3 +47,7 @@
 .label-month {
   font: bold 1.2rem "Poppins", sans-serif !important;
 }
+
+.rbc-calendar {
+  min-height: 900px;
+}

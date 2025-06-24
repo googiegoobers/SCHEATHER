@@ -80,9 +80,9 @@ const SignUpCard: React.FC = () => {
 
     <div className = "signup-background">
       {/*Inside the Container for Desktop*/} 
-      <div className="form-bg"> 
+      <div className="form-bg hidden"> 
          {/*Left Side of the Container*/}
-         <div className="container-left-side">
+         <div className="container-left-side hidden lg:flex">
           <form onSubmit={handleSubmit}>
             <Link href="/">
               <h1 
@@ -245,7 +245,134 @@ const SignUpCard: React.FC = () => {
               />
             </div>
       </div>
+
+
+      {/* mobile */}
+      <div className="lg:hidden md:flex">
+          <form onSubmit={handleSubmit}>
+
+            <div data-layer="Sign in 2 - Phone" className="SignIn2Phone w-96 h-[812px] relative bg-white overflow-hidden">
+
+          <p data-layer="Sign in" className="SignIn left-[135px] top-[26px] absolute text-center justify-start text-cyan-900 text-3xl font-bold font-['Poppins']">
+            Sign up
+          </p>
+        
+        
+
+          <div data-layer="Expand_left_light" className="ExpandLeftLight w-6 h-6 left-[55px] top-[37px] absolute">
+            <Link href="/">
+            <img data-layer="left arrow" className="left-[8px] top-[-5px] absolute" src="/left arrow.svg"/>
+            </Link>
+          </div>
+
+          <p data-layer="First Name" className="FirstName left-[30px] top-[99px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">First Name</p>
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[143px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <input
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                    />
+          </div>
+
+          <div data-layer="Last Name" className="LastName left-[30px] top-[210px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Last Name</div>
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[254px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <input
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                  />
+          </div>
+          
+          <div data-layer="Email" className="Email left-[29px] top-[312px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Email</div>
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[356px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"><input
+                    type="text"
+                    name="email"
+                    placeholder="Input Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                  />
+          
+          </div>
+
+          <div data-layer="Password" className="Password left-[29px] top-[413px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Password</div>
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[458px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    placeholder="Enter Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                  />
+                  <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 focus:outline-none"
+                  >
+                  <img
+                    src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
+                    alt="Toggle visibility"
+                    className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
+                  />
+                  </button>
+          </div>
+
+          <div data-layer="Re-Enter Password" className="ReEnterPassword left-[29px] top-[525px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Re-Enter Password</div>
+          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[570px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    placeholder="Re-enter Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none "
+                  />
+                  <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 focus:outline-none"
+                  >
+                  <img
+                    src={showConfirmPassword ? "/eye.svg" : "/eye-closed.svg"}
+                    alt="Toggle visibility"
+                    className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
+                  />
+                </button>
+          </div>
+
+          <Link href="/auth/login">
+          <p data-layer="Already have an account? Log in here" className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-cyan-900 text-xs font-normal font-['Poppins'] lowercase">Do you have an account? Log in here</p>
+          </Link>
+          
+          <div data-layer="Button" data-hover="Default" className="Button w-44 h-9 left-[96px] top-[685px] absolute bg-cyan-900 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden">
+               <button
+                  type="submit"
+                  className="left-[59px] top-[8.30px] absolute text-center justify-start text-stone-100 text-base font-normal font-['Montserrat']"
+                >
+                Sign up
+                </button> 
+          </div>
+        </div>
+
+        
+          </form>
+
+        </div>
     </div>
+
+    
             
 
   );

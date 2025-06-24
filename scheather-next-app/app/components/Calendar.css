@@ -1,0 +1,49 @@
+@import "tailwindcss";
+/* for the calendar interface */
+
+/* for the navigation */
+.navigation {
+  display: flex;
+  align-items: center;
+  color: #e68c3a;
+}
+
+.navigation button {
+  cursor: pointer;
+}
+
+.rbc-toolbar-label {
+  /* color: #e68c3a !important; */
+  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+}
+
+.rbc-header {
+  background-color: #e68c3a !important;
+  color: white !important;
+  font-weight: 600 !important;
+  /* padding: 0.5rem 1rem !important; if-add siya kay need i-adjut sa view sa weekly */
+  border-radius: 5px !important;
+}
+
+.viewer button {
+  background-color: #213e60 !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 5px !important;
+  padding: 0.5rem 1rem !important;
+  cursor: pointer;
+}
+
+.viewer button:hover {
+  background-color: #1a2b40 !important;
+}
+
+.viewer button:active {
+  background-color: #e68c3a !important;
+  transition: ease-in-out;
+}
+
+.label-month {
+  font: bold 1.2rem "Poppins", sans-serif !important;
+}

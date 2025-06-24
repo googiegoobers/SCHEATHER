@@ -10,6 +10,7 @@ export default function Home() {
     router.push("/auth/signup");
   };
 
+  //for the hamburger menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {

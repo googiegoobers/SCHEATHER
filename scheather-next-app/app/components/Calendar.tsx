@@ -10,8 +10,9 @@ import {
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { db } from "@/app/lib/firebaseConfig";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
+import EventForm from "./EventForm"; // Make sure you have this
 
 const localizer = momentLocalizer(moment);
 
@@ -24,32 +25,37 @@ interface FirestoreEvent {
 
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const snapshot = await getDocs(collection(db, "events"));
-      const eventsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        start: new Date(doc.data().start),
-        end: new Date(doc.data().end),
-      })) as FirestoreEvent[];
-      setEvents(eventsData);
+      try {
+        const snapshot = await getDocs(collection(db, "events"));
+        const eventsData: FirestoreEvent[] = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title,
+            start: new Date(data.start),
+            end: new Date(data.end),
+          };
+        });
+        setEvents(eventsData);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+      }
     };
+
     fetchEvents();
   }, []);
 
-  const handleSelectSlot = async (slotInfo: any) => {
-    const title = prompt("Enter event title");
-    if (title) {
-      const newEvent = {
-        title,
-        start: slotInfo.start,
-        end: slotInfo.end,
-      };
-      await addDoc(collection(db, "events"), newEvent);
-      setEvents((prev) => [...prev, newEvent]);
-    }
+  const handleSelectSlot = (slotInfo: any) => {
+    setSelectedSlot({
+      start: slotInfo.start,
+      end: slotInfo.end,
+    });
+    setShowForm(true);
   };
 
   return (
@@ -66,6 +72,28 @@ const CalendarComponent: React.FC = () => {
           toolbar: (props) => <CustomNavCal {...props} />,
         }}
       />
+
+      {showForm && selectedSlot && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded shadow w-full max-w-md">
+            <EventForm
+              start={selectedSlot.start.toISOString().slice(0, 16)}
+              end={selectedSlot.end.toISOString().slice(0, 16)}
+              onClose={() => setShowForm(false)}
+              onEventCreated={(newEvt) =>
+                setEvents((prev) => [
+                  ...prev,
+                  {
+                    ...newEvt,
+                    start: new Date(newEvt.start),
+                    end: new Date(newEvt.end),
+                  },
+                ])
+              }
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

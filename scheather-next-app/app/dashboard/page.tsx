@@ -451,7 +451,6 @@ export default function Dashboard() {
         {/* for calendar */}
         <div className="p-8">
           <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
-          {/* <EventForm /> */}
           <CalendarComponent />
         </div>
       </div>

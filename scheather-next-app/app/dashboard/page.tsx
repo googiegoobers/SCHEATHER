@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -51,6 +51,7 @@ const iconMap: Record<string, { day: string; night: string }> = {
     day: "/icons/mist-day.png",
     night: "/icons/mist-night.png",
   },
+  //overcast clouds
 };
 
 export default function Dashboard() {
@@ -189,7 +190,12 @@ export default function Dashboard() {
       }
     };
     //mawala ang dropdown kung mag click outside sa avatar
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isMobileDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -216,6 +222,24 @@ export default function Dashboard() {
         !bellIcon.contains(target)
       ) {
         setIsNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  //profile dropdown
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      // ONLY close if not clicking inside the dropdown
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+        setIsMobileDropdownOpen(false);
       }
     };
 
@@ -354,7 +378,10 @@ export default function Dashboard() {
 
               {/* Mobile dropdown content */}
               {isMobileDropdownOpen && (
-                <div className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50   ">
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50   "
+                >
                   <div className="sm:hidden mb-2 border-b pb-2">
                     <div className="text-black text-sm font-semibold truncate">
                       {name}

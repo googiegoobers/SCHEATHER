@@ -14,28 +14,40 @@ const api = {
 };
 
 //weather icons (not using the default icons from OpenWeatherMap)
-const iconMap: { [key: string]: { day: string; night: string } } = {
-  Clear: {
+const iconMap: Record<string, { day: string; night: string }> = {
+  "clear sky": {
     day: "/icons/clear-day.png",
     night: "/icons/clear-night.png",
   },
-  Clouds: {
+  "few clouds": {
     day: "/icons/cloudy-day.png",
     night: "/icons/cloudy-night.png",
   },
-  Rain: {
+  "scattered clouds": {
+    day: "/icons/scattered-clouds-day.png",
+    night: "/icons/scattered-clouds-night.png",
+  },
+  "broken clouds": {
+    day: "/icons/broken-clouds-day.png",
+    night: "/icons/broken-clouds-night.png",
+  },
+  "shower rain": {
+    day: "/icons/shower-rain-day.png",
+    night: "/icons/shower-rain-night.png",
+  },
+  rain: {
     day: "/icons/rain-day.png",
     night: "/icons/rain-night.png",
   },
-  Thunderstorm: {
+  thunderstorm: {
     day: "/icons/thunderstorm-day.png",
     night: "/icons/thunderstorm-night.png",
   },
-  Snow: {
+  snow: {
     day: "/icons/snow-day.png",
     night: "/icons/snow-night.png",
   },
-  Mist: {
+  mist: {
     day: "/icons/mist-day.png",
     night: "/icons/mist-night.png",
   },
@@ -424,18 +436,20 @@ export default function Dashboard() {
                         {/* Weather icon */}
                         <img
                           src={
-                            iconMap[weather.weather[0].main]
-                              ? iconMap[weather.weather[0].main][
-                                  isDayTime() ? "day" : "night"
-                                ]
+                            iconMap[
+                              weather.weather[0].description.toLowerCase()
+                            ]
+                              ? iconMap[
+                                  weather.weather[0].description.toLowerCase()
+                                ][isDayTime() ? "day" : "night"]
                               : "/icons/default.png"
                           }
-                          alt={weather.weather[0].description}
+                          alt={weather.weather[0].description.toLowerCase()}
                           className="w-28 sm:w-30 h-28 mt-2"
                         />
                       </div>
                       <div className="absolute top-32 left-2 text-white text-2xl font-bold font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)] capitalize">
-                        {weather.weather[0].description}
+                        {weather.weather[0].description.toLowerCase()}
                       </div>
                     </div>
                   </div>

@@ -26,13 +26,16 @@ interface FirestoreEvent {
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const snapshot = await getDocs(collection(db, "events"));
-        const eventsData: FirestoreEvent[] = snapshot.docs.map(doc => {
+        const eventsData: FirestoreEvent[] = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,

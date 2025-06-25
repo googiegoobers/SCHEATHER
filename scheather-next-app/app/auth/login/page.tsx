@@ -122,7 +122,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="lg:w-[15vw] lg:h-[35px] top-13 bottom-10 left-22 relative bg-red-500 text-white rounded-[30px] flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-red-600 cursor-pointer"
+            className="lg:w-[15vw] lg:h-[35px] top-13 bottom-10 left-22 relative bg-[#223F61] text-white rounded-[30px] flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg[#94B7EF] cursor-pointer"
           >
             Sign in with Google
           </button>
@@ -196,9 +196,18 @@ export default function Home() {
         <button
           type="button"
           onClick={handleLogin}
-          className="w-44 h-9 left-[96px] top-[685px] absolute bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden text-base font-normal font-['Montserrat'] text-center justify-center items-center flex active:bg-[#94B7EF] active:text-[#223F61]">
+          className="w-44 h-9 left-[96px] top-[635px] absolute bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden text-base font-normal font-['Montserrat'] text-center justify-center items-center flex active:bg-[#94B7EF] active:text-[#223F61]">
           Login
         </button>
+
+        
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-50 h-9 top-[685px] bottom-10 left-21 relative bg-[#223F61] text-white rounded-[30px] flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg[#94B7EF] cursor-pointer"
+          >
+            Sign in with Google
+          </button>
         
         <Link href="/auth/forgetPassword">
           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[739px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] lowercase underline">

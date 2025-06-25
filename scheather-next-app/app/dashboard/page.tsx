@@ -51,6 +51,10 @@ const iconMap: Record<string, { day: string; night: string }> = {
     day: "/icons/mist-day.png",
     night: "/icons/mist-night.png",
   },
+  "overcast clouds": {
+    day: "/icons/overcast-clouds-day.png",
+    night: "/icons/overcast-clouds-night.png",
+  },
 };
 
 export default function Dashboard() {

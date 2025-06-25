@@ -35,7 +35,7 @@ const CustomNavCal = (props: any) => {
       {/* View Switcher Motnh, WEek, day*/}
       <div className="flex gap-2 order-3 md:order-3 justify-center md:justify-end viewer">
         <button
-          className={`px-3 py-1 rounded text-sm ${
+          className={`px-3 py-1 rounded text-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#e68c3a] ${
             view === "month"
               ? "bg-blue-500 text-white"
               : "bg-gray-200 hover:bg-gray-300"
@@ -45,7 +45,7 @@ const CustomNavCal = (props: any) => {
           Month
         </button>
         <button
-          className={`px-3 py-1 rounded text-sm ${
+          className={`px-3 py-1 rounded text-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#e68c3a] ${
             view === "week"
               ? "bg-blue-500 text-white"
               : "bg-gray-200 hover:bg-gray-300"
@@ -55,7 +55,7 @@ const CustomNavCal = (props: any) => {
           Week
         </button>
         <button
-          className={`px-3 py-1 rounded text-sm ${
+          className={`px-3 py-1 rounded text-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#e68c3a] ${
             view === "day"
               ? "bg-blue-500 text-white"
               : "bg-gray-200 hover:bg-gray-300"

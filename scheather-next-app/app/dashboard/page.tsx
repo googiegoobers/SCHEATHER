@@ -9,7 +9,10 @@ import { db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 import HamburgerCal from "@/app/components/HamburgerCal";
-
+import ProfileUser from "@/app/components/ProfileUser";
+import path from "path";
+import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
 //for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
@@ -59,12 +62,12 @@ const iconMap: Record<string, { day: string; night: string }> = {
     night: "/icons/rain-night.png",
   },
   "patchy light drizzle": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "light drizzle": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
 
   snow: { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
@@ -108,12 +111,105 @@ export default function Dashboard() {
   //for the name and email address in the header
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  // for getting the year (user creation) from db
+  const [creationYear, setCreationYear] = useState<number | null>(null);
   //for notifications
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  //for pofile
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const auth = getAuth();
 
+  //creation year
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const creationTime = user.metadata?.creationTime;
+        if (creationTime) {
+          const yearOnly = new Date(creationTime).getFullYear();
+          setCreationYear(yearOnly);
+        }
+      }
+    });
+
+    return () => unsubscribe(); // ✅ clean up listener
+  }, []);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  //for saving the path of the avatar into the database
+  const handleAvatarChange = async (path: string) => {
+    //mu select ang user sa iyahang ginahan nga avatart
+    localStorage.setItem("selectedAvatar", path);
+    const savedAvatar = localStorage.getItem("selectedAvatar");
+    //kuhaon ang path
+    if (savedAvatar) setAvatar(path);
+    setIsAvatarDropdownOpen(false);
+
+    //the process
+    const user = auth.currentUser;
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      try {
+        //ang setDoc mu make sa documet didto sa db if wala pa siya nahimo
+        await setDoc(userDocRef, { avatarPath: path }, { merge: true });
+      } catch (error) {
+        console.error("Error updating avatar in Firestore:", error);
+      }
+    }
+  };
+
+  const [avatar, setAvatar] = useState("/avatar/cat1.jpg");
+
+  // setting the selected avatar from localStorage if available
+  useEffect(() => {
+    const savedAvatar = localStorage.getItem("selectedAvatar");
+    if (savedAvatar) {
+      setAvatar(savedAvatar);
+    }
+  }, []);
+
+  //fetching the avatar path from the database
+  useEffect(() => {
+    const fetchAvatarFromFirestore = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          if (data.avatarPath) {
+            setAvatar(data.avatarPath);
+          }
+        }
+      }
+    };
+    fetchAvatarFromFirestore();
+  });
+
+  const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
+  //avatar dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest(".avatar-dropdown") &&
+        !target.closest("img[src*='/avatar/']")
+      ) {
+        setIsAvatarDropdownOpen(false);
+      }
+    };
+    //mawala ang dropdown kung mag click outside sa avatar
+    if (isMobileDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   //log-out function
   const handleClick = () => {
@@ -194,47 +290,6 @@ export default function Dashboard() {
 
     return () => unsubscribe(); // cleanup
   }, []);
-
-  //avatars
-  const [avatar, setAvatar] = useState("/avatar/cat1.jpg");
-  // setting the selected avatar from localStorage if available
-  useEffect(() => {
-    const savedAvatar = localStorage.getItem("selectedAvatar");
-    if (savedAvatar) {
-      setAvatar(savedAvatar);
-    }
-  }, []);
-
-  const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
-  //avatar dropdown
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        !target.closest(".avatar-dropdown") &&
-        !target.closest("img[src*='/avatar/']")
-      ) {
-        setIsAvatarDropdownOpen(false);
-      }
-    };
-    //mawala ang dropdown kung mag click outside sa avatar
-    if (isMobileDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  // function to handle avatar change
-  const handleAvatarChange = (path: string) => {
-    localStorage.setItem("selectedAvatar", path);
-    setAvatar(path);
-    setIsAvatarDropdownOpen(false);
-  };
 
   //notifications
   useEffect(() => {
@@ -453,9 +508,20 @@ export default function Dashboard() {
                           d="M17 9c0-1.381-.56-2.631-1.464-3.535C14.631 4.56 13.381 4 12 4s-2.631.56-3.536 1.465C7.56 6.369 7 7.619 7 9s.56 2.631 1.464 3.535C9.369 13.44 10.619 14 12 14s2.631-.56 3.536-1.465A4.984 4.984 0 0 0 17 9zM6 19c0 1 2.25 2 6 2c3.518 0 6-1 6-2c0-2-2.354-4-6-4c-3.75 0-6 2-6 4z"
                         />
                       </svg>
-                      <span className="text-sm text-gray-700">
+                      <span
+                        className="text-sm text-gray-700"
+                        onClick={() => setIsProfileOpen(true)}
+                      >
                         User Profile
                       </span>
+                      {isProfileOpen && (
+                        <ProfileUser
+                          onClose={() => setIsProfileOpen(false)}
+                          name={name}
+                          email={email}
+                          creationYear={creationYear}
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -498,11 +564,11 @@ export default function Dashboard() {
                   <HamburgerCal />
                 </div>
                 <a>
-
-                  <div className="text-white text-xl mb-6 mt-6">Invitations</div>
+                  <div className="text-white text-xl mb-6 mt-6">
+                    Invitations
+                  </div>
 
                   <div className="text-white text-xl mb-6">Invitations</div>
-
                 </a>
                 <a>
                   <div className="text-white text-xl mb-6">To-do list</div>

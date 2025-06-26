@@ -5,6 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
+<<<<<<< Updated upstream
+=======
+import { db } from "@/app/lib/firebaseConfig";
+import CalendarComponent from "@/app/components/Calendar";
+import EventForm from "@/app/components/EventForm";
+import HamburgerCal from "@/app/components/HamburgerCal";
+>>>>>>> Stashed changes
 
 const api = {
   key: "d9e6f3e3a33ef6775a81923aa351ad00",
@@ -339,9 +346,16 @@ export default function Dashboard() {
                 onClick={closeMenu}
               ></div>
               {/* Sidebar menu */}
-              <aside className="fixed top-20 left-0 max-h-[calc(100vh-2rem)] w-64 bg-[color:#213E60] z-50 p-6 rounded-tr-[10px] rounded-br-[10px] overflow-auto shadow-lg items-center flex flex-col">
+              <aside className="fixed top-20 left-0 max-h-[calc(100vh-2rem)] w-64 bg-[color:#213E60] z-50 p-6 rounded-tr-[10px] rounded-br-[10px] overflow-hidden shadow-lg items-center flex flex-col">
+                <div data-layer="Hamburger calendar">
+                  <HamburgerCal />
+                </div>
                 <a>
+<<<<<<< Updated upstream
                   <div className="text-white text-xl mb-6">Scheather</div>
+=======
+                  <div className="text-white text-xl mb-6 mt-6">Invitations</div>
+>>>>>>> Stashed changes
                 </a>
                 <a>
                   <div className="text-white text-xl mb-6">Scheather</div>

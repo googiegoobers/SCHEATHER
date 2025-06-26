@@ -22,7 +22,6 @@ const iconMap: Record<string, { day: string; night: string }> = {
   overcast: {
     day: "/icons/overcast-cloud-day.png",
     night: "/icons/overcast-cloud-night.png",
-
   },
 
   "patchy rain possible": {
@@ -56,15 +55,6 @@ const iconMap: Record<string, { day: string; night: string }> = {
   "torrential rain shower": {
     day: "/icons/rain-day.png",
     night: "/icons/rain-night.png",
-  },
-  "patchy light drizzle": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
-  },
-  "light drizzle": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
-
   },
   "patchy light drizzle": {
     day: "/icons/light-rain-day.png",
@@ -151,7 +141,6 @@ export default function Dashboard() {
       try {
         const weatherRes = await fetch(
           `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
-
         );
 
         const data = await weatherRes.json();
@@ -519,7 +508,6 @@ export default function Dashboard() {
         <main className="pt-20 scroll-mt-50">
           {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
-
             {/* div inside of the blue background */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
               <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">

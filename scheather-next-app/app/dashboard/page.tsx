@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
+<<<<<<< Add/Abella
 <<<<<<< Updated upstream
 =======
 import { db } from "@/app/lib/firebaseConfig";
@@ -12,37 +13,98 @@ import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 import HamburgerCal from "@/app/components/HamburgerCal";
 >>>>>>> Stashed changes
+=======
+import { db } from "@/app/lib/firebaseConfig";
+import CalendarComponent from "@/app/components/Calendar";
+import EventForm from "@/app/components/EventForm";
+>>>>>>> main
 
-const api = {
-  key: "d9e6f3e3a33ef6775a81923aa351ad00",
-};
+//for the default icons kay blurry ang icons nga gikan sa API
+const iconMap: Record<string, { day: string; night: string }> = {
+  sunny: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
+  clear: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
 
-//weather icons (not using the default icons from OpenWeatherMap)
-const iconMap: { [key: string]: { day: string; night: string } } = {
-  Clear: {
-    day: "/icons/clear-day.png",
-    night: "/icons/clear-night.png",
-  },
-  Clouds: {
+  "partly cloudy": {
     day: "/icons/cloudy-day.png",
     night: "/icons/cloudy-night.png",
   },
-  Rain: {
+  cloudy: { day: "/icons/cloudy-day.png", night: "/icons/cloudy-night.png" },
+  overcast: {
+    day: "/icons/overcast-cloud-day.png",
+    night: "/icons/overcast-cloud-night.png",
+  },
+
+  "patchy rain possible": {
     day: "/icons/rain-day.png",
     night: "/icons/rain-night.png",
   },
-  Thunderstorm: {
-    day: "/icons/thunderstorm-day.png",
-    night: "/icons/thunderstorm-night.png",
+  "patchy rain nearby": {
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
-  Snow: {
+  "light rain shower": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+  "light rain": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+  "moderate rain": {
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
+  },
+  "heavy rain": {
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
+  },
+  "moderate or heavy rain shower": {
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
+  },
+  "torrential rain shower": {
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
+  },
+  "patchy light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+  "light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+
+  snow: { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "light snow": { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "moderate snow": {
     day: "/icons/snow-day.png",
     night: "/icons/snow-night.png",
   },
-  Mist: {
-    day: "/icons/mist-day.png",
-    night: "/icons/mist-night.png",
+  "heavy snow": { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "patchy light snow": {
+    day: "/icons/snow-day.png",
+    night: "/icons/snow-night.png",
   },
+
+  fog: { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+  mist: { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+  "freezing fog": { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+
+  "thundery outbreaks possible": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
+  },
+  "patchy light rain with thunder": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
+  },
+  "moderate or heavy rain with thunder": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
+  },
+  // Default fallback, if wala sa pilianan, siyaro naman sad wla sa?
+  default: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
 };
 
 export default function Dashboard() {
@@ -66,6 +128,7 @@ export default function Dashboard() {
     router.push("/auth/login");
   };
 
+  //for the hamburger
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
@@ -78,58 +141,55 @@ export default function Dashboard() {
     };
   }, [isMenuOpen]);
 
+  // fetching weather
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const firstName = name ? name.split(" ")[0] : "there";
 
   useEffect(() => {
-    const fetchWeather = async (lat: number, lon: number) => {
+    const fetchWeatherFromWeatherAPI = async (lat: number, lon: number) => {
       try {
-        const res = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${
-            api.key
-          }&_=${Date.now()}`
+        const weatherRes = await fetch(
+          `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
         );
 
-        const data = await res.json();
-        if (res.ok) {
-          setWeather(data);
-        } else {
-          setError(data.message || "Failed to fetch weather.");
+        const data = await weatherRes.json();
+
+        if (!weatherRes.ok || !data?.location) {
+          setError("Failed to fetch weather data.");
+          return;
         }
-      } catch (err: any) {
-        setError("An error occurred while fetching the weather.");
+
+        setWeather({
+          city: data.location.name,
+          country: data.location.country,
+          localtime: data.location.localtime,
+          current: data.current,
+          forecast: data.forecast.forecastday[0], // today’s forecast
+          is_day: data.current.is_day,
+        });
+      } catch (err) {
+        console.error(err);
+        setError("An error occurred.");
       }
     };
 
-    if (navigator.geolocation)
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          fetchWeather(latitude, longitude);
+          fetchWeatherFromWeatherAPI(latitude, longitude);
         },
-        (err) => {
-          setError(
-            "Unable to retrieve your location. Please check your browser settings."
-          );
+        () => {
+          setError("Location permission denied.");
         }
       );
+    }
   }, []);
 
-  //inig click sa button, "This Month", "This Week", "Today" mu stay ra ang color unless lahi nasad nga button ang gi-click
-  const [selected, setSelected] = useState("month");
+  const isDayTime = () => weather?.current?.is_day === 1;
 
-  // this is to classify the icons to day and night
-  const isDayTime = () => {
-    if (!weather?.dt || !weather?.sys) return true; // fallback to day
-
-    const current = weather.dt;
-    const sunrise = weather.sys.sunrise;
-    const sunset = weather.sys.sunset;
-
-    return current >= sunrise && current < sunset;
-  };
-
+  //fetching name and email from firebase auth
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -145,7 +205,7 @@ export default function Dashboard() {
 
   //avatars
   const [avatar, setAvatar] = useState("/avatar/cat1.jpg");
-
+  // setting the selected avatar from localStorage if available
   useEffect(() => {
     const savedAvatar = localStorage.getItem("selectedAvatar");
     if (savedAvatar) {
@@ -154,7 +214,7 @@ export default function Dashboard() {
   }, []);
 
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
-
+  //avatar dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -166,12 +226,18 @@ export default function Dashboard() {
       }
     };
     //mawala ang dropdown kung mag click outside sa avatar
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isMobileDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // function to handle avatar change
   const handleAvatarChange = (path: string) => {
     localStorage.setItem("selectedAvatar", path);
     setAvatar(path);
@@ -200,6 +266,41 @@ export default function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  //profile dropdown
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      // ONLY close if not clicking inside the dropdown
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        !target.closest('button[aria-label="Toggle profile dropdown"]')
+      ) {
+        setIsMobileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  //formatting the date into 9:00 PM
+  function formatLocalTime(localtime: string) {
+    const [, timePart] = localtime.split(" "); // "21:00"
+    const [hourStr, minuteStr] = timePart.split(":");
+    let hour = parseInt(hourStr);
+    const minute = minuteStr;
+    const ampm = hour >= 12 ? "PM" : "AM";
+
+    hour = hour % 12 || 12;
+
+    return `${hour}:${minute} ${ampm}`;
+  }
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
@@ -304,41 +405,95 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-
-            {/* Desktop name + email */}
-            <div className="hidden sm:flex flex-col min-w-0 truncate">
-              <div className="text-black text-sm font-semibold truncate">
-                {name}
-              </div>
-              <div className="text-black text-xs truncate">{email}</div>
-            </div>
-
-            {/* Mobile-only dropdown toggle */}
-            <button
-              onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-              className="sm:hidden"
-              aria-label="Toggle profile dropdown"
-            >
-              <svg
-                className="w-5 h-5 text-black"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" />
-              </svg>
-            </button>
-
-            {/* Mobile dropdown content */}
-            {isMobileDropdownOpen && (
-              <div className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50 sm:hidden">
+            <div className="flex ">
+              {/* Desktop name + email */}
+              <div className="hidden sm:flex flex-col min-w-0 truncate">
                 <div className="text-black text-sm font-semibold truncate">
                   {name}
                 </div>
                 <div className="text-black text-xs truncate">{email}</div>
               </div>
-            )}
+
+              {/* toggle visible on all screens but name and email inside if mobile */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling
+                  setIsMobileDropdownOpen(!isMobileDropdownOpen);
+                }}
+                className="ml-2"
+                aria-label="Toggle profile dropdown"
+              >
+                <svg
+                  className="w-5 h-5 text-black"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" />
+                </svg>
+              </button>
+
+              {/* Mobile dropdown content */}
+              {isMobileDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 top-12 bg-white rounded-md shadow-md p-4 w-48 z-50"
+                >
+                  {/* Name and Email - Mobile Only */}
+                  <div className="sm:hidden mb-3 border-b pb-3 text-center">
+                    <div className="text-black text-sm font-semibold truncate">
+                      {name}
+                    </div>
+                    <div className="text-black text-xs truncate">{email}</div>
+                  </div>
+
+                  {/* User Profile Section */}
+                  <div className="flex flex-col items-center mb-3 border-b pb-3">
+                    <div className="flex items-center gap-1 w-full justify-center hover:bg-gray-50 p-2 rounded cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        className="text-gray-600"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M17 9c0-1.381-.56-2.631-1.464-3.535C14.631 4.56 13.381 4 12 4s-2.631.56-3.536 1.465C7.56 6.369 7 7.619 7 9s.56 2.631 1.464 3.535C9.369 13.44 10.619 14 12 14s2.631-.56 3.536-1.465A4.984 4.984 0 0 0 17 9zM6 19c0 1 2.25 2 6 2c3.518 0 6-1 6-2c0-2-2.354-4-6-4c-3.75 0-6 2-6 4z"
+                        />
+                      </svg>
+                      <span className="text-sm text-gray-700">
+                        User Profile
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Logout Button */}
+                  <button
+                    className="w-full flex items-center justify-center gap-1 hover:bg-gray-50 p-2 rounded cursor-pointer transition-colors duration-300 active:scale-95"
+                    onClick={handleClick}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      className="text-red-900"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M5 21q-.825 0-1.413-.588T3 19V5q0-.825.588-1.413T5 3h7v2H5v14h7v2H5Zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5l-5 5Z"
+                      />
+                    </svg>
+                    <span className="text-sm text-red-900 font-medium">
+                      Log Out
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
+          {/* hamburger menu */}
           {isMenuOpen && (
             <>
               <div
@@ -351,81 +506,86 @@ export default function Dashboard() {
                   <HamburgerCal />
                 </div>
                 <a>
+<<<<<<< Add/Abella
 <<<<<<< Updated upstream
                   <div className="text-white text-xl mb-6">Scheather</div>
 =======
                   <div className="text-white text-xl mb-6 mt-6">Invitations</div>
 >>>>>>> Stashed changes
+=======
+                  <div className="text-white text-xl mb-6">Invitations</div>
+>>>>>>> main
                 </a>
                 <a>
-                  <div className="text-white text-xl mb-6">Scheather</div>
+                  <div className="text-white text-xl mb-6">To-do list</div>
                 </a>
 
                 <div className="flex-grow"></div>
-
-                {/* Logout Button */}
-                <button
-                  className="mt-12 bg-stone-100 rounded-[30px] px-6 py-3 text-center cursor-pointer hover:bg-stone-200 transition-colors duration-300 w-full active:scale-95"
-                  onClick={handleClick}
-                >
-                  <div className="text-cyan-900 text-xl font-poppins">
-                    Log Out
-                  </div>
-                </button>
               </aside>
             </>
           )}
         </header>
-
         {/* // Main content area/ */}
         <main className="pt-20 scroll-mt-50">
-          {/* Full-width yellow background */}
+          {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
-            {/* Centered content with padding */}
+            {/* div inside of the blue background */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
-              {/* Left: Welcome */}
-              <div className="flex">
+              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">
                 <h1
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
                   style={{ fontFamily: "Poppins" }}
                 >
-                  WELCOME, {firstName}!
+                  Welcome, {firstName}!
                 </h1>
               </div>
 
-              {/* Right: Weather Info */}
-              <div className="flex-1 flex justify-end items-start min-h-[16rem]">
-                {weather ? (
+              <div className="flex justify-center items-start min-h-[16rem] px-2 sm:px-6 scale-95 sm:scale-100">
+                {weather?.localtime ? (
+                  // transition div
                   <div
                     className={`transition-transform duration-700 ease-out ${
                       fadeIn ? "translate-y-0" : "translate-y-8"
                     }`}
                   >
-                    <div className="relative w-64 h-64 flex items-start justify-start">
-                      <div className="absolute top-5 left-2 text-[#e68c3a] text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                        {weather?.name}
+                    {/*  container of the city, temp, and description */}
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="philTime flex flex-col sm:flex-row gap-4 sm:gap-6">
+                        <div className="text-[color:#e68c3a]  text-xl font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                          {weather?.city}
+                        </div>
+                        <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                          {formatLocalTime(weather?.localtime)}
+                        </div>
                       </div>
-                      <img
-                        src={
-                          iconMap[weather.weather[0].main]
-                            ? iconMap[weather.weather[0].main][
-                                isDayTime() ? "day" : "night"
-                              ]
-                            : "/icons/default.png"
-                        }
-                        alt={weather.weather[0].description}
-                        className="absolute top-2 right-2 w-24 h-24"
-                      />
-                      <div className="absolute top-10 left-2 flex items-start">
-                        <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
-                          {Math.round(weather.main.temp)}
-                        </span>
-                        <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
-                          °C
-                        </span>
-                      </div>
-                      <div className="absolute top-32 left-2 text-white text-2xl font-bold font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)] capitalize">
-                        {weather.weather[0].description}
+                      {/* weather forcast container */}
+                      <div className="forcast flex items-center justify-center">
+                        {/* Temperature block */}
+                        <div>
+                          <div className="flex items-start">
+                            <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
+                              {weather.current.temp_c.toFixed(1)}
+                            </span>
+                            <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
+                              °C
+                            </span>
+                            <img
+                              src={
+                                // i toLowerCase siya aron mabasa niya tong naa sa iconMap for the icons assigned
+                                (iconMap[
+                                  weather?.current?.condition?.text.toLowerCase()
+                                ] || iconMap["default"])[
+                                  isDayTime() ? "day" : "night"
+                                ]
+                              }
+                              alt={weather?.current?.condition?.text}
+                              className="w-28 sm:w-30 h-28"
+                            />
+                          </div>
+                          <div className="text-white text-xl font-normal font-['Overpass'] capitalize">
+                            {weather?.current?.condition?.text.toLowerCase()}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -438,45 +598,11 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-        <div className="flex flex-row pt-10 px-4 sm:px-6 lg:px-20 scroll-mt-50 gap-3">
-          <button
-            onClick={() => setSelected("month")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "month"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Month
-          </button>
-
-          <button
-            onClick={() => setSelected("week")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "week"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Week
-          </button>
-
-          <button
-            onClick={() => setSelected("day")}
-            className={`whitespace-nowrap w-full max-w-[10rem] px-4 py-2 rounded-xl text-white text-sm sm:text-base lg:text-lg cursor-pointer transition-colors duration-300 active:scale-95
-        ${
-          selected === "day"
-            ? "bg-[#e68c3a]"
-            : "bg-[color:#213E60] hover:bg-[#e68c3a]"
-        }`}
-          >
-            This Day
-          </button>
-        </div>
-
         {/* for calendar */}
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
+          <CalendarComponent />
+        </div>
       </div>
     </div>
   );

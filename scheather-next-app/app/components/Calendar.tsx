@@ -85,7 +85,7 @@ const CalendarComponent: React.FC = () => {
       />
 
       {showForm && selectedSlot && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-[1px] bg-opacity-50 flex justify-center items-center z-50 pointer-events-none">
+        <div className="fixed inset-0 bg-[#383734]/50 backdrop-blur-[1px] bg-opacity-50 flex justify-center items-center z-50 pointer-events-none">
           <OutsideClickHandler
             onOutsideClick={() => {
               setSlotManuallySelected(false); // disable ang trigger to open even form if nag open sa event form then mutap outside
@@ -93,7 +93,9 @@ const CalendarComponent: React.FC = () => {
               setTimeout(() => setSlotManuallySelected(true), 100); //after nga muclick outside, enable re-trigger after 100ms
             }}
           >
-            <div className="bg-white p-4 rounded shadow w-full max-w-md pointer-events-auto">
+            <div className="bg-[#ffffffec] p-4 rounded-[10px] shadow w-[2000] h-165 max-w-md pointer-events-auto">
+              <h1 className="p-3 font-bold font-['Montserrat'] lg:text-lg sm:text-sm">Event Creation Details</h1>
+
               {/* pop-up event */}
               <EventForm
                 start={selectedSlot.start.toISOString().slice(0, 16)}

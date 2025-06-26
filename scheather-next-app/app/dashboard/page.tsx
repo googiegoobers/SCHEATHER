@@ -9,17 +9,12 @@ import { db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 
-const api = {
-  key: "d9e6f3e3a33ef6775a81923aa351ad00",
-};
-
-//weather icons (not using the default icons from OpenWeatherMap)
+//for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
-  "clear sky": {
-    day: "/icons/clear-day.png",
-    night: "/icons/clear-night.png",
-  },
-  "few clouds": {
+  sunny: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
+  clear: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
+
+  "partly cloudy": {
     day: "/icons/cloudy-day.png",
     night: "/icons/cloudy-night.png",
   },
@@ -27,6 +22,7 @@ const iconMap: Record<string, { day: string; night: string }> = {
   overcast: {
     day: "/icons/overcast-cloud-day.png",
     night: "/icons/overcast-cloud-night.png",
+
   },
 
   "patchy rain possible": {
@@ -37,15 +33,15 @@ const iconMap: Record<string, { day: string; night: string }> = {
     day: "/icons/rain-day.png",
     night: "/icons/rain-night.png",
   },
-  "broken clouds": {
-    day: "/icons/broken-clouds-day.png",
-    night: "/icons/broken-clouds-night.png",
+  "light rain shower": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
   },
-  "shower rain": {
-    day: "/icons/shower-rain-day.png",
-    night: "/icons/shower-rain-night.png",
+  "light rain": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
   },
-  rain: {
+  "moderate rain": {
     day: "/icons/rain-day.png",
     night: "/icons/rain-night.png",
   },
@@ -68,20 +64,47 @@ const iconMap: Record<string, { day: string; night: string }> = {
   "light drizzle": {
     day: "/icons/light-rain-day.png",
     night: "/icons/light-rain-night.png",
+
   },
-  snow: {
+  "patchy light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+  "light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+
+  snow: { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "light snow": { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "moderate snow": {
     day: "/icons/snow-day.png",
     night: "/icons/snow-night.png",
   },
-  mist: {
-    day: "/icons/mist-day.png",
-    night: "/icons/mist-night.png",
+  "heavy snow": { day: "/icons/snow-day.png", night: "/icons/snow-night.png" },
+  "patchy light snow": {
+    day: "/icons/snow-day.png",
+    night: "/icons/snow-night.png",
   },
 
-  "overcast clouds": {
-    day: "/icons/overcast-clouds-day.png",
-    night: "/icons/overcast-clouds-night.png",
+  fog: { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+  mist: { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+  "freezing fog": { day: "/icons/fog-day.png", night: "/icons/fog-night.png" },
+
+  "thundery outbreaks possible": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
   },
+  "patchy light rain with thunder": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
+  },
+  "moderate or heavy rain with thunder": {
+    day: "/icons/thunderstorm-day.png",
+    night: "/icons/thunderstorm-night.png",
+  },
+  // Default fallback, if wala sa pilianan, siyaro naman sad wla sa?
+  default: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
 };
 
 export default function Dashboard() {
@@ -123,37 +146,28 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const firstName = name ? name.split(" ")[0] : "there";
 
-  // fetching the weather based on the user's location and finding the nearest city and read that city's weather
   useEffect(() => {
-    const fetchWeatherByCity = async (lat: number, lon: number) => {
+    const fetchWeatherFromWeatherAPI = async (lat: number, lon: number) => {
       try {
-        const geoRes = await fetch(
-          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${api.key}`
-        );
-        const geoData = await geoRes.json();
-
-        if (!geoRes.ok || geoData.length === 0) {
-          setError("Could not find city for your location.");
-          return;
-        }
-
-        const cityName = geoData[0].name;
-        const countryCode = geoData[0].country;
-
         const weatherRes = await fetch(
           `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
-        );
-        const weatherData = await weatherRes.json();
 
-        if (!weatherRes.ok) {
-          setError("Failed to fetch weather for city.");
+        );
+
+        const data = await weatherRes.json();
+
+        if (!weatherRes.ok || !data?.location) {
+          setError("Failed to fetch weather data.");
           return;
         }
 
         setWeather({
-          ...weatherData,
-          city: cityName,
-          country: countryCode,
+          city: data.location.name,
+          country: data.location.country,
+          localtime: data.location.localtime,
+          current: data.current,
+          forecast: data.forecast.forecastday[0], // today’s forecast
+          is_day: data.current.is_day,
         });
       } catch (err) {
         console.error(err);
@@ -165,7 +179,7 @@ export default function Dashboard() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          fetchWeatherByCity(latitude, longitude);
+          fetchWeatherFromWeatherAPI(latitude, longitude);
         },
         () => {
           setError("Location permission denied.");
@@ -174,16 +188,8 @@ export default function Dashboard() {
     }
   }, []);
 
-  // this is to classify the icons to day and night
-  const isDayTime = () => {
-    if (!weather?.dt || !weather?.sys) return true; // fallback to day
+  const isDayTime = () => weather?.current?.is_day === 1;
 
-    const current = weather.dt;
-    const sunrise = weather.sys.sunrise;
-    const sunset = weather.sys.sunset;
-
-    return current >= sunrise && current < sunset;
-  };
   //fetching name and email from firebase auth
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -283,6 +289,19 @@ export default function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  //formatting the date into 9:00 PM
+  function formatLocalTime(localtime: string) {
+    const [, timePart] = localtime.split(" "); // "21:00"
+    const [hourStr, minuteStr] = timePart.split(":");
+    let hour = parseInt(hourStr);
+    const minute = minuteStr;
+    const ampm = hour >= 12 ? "PM" : "AM";
+
+    hour = hour % 12 || 12;
+
+    return `${hour}:${minute} ${ampm}`;
+  }
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
@@ -500,12 +519,10 @@ export default function Dashboard() {
         <main className="pt-20 scroll-mt-50">
           {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
-            {/* <div className="fixed">
-              <img src="/sun-active.gif" className="" />
-            </div> */}
+
             {/* div inside of the blue background */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
-              <div className="flex">
+              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">
                 <h1
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
                   style={{ fontFamily: "Poppins" }}
@@ -514,47 +531,52 @@ export default function Dashboard() {
                 </h1>
               </div>
 
-              {/* Weather Info */}
-              <div className="flex-1 flex justify-end items-start min-h-[16rem]">
-                {weather ? (
+              <div className="flex justify-center items-start min-h-[16rem] px-2 sm:px-6 scale-95 sm:scale-100">
+                {weather?.localtime ? (
+                  // transition div
                   <div
                     className={`transition-transform duration-700 ease-out ${
                       fadeIn ? "translate-y-0" : "translate-y-8"
                     }`}
                   >
-                    <div className="relative w-64 h-64 flex items-start justify-start">
-                      <div className="absolute top-5 left-2 text-[#e68c3a] text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                        {weather.city}
-                      </div>
-
-                      <div className="absolute top-10 left-2 flex items-start gap-4">
-                        {/* Temperature block */}
-                        <div className="flex items-start">
-                          <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
-                            {weather.main.temp.toFixed(1)}
-                          </span>
-                          <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
-                            °C
-                          </span>
+                    {/*  container of the city, temp, and description */}
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="philTime flex flex-col sm:flex-row gap-4 sm:gap-6">
+                        <div className="text-[color:#e68c3a]  text-xl font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                          {weather?.city}
                         </div>
-
-                        {/* Weather icon */}
-                        <img
-                          src={
-                            iconMap[
-                              weather.weather[0].description.toLowerCase()
-                            ]
-                              ? iconMap[
-                                  weather.weather[0].description.toLowerCase()
-                                ][isDayTime() ? "day" : "night"]
-                              : "/icons/default.png"
-                          }
-                          alt={weather.weather[0].description.toLowerCase()}
-                          className="w-28 sm:w-30 h-28 mt-2"
-                        />
+                        <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                          {formatLocalTime(weather?.localtime)}
+                        </div>
                       </div>
-                      <div className="absolute top-32 left-2 text-white text-2xl font-bold font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)] capitalize">
-                        {weather.weather[0].description.toLowerCase()}
+                      {/* weather forcast container */}
+                      <div className="forcast flex items-center justify-center">
+                        {/* Temperature block */}
+                        <div>
+                          <div className="flex items-start">
+                            <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
+                              {weather.current.temp_c.toFixed(1)}
+                            </span>
+                            <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
+                              °C
+                            </span>
+                            <img
+                              src={
+                                // i toLowerCase siya aron mabasa niya tong naa sa iconMap for the icons assigned
+                                (iconMap[
+                                  weather?.current?.condition?.text.toLowerCase()
+                                ] || iconMap["default"])[
+                                  isDayTime() ? "day" : "night"
+                                ]
+                              }
+                              alt={weather?.current?.condition?.text}
+                              className="w-28 sm:w-30 h-28"
+                            />
+                          </div>
+                          <div className="text-white text-xl font-normal font-['Overpass'] capitalize">
+                            {weather?.current?.condition?.text.toLowerCase()}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

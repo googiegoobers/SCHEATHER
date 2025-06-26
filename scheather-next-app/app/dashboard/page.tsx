@@ -5,10 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
-<<<<<<< Add/Abella
-
-=======
->>>>>>> main
 import { db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
@@ -503,11 +499,6 @@ export default function Dashboard() {
                 </div>
                 <a>
 
-<<<<<<< Add/Abella
-=======
-                  <div className="text-white text-xl mb-6">Scheather</div>
-
->>>>>>> main
                   <div className="text-white text-xl mb-6 mt-6">Invitations</div>
 
                   <div className="text-white text-xl mb-6">Invitations</div>

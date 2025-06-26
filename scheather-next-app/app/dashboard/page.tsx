@@ -5,19 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { auth } from "@/app/lib/firebaseConfig";
-<<<<<<< Add/Abella
-<<<<<<< Updated upstream
-=======
 import { db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 import HamburgerCal from "@/app/components/HamburgerCal";
->>>>>>> Stashed changes
-=======
-import { db } from "@/app/lib/firebaseConfig";
-import CalendarComponent from "@/app/components/Calendar";
-import EventForm from "@/app/components/EventForm";
->>>>>>> main
+
 
 //for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
@@ -506,15 +498,13 @@ export default function Dashboard() {
                   <HamburgerCal />
                 </div>
                 <a>
-<<<<<<< Add/Abella
-<<<<<<< Updated upstream
+
                   <div className="text-white text-xl mb-6">Scheather</div>
-=======
+
                   <div className="text-white text-xl mb-6 mt-6">Invitations</div>
->>>>>>> Stashed changes
-=======
+
                   <div className="text-white text-xl mb-6">Invitations</div>
->>>>>>> main
+
                 </a>
                 <a>
                   <div className="text-white text-xl mb-6">To-do list</div>

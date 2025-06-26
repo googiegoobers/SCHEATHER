@@ -20,8 +20,9 @@ const iconMap: Record<string, { day: string; night: string }> = {
   },
   cloudy: { day: "/icons/cloudy-day.png", night: "/icons/cloudy-night.png" },
   overcast: {
-    day: "/icons/overcast-day.png",
-    night: "/icons/overcast-night.png",
+    day: "/icons/overcast-cloud-day.png",
+    night: "/icons/overcast-cloud-night.png",
+
   },
 
   "patchy rain possible": {
@@ -45,16 +46,25 @@ const iconMap: Record<string, { day: string; night: string }> = {
     night: "/icons/rain-night.png",
   },
   "heavy rain": {
-    day: "/icons/heavy-rain-day.png",
-    night: "/icons/heavy-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "moderate or heavy rain shower": {
-    day: "/icons/heavy-rain-day.png",
-    night: "/icons/heavy-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "torrential rain shower": {
-    day: "/icons/heavy-rain-day.png",
-    night: "/icons/heavy-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
+  },
+  "patchy light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+  },
+  "light drizzle": {
+    day: "/icons/light-rain-day.png",
+    night: "/icons/light-rain-night.png",
+
   },
   "patchy light drizzle": {
     day: "/icons/light-rain-day.png",
@@ -93,7 +103,6 @@ const iconMap: Record<string, { day: string; night: string }> = {
     day: "/icons/thunderstorm-day.png",
     night: "/icons/thunderstorm-night.png",
   },
-
   // Default fallback, if wala sa pilianan, siyaro naman sad wla sa?
   default: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
 };
@@ -132,6 +141,7 @@ export default function Dashboard() {
     };
   }, [isMenuOpen]);
 
+  // fetching weather
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const firstName = name ? name.split(" ")[0] : "there";
@@ -140,8 +150,8 @@ export default function Dashboard() {
     const fetchWeatherFromWeatherAPI = async (lat: number, lon: number) => {
       try {
         const weatherRes = await fetch(
-          // ako rang gibutnag lahos ang key, wlaa ra nako gibutang ug variable
-          `http://api.weatherapi.com/v1/forecast.json?key=d4a9a7db6b9f4b1488e115435252506&q=${lat},${lon}&days=1&aqi=no&alerts=no`
+          `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
+
         );
 
         const data = await weatherRes.json();
@@ -265,7 +275,11 @@ export default function Dashboard() {
       const target = e.target as HTMLElement;
 
       // ONLY close if not clicking inside the dropdown
-      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        !target.closest('button[aria-label="Toggle profile dropdown"]')
+      ) {
         setIsMobileDropdownOpen(false);
       }
     };
@@ -403,7 +417,10 @@ export default function Dashboard() {
 
               {/* toggle visible on all screens but name and email inside if mobile */}
               <button
-                onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling
+                  setIsMobileDropdownOpen(!isMobileDropdownOpen);
+                }}
                 className="ml-2"
                 aria-label="Toggle profile dropdown"
               >
@@ -420,28 +437,64 @@ export default function Dashboard() {
               {isMobileDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute right-0 top-12 bg-white rounded-md shadow-md p-3 w-48 z-50   "
+                  className="absolute right-0 top-12 bg-white rounded-md shadow-md p-4 w-48 z-50"
                 >
-                  <div className="sm:hidden mb-2 border-b pb-2">
+                  {/* Name and Email - Mobile Only */}
+                  <div className="sm:hidden mb-3 border-b pb-3 text-center">
                     <div className="text-black text-sm font-semibold truncate">
                       {name}
                     </div>
                     <div className="text-black text-xs truncate">{email}</div>
                   </div>
+
+                  {/* User Profile Section */}
+                  <div className="flex flex-col items-center mb-3 border-b pb-3">
+                    <div className="flex items-center gap-1 w-full justify-center hover:bg-gray-50 p-2 rounded cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        className="text-gray-600"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M17 9c0-1.381-.56-2.631-1.464-3.535C14.631 4.56 13.381 4 12 4s-2.631.56-3.536 1.465C7.56 6.369 7 7.619 7 9s.56 2.631 1.464 3.535C9.369 13.44 10.619 14 12 14s2.631-.56 3.536-1.465A4.984 4.984 0 0 0 17 9zM6 19c0 1 2.25 2 6 2c3.518 0 6-1 6-2c0-2-2.354-4-6-4c-3.75 0-6 2-6 4z"
+                        />
+                      </svg>
+                      <span className="text-sm text-gray-700">
+                        User Profile
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Logout Button */}
                   <button
-                    className="mt-12 bg-stone-100 rounded-[30px] px-6 py-3 text-center cursor-pointer hover:bg-stone-200 transition-colors duration-300 w-full active:scale-95"
+                    className="w-full flex items-center justify-center gap-1 hover:bg-gray-50 p-2 rounded cursor-pointer transition-colors duration-300 active:scale-95"
                     onClick={handleClick}
                   >
-                    <div className="text-cyan-900 text-xl font-poppins">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      className="text-red-900"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M5 21q-.825 0-1.413-.588T3 19V5q0-.825.588-1.413T5 3h7v2H5v14h7v2H5Zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5l-5 5Z"
+                      />
+                    </svg>
+                    <span className="text-sm text-red-900 font-medium">
                       Log Out
-                    </div>
+                    </span>
                   </button>
                 </div>
               )}
             </div>
           </div>
 
+          {/* hamburger menu */}
           {isMenuOpen && (
             <>
               <div
@@ -466,6 +519,7 @@ export default function Dashboard() {
         <main className="pt-20 scroll-mt-50">
           {/* Full-width blue background */}
           <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
+
             {/* div inside of the blue background */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
               <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">

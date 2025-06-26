@@ -499,8 +499,6 @@ export default function Dashboard() {
                 </div>
                 <a>
 
-                  <div className="text-white text-xl mb-6">Scheather</div>
-
                   <div className="text-white text-xl mb-6 mt-6">Invitations</div>
 
                   <div className="text-white text-xl mb-6">Invitations</div>

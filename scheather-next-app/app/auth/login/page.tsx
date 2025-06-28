@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 // import {AuthContextProvider} from "@/app/context/AuthContext";
 
 import React, { useState } from "react";
@@ -44,9 +45,40 @@ export default function Home() {
 };
 
   return (
-    <div className = "bg-white flex items-center justify-center inset-0 fixed overflow-hidden">
+    
+    <div className="bg-white flex flex-col min-h-screen overflow-auto">
+      {/* Header*/}
+        <header
+          className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
+          style={{
+            fontFamily: "Poppins",
+          }}
+        >
+          {/* Brand Logo */}
+          <div
+            className="text-black text-xl sm:text-2xl font-medium"
+            style={{
+              fontFamily: '"Cedarville Cursive", cursive',
+            }}
+          >
+            Scheather
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-8 absolute">
+            <Link href="/" passHref>
+            <h1
+              className="ml-400 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+            >
+             Back to Landing Page
+            </h1>
+            </Link>
+          </div>
+        </header>
+        
       {/*Inside the Container for Desktop*/} 
-      <div data-layer="Container" className="hidden lg:flex lg:w-[85vw] lg:h-[80vh] absolute bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex-row initial=scale1.0"> 
+      <div className="hidden lg:flex flex-1 justify-center items-center">
+        <div data-layer="Container" className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
          {/*Left Side of the Container*/}
          <div className="hidden lg:flex relative Justify-center flex lg:top-[10vh] lg:px-[5vw] flex-col">
             <Link href="/">
@@ -67,7 +99,7 @@ export default function Home() {
               Log in to see more
             </h2>
             
-            <p className="text-[#223F61] lg:p5px my-2.5"
+            <p className="text-[#223F61] lg:p5px my-2.5 mt-15"
                style={{
                 fontFamily: 'Poppins',
                }}>
@@ -115,23 +147,33 @@ export default function Home() {
            <button
               type="button"
               onClick={handleLogin}
-              className="lg:w-[12vw] lg:h-[35px] top-10 bottom-10 left-28 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-xl font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61]"
+              className="lg:w-[12vw] lg:h-[40px] top-20 bottom-10 left-37 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-[18px] font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer hover:ease-in-out"
               >Login
           </button>
+          
+          {/* Google Identity Services script (loads the official button styles) */}
+          <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
 
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="lg:w-[15vw] lg:h-[35px] top-13 bottom-10 left-22 relative bg-[#223F61] text-white rounded-[30px] flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg[#94B7EF] cursor-pointer"
+            className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-23 ml-38 cursor-pointer"
           >
-            Sign in with Google
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            <span>Sign in with Google</span>
           </button>
-
+          
+          <div className="mt-15">
+            <p className="relative lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
           <Link href="/auth/forgetPassword">
-
-            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere relative lg:mt-[10vh] text-center justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] lowercase cursor-pointer underline">Forget Password? Reset Password Here</p>
-
+            <p className="relative ml-100 lg:mt-[-2.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
           </Link>
+          </div>
+            
            
          </div>
          {/*Right side of the Container*/}
@@ -143,6 +185,11 @@ export default function Home() {
             />
          </div>
       </div>
+      
+
+         
+      </div>
+      
       {/*mobile*/}
       <div className="lg:hidden md:flex overflow-auto">
         <div data-layer="Login 2 - Phone" className="Login2Phone w-96 h-[812px] relative bg-white overflow-hidden">
@@ -200,13 +247,19 @@ export default function Home() {
           Login
         </button>
 
-        
+          <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
+
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-50 h-9 top-[685px] bottom-10 left-21 relative bg-[#223F61] text-white rounded-[30px] flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg[#94B7EF] cursor-pointer"
+            className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-170 ml-18 cursor-pointer"
           >
-            Sign in with Google
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            <span>Sign in with Google</span>
           </button>
         
         <Link href="/auth/forgetPassword">
@@ -214,10 +267,88 @@ export default function Home() {
           Forget Password? Reset Password Here
           </p>
         </Link>
-
+        
       </div>
-
+      
       </div>
+      <footer
+        className="mt-20 w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        id="contacts"
+      >
+        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8">
+          <div
+            className="text-white text-center lg:text-left order-1 lg:order-1"
+            style={{
+              fontFamily: '"Cedarville Cursive", cursive',
+              fontSize: "clamp(2rem, 5vw, 4rem)",
+              color: "white",
+            }}
+          >
+            Scheather
+          </div>
+          <div
+            className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
+            style={{
+              fontFamily: "Poppins",
+              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              color: "#e68c3a",
+            }}
+          >
+            You go to planning partner
+          </div>
+
+          <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">
+            <p className="text-lg sm:text-xl font-semibold mb-4">Contact Us</p>
+
+            {/* Phone */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 flex-shrink-0"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
+                />
+              </svg>
+              <p className="text-base sm:text-lg">0977966554</p>
+            </div>
+
+            {/* Email */}
+            <div className="flex items-center justify-center lg:justify-start gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 flex-shrink-0"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                />
+              </svg>
+              <p className="text-base sm:text-lg break-all sm:break-normal">
+                scheather@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-6 lg:mt-8 pt-6 border-t border-gray-700">
+          <p className="text-sm sm:text-base">
+            &copy; 2025 Scheather. All rights reserved.
+          </p>
+        </div>
+      </footer>
+      
     </div>
   );
 }

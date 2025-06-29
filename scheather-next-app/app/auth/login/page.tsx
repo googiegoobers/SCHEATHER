@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -11,13 +11,12 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { UserAuth } from "@/app/context/AuthContext";
 
-
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const {user, googleSignIn, logOut} = UserAuth();
+  const { user, googleSignIn, logOut } = UserAuth();
 
   const handleLogin = async () => {
     try {
@@ -42,14 +41,11 @@ export default function Home() {
     } catch (error: any) {
       alert(`Google Sign-In failed: ${error.message}`);
     }
-};
+  };
 
   return (
-    
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
-      
-        
-      {/*Inside the Container for Desktop*/} 
+      {/*Inside the Container for Desktop*/}
       <div className="hidden lg:flex flex-1 justify-center items-center">
         {/* Header*/}
         <header
@@ -71,42 +67,51 @@ export default function Home() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8 absolute">
             <Link href="/" passHref>
-            <h1
-              className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
-            >
-             Back to Landing Page
-            </h1>
+              <h1 className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
+                Back to Landing Page
+              </h1>
             </Link>
           </div>
         </header>
-        <div data-layer="Container" className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
-         {/*Left Side of the Container*/}
-         <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
+        <div
+          data-layer="Container"
+          className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"
+        >
+          {/*Left Side of the Container*/}
+          <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
             <Link href="/">
-              <h1 
-              className=" text-[#223F61] text-xl sm:text-5xl font-medium"
-              style={{
-              fontFamily: '"Cedarville Cursive", cursive',
-              }}
-              > Scheather
-            </h1>
+              <h1
+                className=" text-[#223F61] text-xl sm:text-5xl font-medium"
+                style={{
+                  fontFamily: '"Cedarville Cursive", cursive',
+                }}
+              >
+                {" "}
+                Scheather
+              </h1>
             </Link>
             <h2
               className="text-[#223F61] lg:text-3xl sm:text-5xl"
               style={{
-                fontFamily: 'Poppins',
+                fontFamily: "Poppins",
               }}
             >
               Log in to see more
             </h2>
-            
-            <p className="text-[#223F61] lg:p5px my-2.5 mt-15"
-               style={{
-                fontFamily: 'Poppins',
-               }}>
+
+            <p
+              className="text-[#223F61] lg:p5px my-2.5 mt-15"
+              style={{
+                fontFamily: "Poppins",
+              }}
+            >
               Email
             </p>
-            <div data-layer="Textbox" data-blank="Default" className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <div
+              data-layer="Textbox"
+              data-blank="Default"
+              className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"
+            >
               <input
                 type="email"
                 placeholder="Input Email"
@@ -117,15 +122,21 @@ export default function Home() {
               />
             </div>
 
-            <p className="text-[#223F61] lg:p5px my-2.5"
-               style={{
-                fontFamily: 'Poppins',
-               }}>
+            <p
+              className="text-[#223F61] lg:p5px my-2.5"
+              style={{
+                fontFamily: "Poppins",
+              }}
+            >
               Password
             </p>
-            <div data-layer="Textbox" data-blank="Default" className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+            <div
+              data-layer="Textbox"
+              data-blank="Default"
+              className="lg:w-[28vw] lg:h-[45px] relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"
+            >
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -133,108 +144,155 @@ export default function Home() {
                 className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
               />
               <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1.5 focus:outline-none"
-            >
-              <img
-                src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
-                alt="Toggle visibility"
-                className="w-[25px] h-[25px] mt-1.5"
-              />
-            </button>
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1.5 focus:outline-none"
+              >
+                <img
+                  src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
+                  alt="Toggle visibility"
+                  className="w-[25px] h-[25px] mt-1.5"
+                />
+              </button>
             </div>
 
-           <button
+            <button
               type="button"
               onClick={handleLogin}
               className="lg:w-[14.5vw] lg:h-[40px] top-5 bottom-10 left-24 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-[18px] font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer hover:ease-in-out"
-              >Login
-          </button>
-          
-          {/* Google Identity Services script (loads the official button styles) */}
-          <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
+            >
+              Login
+            </button>
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-7 ml-24 cursor-pointer"
-          >
-            <img
-              src="https://developers.google.com/identity/images/g-logo.png"
-              alt="Google"
-              className="w-5 h-5"
+            {/* Google Identity Services script (loads the official button styles) */}
+            <Script
+              src="https://accounts.google.com/gsi/client"
+              strategy="lazyOnload"
             />
-            <span>Sign in with Google</span>
-          </button>
-          
-          <div className="">
-            <p className="relative ml-0.555 lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
-          <Link href="/auth/forgetPassword">
-            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
-          </Link>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-7 ml-24 cursor-pointer"
+            >
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google"
+                className="w-5 h-5"
+              />
+              <span>Sign in with Google</span>
+            </button>
+
+            <div className="">
+              <p className="relative ml-0.555 lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">
+                Forgot Password?
+              </p>
+              <Link href="/auth/forgetPassword">
+                <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">
+                  Reset Password
+                </p>
+              </Link>
+            </div>
+
+            <div className="">
+              <p className="relative lg:mt-[1vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">
+                Don't have an account?
+              </p>
+              <Link href="/auth/signup">
+                <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">
+                  Sign up
+                </p>
+              </Link>
+            </div>
           </div>
-          
-          <div className="">
-            <p className="relative lg:mt-[1vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Don't have an account?</p>
-          <Link href="/auth/signup">
-            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Sign up</p>
-          </Link>
-          </div>
-           
-         </div>
-         {/*Right side of the Container*/}
-         <div className="Justify-center flex m-10 relative lg:top-[1vh]">
+          {/*Right side of the Container*/}
+          <div className="Justify-center flex m-10 relative lg:top-[1vh]">
             <img
               //img hero logo
               src="/hero-logo.png"
               className="lg:px-10"
             />
-         </div>
+          </div>
+        </div>
       </div>
-      
 
-         
-      </div>
-      
       {/*mobile*/}
       <div className="lg:hidden md:flex overflow-auto">
-        <div data-layer="Login 2 - Phone" className="Login2Phone w-96 h-[812px] relative bg-white overflow-hidden">
-
-          <p data-layer="Login" className="Login left-[146px] top-[26px] absolute text-center justify-start text-[#223F61] text-3xl font-bold font-['Poppins']">Login
+        <div
+          data-layer="Login 2 - Phone"
+          className="Login2Phone w-96 h-[812px] relative bg-white overflow-hidden"
+        >
+          <p
+            data-layer="Login"
+            className="Login left-[146px] top-[26px] absolute text-center justify-start text-[#223F61] text-3xl font-bold font-['Poppins']"
+          >
+            Login
           </p>
-          
+
           <Link href="/">
-          <img data-layer="left arrow"className="left-[55px] top-[30px] absolute" src="/left arrow.svg"/>
+            <img
+              data-layer="left arrow"
+              className="left-[55px] top-[30px] absolute"
+              src="/left arrow.svg"
+            />
           </Link>
 
-          <img data-layer="hero-logo 3" className="HeroLogo3 w-48 h-48 left-[90px] top-[111px] absolute" src="/hero-logo.png"/>
+          <img
+            data-layer="hero-logo 3"
+            className="HeroLogo3 w-48 h-48 left-[90px] top-[111px] absolute"
+            src="/hero-logo.png"
+          />
 
-          <h1 data-layer="Scheather" className="Scheather left-[85px] top-[306px] absolute justify-start text-cyan-900 text-5xl font-normal font-['Cedarville_Cursive']">Scheather</h1>
+          <h1
+            data-layer="Scheather"
+            className="Scheather left-[85px] top-[306px] absolute justify-start text-cyan-900 text-5xl font-normal font-['Cedarville_Cursive']"
+          >
+            Scheather
+          </h1>
 
-          <p data-layer="Email" className="Email left-[30px] top-[421px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize">Email</p>
-               {/* email auth */}
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[27px] top-[469px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center">
+          <p
+            data-layer="Email"
+            className="Email left-[30px] top-[421px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize"
+          >
+            Email
+          </p>
+          {/* email auth */}
+          <div
+            data-layer="Textbox"
+            data-blank="Default"
+            className="Textbox w-80 h-10 left-[27px] top-[469px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center"
+          >
             <input
               type="email"
               placeholder="Input Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"/>
+              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"
+            />
           </div>
 
-          <p data-layer="Password" className="Password left-[27px] top-[523px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize">Password</p>
-               {/* password auth */}
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[27px] top-[569px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center">
+          <p
+            data-layer="Password"
+            className="Password left-[27px] top-[523px] absolute text-center justify-start text-[#223F61] text-lg font-normal font-['Poppins'] capitalize"
+          >
+            Password
+          </p>
+          {/* password auth */}
+          <div
+            data-layer="Textbox"
+            data-blank="Default"
+            className="Textbox w-80 h-10 left-[27px] top-[569px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 px-4 flex items-center"
+          >
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"/>
-              <button
+              className="w-full h-full bg-transparent outline-none text-stone-900 text-base font-normal font-['Montserrat'] placeholder:text-stone-900/50"
+            />
+            <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1.5 focus:outline-none"
@@ -247,14 +305,18 @@ export default function Home() {
             </button>
           </div>
 
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="w-44 h-9 left-[96px] top-[635px] absolute bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden text-base font-normal font-['Montserrat'] text-center justify-center items-center flex active:bg-[#94B7EF] active:text-[#223F61]">
-          Login
-        </button>
+          <button
+            type="button"
+            onClick={handleLogin}
+            className="w-44 h-9 left-[96px] top-[635px] absolute bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden text-base font-normal font-['Montserrat'] text-center justify-center items-center flex active:bg-[#94B7EF] active:text-[#223F61]"
+          >
+            Login
+          </button>
 
-          <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
+          <Script
+            src="https://accounts.google.com/gsi/client"
+            strategy="lazyOnload"
+          />
 
           <button
             type="button"
@@ -268,27 +330,37 @@ export default function Home() {
             />
             <span>Sign in with Google</span>
           </button>
-        
-        <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] ">
-          Forgot Password? 
-        </p>
-        <Link href="/auth/forgetPassword">
-           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[200px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
-          Reset Password 
-          </p>
-        </Link>
 
-        <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] ">
-          Don't have an account? 
-        </p>
-        <Link href="/auth/forgetPassword">
-           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[248px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
-          Sign Up 
+          <p
+            data-layer="Forget Password? Reset Password Here"
+            className="ForgetPasswordResetPasswordHere left-[72px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] "
+          >
+            Forgot Password?
           </p>
-        </Link>
-        
-      </div>
-      
+          <Link href="/auth/forgetPassword">
+            <p
+              data-layer="Forget Password? Reset Password Here"
+              className="ForgetPasswordResetPasswordHere left-[200px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline"
+            >
+              Reset Password
+            </p>
+          </Link>
+
+          <p
+            data-layer="Forget Password? Reset Password Here"
+            className="ForgetPasswordResetPasswordHere left-[72px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] "
+          >
+            Don't have an account?
+          </p>
+          <Link href="/auth/signup">
+            <p
+              data-layer="Forget Password? Reset Password Here"
+              className="ForgetPasswordResetPasswordHere left-[248px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline"
+            >
+              Sign Up
+            </p>
+          </Link>
+        </div>
       </div>
       <footer
         className="mt-20 w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
@@ -367,7 +439,6 @@ export default function Home() {
           </p>
         </div>
       </footer>
-      
     </div>
   );
 }

@@ -12,7 +12,7 @@ interface SignUpFormData {
   lastName: string;
   email: string;
   password: string;
-  confirmPassword: string; 
+  confirmPassword: string;
 }
 
 const SignUpCard: React.FC = () => {
@@ -21,7 +21,7 @@ const SignUpCard: React.FC = () => {
     lastName: "",
     email: "",
     password: "",
-    confirmPassword:""
+    confirmPassword: "",
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -30,41 +30,39 @@ const SignUpCard: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
 
-  e.preventDefault();
-  setError(null);
-  setSuccess(null);
+    // Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      console.log("Passwords do not match! Try Again.");
+      alert("Signup failed! \nPasswords do not match.");
+      setError("Passwords do not match.");
+      return;
+    }
 
-  // Check if passwords match
-  if (formData.password !== formData.confirmPassword) {
-    console.log("Passwords do not match! Try Again.");
-    alert("Signup failed! \nPasswords do not match.");
-    setError("Passwords do not match.");
-    return;
-  }
+    try {
+      // Step 1: Create user
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = result.user;
 
-  try {
-    // Step 1: Create user
-    const result = await createUserWithEmailAndPassword(
-      auth,
-      formData.email,
-      formData.password,
-    );
-    const user = result.user;
+      // Step 2: Update display name
+      await updateProfile(user, {
+        displayName: `${formData.firstName} ${formData.lastName}`,
+      });
 
-    // Step 2: Update display name
-    await updateProfile(user, {
-      displayName: `${formData.firstName} ${formData.lastName}`,
-    });
-
-     console.log("✅ User created and profile updated!", user);
+      console.log("✅ User created and profile updated!", user);
       // setSuccess("User created successfully!");
       router.push("/dashboard");
       // Optional: redirect or show success message here
@@ -74,13 +72,14 @@ const SignUpCard: React.FC = () => {
       setError(err.message || "Signup failed");
       // Optional: show error message to user
     }
-};
+  };
 
-   
   return (
-
-    <div className = "bg-white flex flex-col min-h-screen overflow-auto">
+    <div className="bg-white flex flex-col min-h-screen overflow-auto">
       {/* Header*/}
+
+      {/*Inside the Container for Desktop*/}
+      <div className="hidden lg:flex flex-1 justify-center items-center">
         <header
           className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
           style={{
@@ -100,314 +99,317 @@ const SignUpCard: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8 absolute">
             <Link href="/" passHref>
-            <h1
-              className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
-            >
-             Back to Landing Page
-            </h1>
+              <h1 className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
+                Back to Landing Page
+              </h1>
             </Link>
           </div>
         </header>
-      {/*Inside the Container for Desktop*/} 
-      <div className="hidden lg:flex flex-1 justify-center items-center">
-        <div className="mt-30 lg:w-[85vw] lg:h-[85vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
-         {/*Left Side of the Container*/}
-         <div className="container-left-side hidden lg:flex">
-          <form onSubmit={handleSubmit}>
-            <Link href="/">
-              <h1 
-              className=" text-[#223F61] text-xl sm:text-5xl font-medium"
-              style={{
-              fontFamily: '"Cedarville Cursive", cursive',
-              }}
-              > Scheather
-            </h1>
-            </Link>
-
-            <h2
-              className="text-[#223F61] lg:text-3xl sm:text-2xl"
-              style={{
-                fontFamily: 'Poppins',
-              }}
-            >
-              Create an Account
-            </h2>
-                {/* Inputs */}
-                <p className="text-[#223F61] lg:p5px my-1.5"
-                   style={{
-                    fontFamily: 'Poppins',
-                   }}>
-                  First Name
-                </p>
-                <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                    />
-                </div>
-
-                <p className="text-[#223F61] lg:p5px my-1.5"
+        <div className="mt-30 lg:w-[85vw] lg:h-[85vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0">
+          {/*Left Side of the Container*/}
+          <div className="container-left-side hidden lg:flex">
+            <form onSubmit={handleSubmit}>
+              <Link href="/">
+                <h1
+                  className=" text-[#223F61] text-xl sm:text-5xl font-medium"
                   style={{
-                    fontFamily: 'Poppins',
-                  }}>
-                  Last Name
-                </p>
-                <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-                </div>
-                
-                <p className="text-[#223F61] lg:p5px my-1.5"
-                  style={{
-                    fontFamily: 'Poppins',
-                  }}>
-                  Email
-                </p>
-                <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type="text"
-                    name="email"
-                    placeholder="Input Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-                </div>
+                    fontFamily: '"Cedarville Cursive", cursive',
+                  }}
+                >
+                  {" "}
+                  Scheather
+                </h1>
+              </Link>
 
-                <p className="text-[#223F61] lg:p5px my-1.5"
-                  style={{
-                    fontFamily: 'Poppins',
-                  }}>
-                  Password
-                </p>
-                <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    placeholder="Enter Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-                  <button
+              <h2
+                className="text-[#223F61] lg:text-3xl sm:text-2xl"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
+                Create an Account
+              </h2>
+              {/* Inputs */}
+              <p
+                className="text-[#223F61] lg:p5px my-1.5"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
+                First Name
+              </p>
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                />
+              </div>
+
+              <p
+                className="text-[#223F61] lg:p5px my-1.5"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
+                Last Name
+              </p>
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                />
+              </div>
+
+              <p
+                className="text-[#223F61] lg:p5px my-1.5"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
+                Email
+              </p>
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                <input
+                  type="text"
+                  name="email"
+                  placeholder="Input Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                />
+              </div>
+
+              <p
+                className="text-[#223F61] lg:p5px my-1.5"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
+                Password
+              </p>
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
+                />
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 focus:outline-none"
-                  >
+                >
                   <img
                     src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
                     alt="Toggle visibility"
                     className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
                   />
-                  </button>
-                </div>
+                </button>
+              </div>
 
-                <p className="text-[#223F61] lg:p5px my-1.5"
-                  style={{
-                    fontFamily: 'Poppins',
-                  }}>
+              <p
+                className="text-[#223F61] lg:p5px my-1.5"
+                style={{
+                  fontFamily: "Poppins",
+                }}
+              >
                 Re-enter Password
-                </p>
-                <div data-blank="Default" className="lg:w-90 lg:h-10  relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    placeholder="Re-enter Password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none "
-                  />
-                  <button
+              </p>
+              <div
+                data-blank="Default"
+                className="lg:w-90 lg:h-10  relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"
+              >
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Re-enter Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none "
+                />
+                <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 focus:outline-none"
-                  >
+                >
                   <img
                     src={showConfirmPassword ? "/eye.svg" : "/eye-closed.svg"}
                     alt="Toggle visibility"
                     className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
                   />
                 </button>
-                </div>
-                  
-                {error && (
-                  <p className="text-red-500 text-sm mb-2">{error}</p>
-                )}
+              </div>
 
-                <button
-                  type="submit"
-                  className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 
+              {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+              <button
+                type="submit"
+                className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 
                     outline-offset-[-2px] outline-[#223F61] flex items-center justify-center text-xl font-normal
                     font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
-                >
-                  Sign up
-                </button>   
-          </form>
+              >
+                Sign up
+              </button>
+            </form>
 
             <div className="Login-link">
-              <p className="text-[#223F61] font-normal font-['Poppins']">Already have an account?</p>
+              <p className="text-[#223F61] font-normal font-['Poppins']">
+                Already have an account?
+              </p>
               <Link href="/auth/login">
-                <p className="text-[#223F61] font-normal font-['Poppins'] hover:underline cursor-pointer ml-23">Log in</p>
+                <p className="text-[#223F61] font-normal font-['Poppins'] hover:underline cursor-pointer ml-23">
+                  Log in
+                </p>
               </Link>
             </div>
-
           </div>
-           
-            {/*Right side of the Container*/}
-            <div className="Justify-center flex m-10 relative">
-              <img
-                src="/hero-logo.png"
-                className=""
-                alt="Hero Logo"
-              />
-            </div>
+
+          {/*Right side of the Container*/}
+          <div className="Justify-center flex m-10 relative">
+            <img src="/hero-logo.png" className="" alt="Hero Logo" />
+          </div>
+        </div>
       </div>
-
-
       {/* mobile */}
-      <div className="lg:hidden md:flex">
-          <form onSubmit={handleSubmit}>
-
-            <div data-layer="Sign in 2 - Phone" className="SignIn2Phone w-96 h-[812px] relative bg-white overflow-hidden">
-
-          <p data-layer="Sign in" className="SignIn left-[135px] top-[26px] absolute text-center justify-start text-cyan-900 text-3xl font-bold font-['Poppins']">
-            Sign up
-          </p>
-        
-        
-
-          <div data-layer="Expand_left_light" className="ExpandLeftLight w-6 h-6 left-[55px] top-[37px] absolute">
+      <div className="lg:hidden flex flex-col flex-1 w-full overflow-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 w-full max-w-md mx-auto px-4 py-8"
+        >
+          <div className="flex items-center mb-4">
             <Link href="/">
-            <img data-layer="left arrow" className="left-[8px] top-[-5px] absolute" src="/left arrow.svg"/>
+              <img src="/left arrow.svg" alt="Back" className="w-6 h-6 mr-2" />
+            </Link>
+            <h2 className="text-cyan-900 text-3xl font-bold font-['Poppins'] ml-2">
+              Sign up
+            </h2>
+          </div>
+
+          <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
+            First Name
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+          />
+
+          <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
+            Last Name
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+          />
+
+          <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
+            Email
+          </label>
+          <input
+            type="text"
+            name="email"
+            placeholder="Input Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+          />
+
+          <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none"
+            >
+              <img
+                src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
+                alt="Toggle visibility"
+                className="w-[25px] h-[25px] cursor-pointer"
+              />
+            </button>
+          </div>
+
+          <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
+            Re-Enter Password
+          </label>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              placeholder="Re-enter Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none"
+            >
+              <img
+                src={showConfirmPassword ? "/eye.svg" : "/eye-closed.svg"}
+                alt="Toggle visibility"
+                className="w-[25px] h-[25px] cursor-pointer"
+              />
+            </button>
+          </div>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full h-12 mt-4 bg-cyan-900 text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
+          >
+            Sign up
+          </button>
+
+          <div className="flex justify-center mt-4">
+            <Link href="/auth/login">
+              <p className="text-cyan-900 text-xs font-normal font-['Poppins'] hover:underline cursor-pointer">
+                Already have an account? Log in here
+              </p>
             </Link>
           </div>
-
-          <p data-layer="First Name" className="FirstName left-[30px] top-[99px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">First Name</p>
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[143px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-            <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                    />
-          </div>
-
-          <div data-layer="Last Name" className="LastName left-[30px] top-[210px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Last Name</div>
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[254px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-            <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-          </div>
-          
-          <div data-layer="Email" className="Email left-[29px] top-[312px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Email</div>
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[356px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"><input
-                    type="text"
-                    name="email"
-                    placeholder="Input Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-          
-          </div>
-
-          <div data-layer="Password" className="Password left-[29px] top-[413px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Password</div>
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[458px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    placeholder="Enter Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"
-                  />
-                  <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 focus:outline-none"
-                  >
-                  <img
-                    src={showPassword ? "/eye.svg" : "/eye-closed.svg"}
-                    alt="Toggle visibility"
-                    className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
-                  />
-                  </button>
-          </div>
-
-          <div data-layer="Re-Enter Password" className="ReEnterPassword left-[29px] top-[525px] absolute text-center justify-start text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">Re-Enter Password</div>
-          <div data-layer="Textbox" data-blank="Default" className="Textbox w-80 h-10 left-[32px] top-[570px] absolute bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    placeholder="Re-enter Password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    className="w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none "
-                  />
-                  <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 focus:outline-none"
-                  >
-                  <img
-                    src={showConfirmPassword ? "/eye.svg" : "/eye-closed.svg"}
-                    alt="Toggle visibility"
-                    className="w-[25px] h-[25px] mt-1.5  cursor-pointer"
-                  />
-                </button>
-                 {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
-          </div>
-              
-          <Link href="/auth/login">
-          <p data-layer="Already have an account? Log in here" className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-cyan-900 text-xs font-normal font-['Poppins']">Already have an account? Log in here</p>
-          </Link>
-
-          <div data-layer="Button" data-hover="Default" className="Button w-44 h-9 left-[96px] top-[685px] absolute bg-cyan-900 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden">
-               
-               <button
-                  type="submit"
-                  className="left-[59px] top-[8.30px] absolute text-center justify-start text-stone-100 text-base font-normal font-['Montserrat']"
-                >
-                Sign up
-                </button>
-                 
-          </div>
-        </div>
-          </form>
+        </form>
       </div>
-      
-      
-        </div>
-        <footer
+      <footer
         className="mt-20 w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
         id="contacts"
       >
@@ -484,8 +486,7 @@ const SignUpCard: React.FC = () => {
           </p>
         </div>
       </footer>
-    </div>     
-
+    </div>
   );
 };
 

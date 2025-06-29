@@ -79,9 +79,38 @@ const SignUpCard: React.FC = () => {
    
   return (
 
-    <div className = "signup-background">
+    <div className = "bg-white flex flex-col min-h-screen overflow-auto">
+      {/* Header*/}
+        <header
+          className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
+          style={{
+            fontFamily: "Poppins",
+          }}
+        >
+          {/* Brand Logo */}
+          <div
+            className="text-black text-xl sm:text-2xl font-medium"
+            style={{
+              fontFamily: '"Cedarville Cursive", cursive',
+            }}
+          >
+            Scheather
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-8 absolute">
+            <Link href="/" passHref>
+            <h1
+              className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+            >
+             Back to Landing Page
+            </h1>
+            </Link>
+          </div>
+        </header>
       {/*Inside the Container for Desktop*/} 
-      <div className="form-bg hidden lg:flex"> 
+      <div className="hidden lg:flex flex-1 justify-center items-center">
+        <div className="mt-30 lg:w-[85vw] lg:h-[85vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
          {/*Left Side of the Container*/}
          <div className="container-left-side hidden lg:flex">
           <form onSubmit={handleSubmit}>
@@ -103,9 +132,7 @@ const SignUpCard: React.FC = () => {
             >
               Create an Account
             </h2>
-
                 {/* Inputs */}
-
                 <p className="text-[#223F61] lg:p5px my-1.5"
                    style={{
                     fontFamily: 'Poppins',
@@ -363,8 +390,6 @@ const SignUpCard: React.FC = () => {
           <Link href="/auth/login">
           <p data-layer="Already have an account? Log in here" className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-cyan-900 text-xs font-normal font-['Poppins']">Already have an account? Log in here</p>
           </Link>
-          
-           
 
           <div data-layer="Button" data-hover="Default" className="Button w-44 h-9 left-[96px] top-[685px] absolute bg-cyan-900 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden">
                
@@ -377,11 +402,88 @@ const SignUpCard: React.FC = () => {
                  
           </div>
         </div>
-
-        
           </form>
-
+      </div>
+      
+      
         </div>
+        <footer
+        className="mt-20 w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        id="contacts"
+      >
+        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8">
+          <div
+            className="text-white text-center lg:text-left order-1 lg:order-1"
+            style={{
+              fontFamily: '"Cedarville Cursive", cursive',
+              fontSize: "clamp(2rem, 5vw, 4rem)",
+              color: "white",
+            }}
+          >
+            Scheather
+          </div>
+          <div
+            className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
+            style={{
+              fontFamily: "Poppins",
+              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              color: "#e68c3a",
+            }}
+          >
+            You go to planning partner
+          </div>
+
+          <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">
+            <p className="text-lg sm:text-xl font-semibold mb-4">Contact Us</p>
+
+            {/* Phone */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 flex-shrink-0"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
+                />
+              </svg>
+              <p className="text-base sm:text-lg">0977966554</p>
+            </div>
+
+            {/* Email */}
+            <div className="flex items-center justify-center lg:justify-start gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 flex-shrink-0"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                />
+              </svg>
+              <p className="text-base sm:text-lg break-all sm:break-normal">
+                scheather@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-6 lg:mt-8 pt-6 border-t border-gray-700">
+          <p className="text-sm sm:text-base">
+            &copy; 2025 Scheather. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>     
 
   );

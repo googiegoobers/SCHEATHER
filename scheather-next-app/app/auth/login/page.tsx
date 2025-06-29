@@ -47,7 +47,11 @@ export default function Home() {
   return (
     
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
-      {/* Header*/}
+      
+        
+      {/*Inside the Container for Desktop*/} 
+      <div className="hidden lg:flex flex-1 justify-center items-center">
+        {/* Header*/}
         <header
           className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
           style={{
@@ -75,9 +79,6 @@ export default function Home() {
             </Link>
           </div>
         </header>
-        
-      {/*Inside the Container for Desktop*/} 
-      <div className="hidden lg:flex flex-1 justify-center items-center">
         <div data-layer="Container" className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
          {/*Left Side of the Container*/}
          <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
@@ -168,12 +169,18 @@ export default function Home() {
           </button>
           
           <div className="">
-            <p className="relative lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
+            <p className="relative ml-0.555 lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
           <Link href="/auth/forgetPassword">
-            <p className="relative ml-75 lg:mt-[-2.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
+            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
           </Link>
           </div>
-            
+          
+          <div className="">
+            <p className="relative lg:mt-[1vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Don't have an account?</p>
+          <Link href="/auth/signup">
+            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Sign up</p>
+          </Link>
+          </div>
            
          </div>
          {/*Right side of the Container*/}
@@ -268,6 +275,15 @@ export default function Home() {
         <Link href="/auth/forgetPassword">
            <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[200px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
           Reset Password 
+          </p>
+        </Link>
+
+        <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] ">
+          Don't have an account? 
+        </p>
+        <Link href="/auth/forgetPassword">
+           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[248px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+          Sign Up 
           </p>
         </Link>
         

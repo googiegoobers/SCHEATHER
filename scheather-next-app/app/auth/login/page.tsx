@@ -47,7 +47,11 @@ export default function Home() {
   return (
     
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
-      {/* Header*/}
+      
+        
+      {/*Inside the Container for Desktop*/} 
+      <div className="hidden lg:flex flex-1 justify-center items-center">
+        {/* Header*/}
         <header
           className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"
           style={{
@@ -68,19 +72,16 @@ export default function Home() {
           <div className="hidden lg:flex items-center gap-8 absolute">
             <Link href="/" passHref>
             <h1
-              className="ml-400 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+              className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
              Back to Landing Page
             </h1>
             </Link>
           </div>
         </header>
-        
-      {/*Inside the Container for Desktop*/} 
-      <div className="hidden lg:flex flex-1 justify-center items-center">
         <div data-layer="Container" className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"> 
          {/*Left Side of the Container*/}
-         <div className="hidden lg:flex relative Justify-center flex lg:top-[10vh] lg:px-[5vw] flex-col">
+         <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
             <Link href="/">
               <h1 
               className=" text-[#223F61] text-xl sm:text-5xl font-medium"
@@ -147,7 +148,7 @@ export default function Home() {
            <button
               type="button"
               onClick={handleLogin}
-              className="lg:w-[12vw] lg:h-[40px] top-20 bottom-10 left-37 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-[18px] font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer hover:ease-in-out"
+              className="lg:w-[14.5vw] lg:h-[40px] top-5 bottom-10 left-24 relative bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] overflow-hidden flex items-center justify-center text-[18px] font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer hover:ease-in-out"
               >Login
           </button>
           
@@ -157,7 +158,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-23 ml-38 cursor-pointer"
+            className="flex items-center justify-center gap-2 w-56 h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] mt-7 ml-24 cursor-pointer"
           >
             <img
               src="https://developers.google.com/identity/images/g-logo.png"
@@ -167,13 +168,19 @@ export default function Home() {
             <span>Sign in with Google</span>
           </button>
           
-          <div className="mt-15">
-            <p className="relative lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
+          <div className="">
+            <p className="relative ml-0.555 lg:mt-[5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Forgot Password?</p>
           <Link href="/auth/forgetPassword">
-            <p className="relative ml-100 lg:mt-[-2.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
+            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Reset Password</p>
           </Link>
           </div>
-            
+          
+          <div className="">
+            <p className="relative lg:mt-[1vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins']">Don't have an account?</p>
+          <Link href="/auth/signup">
+            <p className="relative ml-75 lg:mt-[-3.5vh] justify-start text-[#223F61] lg:text-md font-normal font-['Poppins'] cursor-pointer hover:underline">Sign up</p>
+          </Link>
+          </div>
            
          </div>
          {/*Right side of the Container*/}
@@ -262,9 +269,21 @@ export default function Home() {
             <span>Sign in with Google</span>
           </button>
         
+        <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] ">
+          Forgot Password? 
+        </p>
         <Link href="/auth/forgetPassword">
-          <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[739px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] lowercase underline">
-          Forget Password? Reset Password Here
+           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[200px] top-[750px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+          Reset Password 
+          </p>
+        </Link>
+
+        <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[72px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] ">
+          Don't have an account? 
+        </p>
+        <Link href="/auth/forgetPassword">
+           <p data-layer="Forget Password? Reset Password Here" className="ForgetPasswordResetPasswordHere left-[248px] top-[770px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+          Sign Up 
           </p>
         </Link>
         

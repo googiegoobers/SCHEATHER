@@ -26,7 +26,7 @@ function HamburgerCal() {
   };
 
   return (
-    <div data-layer="the body" className=" bg-[#94B7EF] rounded p-4 w-[18vw] h-[42vh]">
+    <div data-layer="the body" className=" bg-[#94B7EF] rounded p-4 lg:w-[18vw] lg:h-[42vh] xl:w-[12vw] xl:h-[28vh]">
       <Calendar 
       onChange={onChange} 
       value={value}

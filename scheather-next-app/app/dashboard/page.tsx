@@ -437,7 +437,7 @@ export default function Dashboard() {
 
                 {isAvatarDropdownOpen && (
                   <div className="avatar-dropdown absolute right-0 top-14 bg-white shadow-lg rounded-md p-4 z-50 grid grid-cols-2 gap-4 w-40">
-                    {["cat1", "cat2", "capy1"].map((name) => (
+                    {["cat1", "cat2", "capy1", "axolotl", "blackCat", "greyCat", "pungen"].map((name) => (
                       <img
                         key={name}
                         src={`/avatar/${name}.jpg`}
@@ -520,6 +520,7 @@ export default function Dashboard() {
                           name={name}
                           email={email}
                           creationYear={creationYear}
+                          path={avatar}
                         />
                       )}
                     </div>

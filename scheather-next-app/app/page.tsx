@@ -2,10 +2,27 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const Scene = dynamic(() => import("@/app/components/Scene"), { ssr: false });
 
 export default function Home() {
   const router = useRouter();
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      setScrollProgress(progress);
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const handleClick = () => {
     router.push("/auth/signup");
   };
@@ -190,9 +207,9 @@ export default function Home() {
         >
           <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl gap-8 lg:gap-10">
             {/* LEFT CONTENT */}
-            <div className="flex-1 max-w-[800px] order-2 lg:order-1 text-left">
+            <div className="flex-1 max-w-[600px] order-2 lg:order-1 text-left">
               <h1
-                className="text-[color:#213E60] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl mb-6 lg:mb-8 font-bold leading-relaxed"
+                className="text-[color:#213E60] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl mb-4 lg:mb-8 font-bold leading-relaxed"
                 style={{
                   fontFamily: "Poppins",
                 }}
@@ -256,11 +273,13 @@ export default function Home() {
 
             {/* RIGHT CONTENT - IMAGE */}
             <div className="flex flex-col justify-center items-center flex-1 order-1 lg:order-2 w-full">
-              <img
+              <Scene scrollProgress={scrollProgress} />
+
+              {/* <img
                 src="/hero-logo.png"
                 alt="Art"
                 className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain"
-              />
+              /> */}
             </div>
           </div>
         </div>

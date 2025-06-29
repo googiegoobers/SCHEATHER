@@ -520,6 +520,7 @@ export default function Dashboard() {
                           name={name}
                           email={email}
                           creationYear={creationYear}
+                          path={avatar}
                         />
                       )}
                     </div>

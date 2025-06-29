@@ -402,7 +402,7 @@ export default function Home() {
         </div>
       </div>
       <footer
-        className="w-full bg-gray-800 text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        className="w-full bg-[color:#213E60] text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
         id="contacts"
       >
         <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8">

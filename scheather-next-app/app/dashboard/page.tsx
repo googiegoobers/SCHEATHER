@@ -235,27 +235,17 @@ export default function Dashboard() {
   const firstName = name ? name.split(" ")[0] : "there";
 
   useEffect(() => {
-    const fetchWeatherFromWeatherAPI = async (lat: number, lon: number) => {
+    const fetchWeather = async (lat: number, lon: number) => {
       try {
-        const weatherRes = await fetch(
-          `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
-        );
+        const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+        const data = await res.json();
 
-        const data = await weatherRes.json();
-
-        if (!weatherRes.ok || !data?.location) {
+        if (!res.ok) {
           setError("Failed to fetch weather data.");
           return;
         }
 
-        setWeather({
-          city: data.location.name,
-          country: data.location.country,
-          localtime: data.location.localtime,
-          current: data.current,
-          forecast: data.forecast.forecastday[0], // today’s forecast
-          is_day: data.current.is_day,
-        });
+        setWeather(data);
       } catch (err) {
         console.error(err);
         setError("An error occurred.");
@@ -264,9 +254,9 @@ export default function Dashboard() {
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchWeatherFromWeatherAPI(latitude, longitude);
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          fetchWeather(latitude, longitude);
         },
         () => {
           setError("Location permission denied.");
@@ -437,7 +427,15 @@ export default function Dashboard() {
 
                 {isAvatarDropdownOpen && (
                   <div className="avatar-dropdown absolute right-0 top-14 bg-white shadow-lg rounded-md p-4 z-50 grid grid-cols-2 gap-4 w-40">
-                    {["cat1", "cat2", "capy1", "axolotl", "blackCat", "greyCat", "pungen"].map((name) => (
+                    {[
+                      "cat1",
+                      "cat2",
+                      "capy1",
+                      "axolotl",
+                      "blackCat",
+                      "greyCat",
+                      "pungen",
+                    ].map((name) => (
                       <img
                         key={name}
                         src={`/avatar/${name}.jpg`}

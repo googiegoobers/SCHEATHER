@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "@/app/lib/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { updatePassword } from "firebase/auth";
@@ -16,8 +16,13 @@ export default function Home() {
   const [success, setSuccess] = useState("");
   const [email, setEmail] = useState("");
   // for changing the word Forgot to Change (I'm using this for the change password)
-  const searchParams = useSearchParams();
-  const mode = searchParams.get("mode");
+  const [mode, setMode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setMode(params.get("mode"));
+  }, []);
+
   const isChangePassword = mode === "change";
 
   const handleSubmit = async (e: React.FormEvent) => {

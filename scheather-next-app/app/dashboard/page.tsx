@@ -38,12 +38,12 @@ const iconMap: Record<string, { day: string; night: string }> = {
     night: "/icons/rain-night.png",
   },
   "light rain shower": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "light rain": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "moderate rain": {
     day: "/icons/rain-day.png",
@@ -656,6 +656,9 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
           <CalendarComponent />
         </div>
+        <footer className="w-full bg-[color:#213E60] p-5 text-center text-white">
+          <p>Scheather</p>
+        </footer>
       </div>
     </div>
   );

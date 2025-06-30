@@ -15,7 +15,7 @@ Scheather is a smart event planner web application designed for groups to easily
 
 🛠 Tech Stack
 - Frontend: Next.js + TypeScript + Tailwind CSS
-- Backend: Firebase Authentication
+- Backend: Firebase
 - Hosting: Vercel
 - APIs: WeatherAPI, 
 

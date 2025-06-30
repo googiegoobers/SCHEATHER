@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { auth } from "@/app/lib/firebaseConfig";
-import { db } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 import HamburgerCal from "@/app/components/HamburgerCal";
@@ -185,7 +184,7 @@ export default function Dashboard() {
       }
     };
     fetchAvatarFromFirestore();
-  });
+  }, []);
 
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
   //avatar dropdown

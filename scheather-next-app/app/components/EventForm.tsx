@@ -3,15 +3,17 @@ import React, { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "@/app/lib/firebaseConfig";
 import "./Calendar.css";
+import { User } from "firebase/auth";
 
 interface EventFormProps {
   start: string;
   end: string;
   onClose: () => void;
   onEventCreated: (event: any) => void;
+  currentUser: User | null;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreated }) => {
+const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreated, currentUser, }) => {
   const [newEvent, setNewEvent] = useState({
     title: "",
     location: "",
@@ -21,7 +23,6 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
     inviteList: [],
     budgetList: [],
     participants: [],
-    createdBy: auth.currentUser?.uid || "anonymous",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,9 +60,21 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!currentUser) {
+      alert("You must be logged in to create an event.");
+      return;
+    }
+
+    const eventToSave = {
+      ...newEvent,
+      createdBy: currentUser.uid,
+    };
+
     try {
-      const docRef = await addDoc(collection(db, "events"), newEvent);
-      onEventCreated({ ...newEvent, id: docRef.id });
+      const docRef = await addDoc(collection(db, "events"), eventToSave);
+
+      onEventCreated({ ...eventToSave, id: docRef.id });
+      
       alert("Event created!");
       onClose();
     } catch (err) {

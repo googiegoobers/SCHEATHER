@@ -5,6 +5,7 @@ import { useState } from "react";
 import { auth } from "@/app/lib/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { updatePassword } from "firebase/auth";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,10 @@ export default function Home() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [email, setEmail] = useState("");
+  // for changing the word Forgot to Change (I'm using this for the change password)
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const isChangePassword = mode === "change";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +62,7 @@ export default function Home() {
               data-layer="Forget Password"
               className="ForgetPassword left-[170px] top-[140px] absolute text-center justify-start text-[#223F61] text-4xl font-normal font-['Poppins']"
             >
-              Forgot Password
+              {isChangePassword ? "Change Password" : "Forgot Password"}
             </p>
 
             <p
@@ -153,15 +158,16 @@ export default function Home() {
             >
               Submit
             </button>
-
-            <Link href="/auth/login">
-              <p
-                data-layer="Do you have an account? Log in here"
-                className="DoYouHaveAnAccountLogInHere w-80 h-7 left-[189px] top-[525px] absolute text-center justify-start text-[#223F61] text-sm font-normal font-['Poppins'] lowercase underline cursor-pointer"
-              >
-                Do you have an account? Log in here
-              </p>
-            </Link>
+            {!isChangePassword && (
+              <Link href="/auth/login">
+                <p
+                  data-layer="Do you have an account? Log in here"
+                  className="DoYouHaveAnAccountLogInHere w-80 h-7 left-[189px] top-[525px] absolute text-center justify-start text-[#223F61] text-sm font-normal font-['Poppins'] lowercase underline cursor-pointer"
+                >
+                  Do you have an account? Log in here
+                </p>
+              </Link>
+            )}
           </div>
           {/* right side */}
           <div className="w-1/2 h-full flex justify-center items-center">
@@ -182,7 +188,7 @@ export default function Home() {
               data-layer="Forget Password"
               className="ForgetPassword left-[99px] top-[33px] absolute text-center justify-start text-[#223F61] text-xl font-bold font-['Poppins']"
             >
-              Forget Password
+              {isChangePassword ? "Change Password" : "Forgot Password"}
             </div>
 
             <Link href="/">
@@ -314,12 +320,14 @@ export default function Home() {
               Submit
             </button>
 
-            <p
-              data-layer="Do you have an account? Log in here"
-              className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] lowercase underline"
-            >
-              Do you have an account? Log in here
-            </p>
+            {!isChangePassword && (
+              <p
+                data-layer="Do you have an account? Log in here"
+                className="DoYouHaveAnAccountLogInHere left-[78px] top-[739px] absolute text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] lowercase underline"
+              >
+                Do you have an account? Log in here
+              </p>
+            )}
           </div>
         </div>
       </form>

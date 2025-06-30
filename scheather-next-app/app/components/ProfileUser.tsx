@@ -73,7 +73,10 @@ export default function UserProfileModal({
             <p className="text-lg font-semibold text-gray-800">{name}</p>
             <p className="text-sm text-gray-600">{email}</p>
           </div>
-          <Link href="/auth/forgetPassword" className="p-4 flex justify-center">
+          <Link
+            href="/auth/forgetPassword?mode=change"
+            className="p-4 flex justify-center"
+          >
             <p className="absolute underline-offset-2 text-center justify-start text-[#223F61] text-sm font-normal font-['Poppins'] underline cursor-pointer">
               Change Password
             </p>

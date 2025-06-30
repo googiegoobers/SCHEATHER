@@ -237,13 +237,12 @@ export default function Dashboard() {
     const fetchWeather = async (lat: number, lon: number) => {
       try {
         const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-        const data = await res.json();
-
         if (!res.ok) {
-          setError("Failed to fetch weather data.");
+          const text = await res.text();
+          setError(text || "Failed to fetch weather data.");
           return;
         }
-
+        const data = await res.json();
         setWeather(data);
       } catch (err) {
         console.error(err);

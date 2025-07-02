@@ -9,11 +9,12 @@ import {
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { db } from "@/app/lib/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { auth, db } from "@/app/lib/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm"; // Make sure you have this
 import OutsideClickHandler from "react-outside-click-handler"; //naa sa type folder under .next (gisunod ra nako ang gisulti sa copilot sa vs code hahahah, it worked!, so that OusideEvenntHandler mugana)
+import { onAuthStateChanged } from "firebase/auth";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,6 +27,7 @@ interface FirestoreEvent {
 
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     start: Date;
@@ -33,27 +35,41 @@ const CalendarComponent: React.FC = () => {
   } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
+  useEffect(() =>{
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const fetchEvents = async () => {
+      if(!currentUser) return;
+
       try {
-        const snapshot = await getDocs(collection(db, "events"));
-        const eventsData: FirestoreEvent[] = snapshot.docs.map((doc) => {
+        const eventsCollection = collection(db, "events");
+        const q = query(eventsCollection, where("createdBy", "==", currentUser.uid));
+
+        const snapshot = await getDocs(q);
+        const eventsData = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,
             title: data.title,
-            start: new Date(data.start),
-            end: new Date(data.end),
+            start: new Date(data.start?.toDate?.() || data.start),
+            end: new Date(data.end?.toDate?.() || data.end),
           };
         });
+
         setEvents(eventsData);
-      } catch (err) {
-        console.error("Error fetching events:", err);
+      } catch (error) {
+        console.error("Error fetching events:", error);
       }
     };
 
     fetchEvents();
-  }, []);
+  }, [currentUser]);
 
   const handleSelectSlot = (slotInfo: any) => {
     setSelectedSlot({
@@ -111,6 +127,7 @@ const CalendarComponent: React.FC = () => {
                     },
                   ])
                 }
+                currentUser ={currentUser}
               />
             </div>
           </OutsideClickHandler>

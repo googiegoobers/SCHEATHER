@@ -99,7 +99,7 @@ const SignUpCard: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8 absolute">
             <Link href="/" passHref>
-              <h1 className="ml-310 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
+              <h1 className="ml-300 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
                 Back to Landing Page
               </h1>
             </Link>
@@ -138,7 +138,7 @@ const SignUpCard: React.FC = () => {
               >
                 First Name
               </p>
-              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600">
                 <input
                   type="text"
                   name="firstName"
@@ -158,7 +158,7 @@ const SignUpCard: React.FC = () => {
               >
                 Last Name
               </p>
-              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600">
                 <input
                   type="text"
                   name="lastName"
@@ -178,7 +178,7 @@ const SignUpCard: React.FC = () => {
               >
                 Email
               </p>
-              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600">
                 <input
                   type="text"
                   name="email"
@@ -198,7 +198,7 @@ const SignUpCard: React.FC = () => {
               >
                 Password
               </p>
-              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+              <div className="lg:w-90 lg:h-10 relative bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600">
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -231,7 +231,7 @@ const SignUpCard: React.FC = () => {
               </p>
               <div
                 data-blank="Default"
-                className="lg:w-90 lg:h-10  relative bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600"
+                className="lg:w-90 lg:h-10  relative bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600"
               >
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -259,7 +259,7 @@ const SignUpCard: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 
+                className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline-2 
                     outline-offset-[-2px] outline-[#223F61] flex items-center justify-center text-xl font-normal
                     font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
               >
@@ -310,7 +310,7 @@ const SignUpCard: React.FC = () => {
             value={formData.firstName}
             onChange={handleChange}
             required
-            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
           />
 
           <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
@@ -323,7 +323,7 @@ const SignUpCard: React.FC = () => {
             value={formData.lastName}
             onChange={handleChange}
             required
-            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
           />
 
           <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
@@ -336,7 +336,7 @@ const SignUpCard: React.FC = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+            className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
           />
 
           <label className="text-cyan-900 text-lg font-normal font-['Poppins'] capitalize">
@@ -350,7 +350,7 @@ const SignUpCard: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
             />
             <button
               type="button"
@@ -376,7 +376,7 @@ const SignUpCard: React.FC = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
+              className="w-full h-10 px-6 bg-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-zinc-600 text-stone-900 placeholder:text-stone-900/50 text-base font-normal font-['Montserrat']"
             />
             <button
               type="button"
@@ -395,7 +395,7 @@ const SignUpCard: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full h-12 mt-4 bg-cyan-900 text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
+            className="w-full h-12 mt-4 bg-cyan-900 text-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-cyan-900 flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
           >
             Sign up
           </button>
@@ -428,11 +428,11 @@ const SignUpCard: React.FC = () => {
             className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
             style={{
               fontFamily: "Poppins",
-              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              fontSize: "clamp(0.75rem, 2vw, 1.5rem)",
               color: "#e68c3a",
             }}
           >
-            You go to planning partner
+            Schedule together according to the weather.
           </div>
 
           <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">

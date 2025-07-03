@@ -14,6 +14,12 @@ const CustomNavCal = (props: any) => {
           &lt;
         </button>
         <button
+          className="px-2 py-1 rounded text-[color:#e68c3a] hover:bg-gray-300"
+          onClick={() => onNavigate("PREV")}
+        >
+          &lt;&lt;
+        </button>
+        <button
           className="px-2 py-1 text-black rounded hover:bg-gray-300 font-bold"
           onClick={() => onNavigate("TODAY")}
         >
@@ -24,6 +30,12 @@ const CustomNavCal = (props: any) => {
           onClick={() => onNavigate("NEXT")}
         >
           &gt;
+        </button>
+        <button
+          className="px-2 py-1 rounded text-[color:#e68c3a] hover:bg-gray-300"
+          onClick={() => onNavigate("NEXT")}
+        >
+          &gt;&gt;
         </button>
       </div>
 

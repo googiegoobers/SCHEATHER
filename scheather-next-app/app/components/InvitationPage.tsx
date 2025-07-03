@@ -15,7 +15,7 @@ const InvitationPage: React.FC<Props> = ({ onClose }) => {
             className="flex text-sm gap-2  text-center items-center flex-1 cursor-pointer hover:underline whitespace-nowrap "
           >
             <svg
-              className="w-4 h-4 text-gray-800 dark:text-white hover:text-black"
+              className="w-4 h-4 text-gray-800 hover:text-black"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="24"

@@ -326,18 +326,13 @@ export default function Dashboard() {
     };
   }, []);
 
-  //formatting the date into 9:00 PM
-  function formatLocalTime(localtime: string) {
-    const [, timePart] = localtime.split(" "); // "21:00"
-    const [hourStr, minuteStr] = timePart.split(":");
-    let hour = parseInt(hourStr);
-    const minute = minuteStr;
-    const ampm = hour >= 12 ? "PM" : "AM";
-
-    hour = hour % 12 || 12;
-
-    return `${hour}:${minute} ${ampm}`;
-  }
+  //getting the time since lahi ang time sa weatherAPI
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
@@ -574,9 +569,10 @@ export default function Dashboard() {
                 </div>
                 <a>
                   <Link href="/ToDoList">
-                    <div className="text-white text-xl mb-6 cursor pointer">To-do list</div>
+                    <div className="text-white text-xl mb-6 cursor pointer">
+                      To-do list
+                    </div>
                   </Link>
-                  
                 </a>
 
                 <div className="flex-grow"></div>
@@ -622,7 +618,7 @@ export default function Dashboard() {
                               {weather?.city}
                             </div>
                             <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                              {formatLocalTime(weather?.localtime)}
+                              {time}
                             </div>
                           </div>
                           {/* weather forcast container */}

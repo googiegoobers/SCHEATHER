@@ -573,7 +573,10 @@ export default function Dashboard() {
                   </a>
                 </div>
                 <a>
-                  <div className="text-white text-xl mb-6">To-do list</div>
+                  <Link href="/ToDoList">
+                    <div className="text-white text-xl mb-6 cursor pointer">To-do list</div>
+                  </Link>
+                  
                 </a>
 
                 <div className="flex-grow"></div>

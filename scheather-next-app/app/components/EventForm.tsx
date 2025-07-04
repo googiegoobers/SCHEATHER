@@ -4,6 +4,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "@/app/lib/firebaseConfig";
 import "./Calendar.css";
 import { User } from "firebase/auth";
+import LocationAutocomplete from "./LocationAutocomplete";
 
 interface EventFormProps {
   start: string;
@@ -13,7 +14,13 @@ interface EventFormProps {
   currentUser: User | null;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreated, currentUser, }) => {
+const EventForm: React.FC<EventFormProps> = ({
+  start,
+  end,
+  onClose,
+  onEventCreated,
+  currentUser,
+}) => {
   const [newEvent, setNewEvent] = useState({
     title: "",
     location: "",
@@ -25,7 +32,9 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
     participants: [],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target as HTMLInputElement;
     const { name, value, type, checked } = target;
     if (name === "isAllDay") {
@@ -72,7 +81,7 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
 
     try {
       const docRef = await addDoc(collection(db, "events"), eventToSave);
-      onEventCreated({ ...eventToSave, id: docRef.id });      
+      onEventCreated({ ...eventToSave, id: docRef.id });
       alert("Event created!");
       onClose();
     } catch (err) {
@@ -81,14 +90,20 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
     }
   };
 
-  
   return (
     <div className="w-full flex flex-col items-center">
       <div className="relative w-[968.86px] h-[698px] bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 pb-24">
-        <form onSubmit={handleSubmit} className="absolute inset-0 overflow-y-auto p-4 pb-110">
-          <div className="w-116 h-16 left-[60px] top-[31px] absolute justify-start text-cyan-900 text-5xl font-bold font-['Montserrat']">EVENT DETAILS</div>
-          <div className="w-[900px] h-0 left-[26.07px] top-[102.07px] absolute opacity-50 outline outline-2 outline-offset-[-1px] outline-stone-900"></div> {/*line*/}
-          <div className="w-[900px] h-0 left-[26px] top-[540px] absolute opacity-50 outline outline-1 outline-offset-[-0.50px] outline-stone-900"></div> {/*line*/}
+        <form
+          onSubmit={handleSubmit}
+          className="absolute inset-0 overflow-y-auto p-4 pb-110"
+        >
+          <div className="w-116 h-16 left-[60px] top-[31px] absolute justify-start text-cyan-900 text-5xl font-bold font-['Montserrat']">
+            EVENT DETAILS
+          </div>
+          <div className="w-[900px] h-0 left-[26.07px] top-[102.07px] absolute opacity-50 outline outline-2 outline-offset-[-1px] outline-stone-900"></div>{" "}
+          {/*line*/}
+          <div className="w-[900px] h-0 left-[26px] top-[540px] absolute opacity-50 outline outline-1 outline-offset-[-0.50px] outline-stone-900"></div>{" "}
+          {/*line*/}
           <div className="w-60 left-[102px] top-[130px] absolute justify-start text-stone-900 text-3xl font-bold font-['Montserrat']">
             <input
               name="title"
@@ -98,7 +113,7 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
               onChange={handleChange}
               required
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-full"
-              style={{ minWidth: '200px', width: '420px' }}
+              style={{ minWidth: "200px", width: "420px" }}
             />
           </div>
           <div className="w-96 left-[102px] top-[198px] absolute justify-start text-stone-900 text-3xl font-bold font-['Montserrat']">
@@ -109,7 +124,7 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
               onChange={handleChange}
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-full"
               required
-              style={{ minWidth: '200px', width: '420px' }}
+              style={{ minWidth: "200px", width: "420px" }}
             />
           </div>
           <div className="w-96 left-[102px] top-[266px] absolute justify-start text-stone-900 text-3xl font-bold font-['Montserrat']">
@@ -120,46 +135,81 @@ const EventForm: React.FC<EventFormProps> = ({ start, end, onClose, onEventCreat
               onChange={handleChange}
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-full"
               required
-              style={{ minWidth: '200px', width: '420px' }}
+              style={{ minWidth: "200px", width: "420px" }}
             />
           </div>
-          <div className="w-60 left-[102px] top-[334px] absolute justify-start text-stone-900 text-3xl font-bold font-['Montserrat']">
-            <input
-              name="location"
-              type="text"
-              placeholder="Location"
+          <div className="w-150 left-[102px] top-[334px] absolute justify-start text-stone-900 text-sm font-['Montserrat']">
+            <LocationAutocomplete
               value={newEvent.location}
-              onChange={handleChange}
-              className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-full"
-              style={{ minWidth: '200px', width: '420px' }}
+              onChange={(val) =>
+                setNewEvent((prev) => ({ ...prev, location: val }))
+              }
             />
           </div>
-          <div className="w-64 h-16 left-[102px] top-[394px] absolute justify-start text-stone-900/75 text-lg font-semibold font-['Montserrat']">The weather is 32° Celsius</div>
+          <div className="w-64 h-16 left-[102px] top-[394px] absolute justify-start text-stone-900/75 text-lg font-semibold font-['Montserrat']">
+            The weather is 32° Celsius
+          </div>
           <label className="left-[102px] top-[440px] absolute flex items-center">
-          <input
-            name="isAllDay"
-            type="checkbox"
-            checked={newEvent.isAllDay}
-            onChange={handleChange}
-            className="font-[Montserrat]"
-          />
-          All Day
-        </label>
-
+            <input
+              name="isAllDay"
+              type="checkbox"
+              checked={newEvent.isAllDay}
+              onChange={handleChange}
+              className="font-[Montserrat]"
+            />
+            All Day
+          </label>
           {/* Invite List Preview (static for now) */}
-          <div className="w-96 h-11 left-[60px] top-[500px] absolute justify-start text-cyan-900 text-3xl font-bold font-['Montserrat']">Invite List</div>
-          <div className="w-96 h-16 left-[102px] top-[577px] absolute justify-start"><span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">Toothless<br/></span><span className="text-stone-900/75 text-base font-normal font-['Montserrat']">toothless@gmail.com</span></div>
-          <div className="w-96 h-16 left-[102px] top-[672px] absolute justify-start"><span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">Kanye West<br/></span><span className="text-stone-900/75 text-base font-normal font-['Montserrat']">kanyewest@gmail.com</span></div>
-          <div className="w-96 h-16 left-[102px] top-[767px] absolute justify-start"><span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">Freddy Fazbear<br/></span><span className="text-stone-900/75 text-base font-normal font-['Montserrat']">freddyfazbear@gmail.com</span></div>
-          <div className="w-40 h-5 left-[752px] top-[557px] absolute justify-start text-stone-900/75 text-base font-bold font-['Montserrat']">STATUS</div>
-          <div className="w-40 h-5 left-[752px] top-[597px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">Accepted</div>
-          <div className="w-40 h-5 left-[752px] top-[697px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">Declined</div>
-          <div className="w-40 h-5 left-[752px] top-[787px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">Pending</div>
-          <div className="w-8 h-7 left-[904px] top-[47px] absolute outline outline-[1.52px] outline-offset-[-0.76px] outline-black" /> {/* Icon placeholder */}
-          
-          <div style={{ height: '600px' }} /> {/* Spacer for button */}
+          <div className="w-96 h-11 left-[60px] top-[500px] absolute justify-start text-cyan-900 text-3xl font-bold font-['Montserrat']">
+            Invite List
+          </div>
+          <div className="w-96 h-16 left-[102px] top-[577px] absolute justify-start">
+            <span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">
+              Toothless
+              <br />
+            </span>
+            <span className="text-stone-900/75 text-base font-normal font-['Montserrat']">
+              toothless@gmail.com
+            </span>
+          </div>
+          <div className="w-96 h-16 left-[102px] top-[672px] absolute justify-start">
+            <span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">
+              Kanye West
+              <br />
+            </span>
+            <span className="text-stone-900/75 text-base font-normal font-['Montserrat']">
+              kanyewest@gmail.com
+            </span>
+          </div>
+          <div className="w-96 h-16 left-[102px] top-[767px] absolute justify-start">
+            <span className="text-stone-900/75 text-3xl font-bold font-['Montserrat']">
+              Freddy Fazbear
+              <br />
+            </span>
+            <span className="text-stone-900/75 text-base font-normal font-['Montserrat']">
+              freddyfazbear@gmail.com
+            </span>
+          </div>
+          <div className="w-40 h-5 left-[752px] top-[557px] absolute justify-start text-stone-900/75 text-base font-bold font-['Montserrat']">
+            STATUS
+          </div>
+          <div className="w-40 h-5 left-[752px] top-[597px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">
+            Accepted
+          </div>
+          <div className="w-40 h-5 left-[752px] top-[697px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">
+            Declined
+          </div>
+          <div className="w-40 h-5 left-[752px] top-[787px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">
+            Pending
+          </div>
+          <div className="w-8 h-7 left-[904px] top-[47px] absolute outline outline-[1.52px] outline-offset-[-0.76px] outline-black" />{" "}
+          {/* Icon placeholder */}
+          <div style={{ height: "600px" }} /> {/* Spacer for button */}
           <div className="flex justify-center items-center absolute left-1/2 transform -translate-x-1/2 bottom-10 top-[1000px]">
-            <button type="submit" className="w-[350px] bg-[#213E60] text-white rounded-[8px] p-2 hover:bg-[#94B6EF]">
+            <button
+              type="submit"
+              className="w-[350px] bg-[#213E60] text-white rounded-[8px] p-2 hover:bg-[#94B6EF]"
+            >
               Create Event
             </button>
           </div>

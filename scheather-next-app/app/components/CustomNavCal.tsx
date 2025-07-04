@@ -1,7 +1,8 @@
 import React from "react";
+import MonthYearPicker from "./MonthYearPicker";
 
 const CustomNavCal = (props: any) => {
-  const { label, onNavigate, onView, view } = props;
+  const { label, onNavigate, onView, view, date } = props;
 
   return (
     <div className="flex flex-col space-y-2 md:grid md:grid-cols-3 md:space-y-0 items-center py-2">
@@ -12,6 +13,12 @@ const CustomNavCal = (props: any) => {
           onClick={() => onNavigate("PREV")}
         >
           &lt;
+        </button>
+        <button
+          className="px-2 py-1 rounded text-[color:#e68c3a] hover:bg-gray-300"
+          onClick={() => onNavigate("PREV")}
+        >
+          &lt;&lt;
         </button>
         <button
           className="px-2 py-1 text-black rounded hover:bg-gray-300 font-bold"
@@ -25,11 +32,20 @@ const CustomNavCal = (props: any) => {
         >
           &gt;
         </button>
+        <button
+          className="px-2 py-1 rounded text-[color:#e68c3a] hover:bg-gray-300"
+          onClick={() => onNavigate("NEXT")}
+        >
+          &gt;&gt;
+        </button>
       </div>
 
       {/* MOnth and Year label */}
-      <div className="flex justify-center order-1 md:order-2v label-month">
-        <span className=" md:text-base">{label}</span>
+      <div className="flex justify-center order-1 md:order-2">
+        <MonthYearPicker
+          date={props.date}
+          onChange={(newDate) => props.onNavigate("DATE", newDate)}
+        />
       </div>
 
       {/* View Switcher Motnh, WEek, day*/}

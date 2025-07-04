@@ -68,6 +68,7 @@ export default function Home() {
           <div className="hidden lg:flex items-center gap-4 ml-auto">
             <Link href="/" passHref>
               <h1 className="text-black text-sm xl:text-base hover:cursor-pointer after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
+
                 Back to Landing Page
               </h1>
             </Link>
@@ -345,11 +346,11 @@ export default function Home() {
             className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
             style={{
               fontFamily: "Poppins",
-              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              fontSize: "clamp(0.75rem, 2vw, 1.5rem)",
               color: "#e68c3a",
             }}
           >
-            You go to planning partner
+            Schedule together according to the weather.
           </div>
 
           <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">

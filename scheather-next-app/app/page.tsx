@@ -27,7 +27,7 @@ export default function Home() {
     router.push("/auth/signup");
   };
 
-  //for the hamburger menu
+  //for the hamburger menu for mobile
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -58,7 +58,7 @@ export default function Home() {
         >
           {/* Brand Logo */}
           <div
-            className="text-black text-xl sm:text-2xl font-medium"
+            className="text-[color:#213E60] text-xl sm:text-2xl font-medium"
             style={{
               fontFamily: '"Cedarville Cursive", cursive',
             }}
@@ -141,7 +141,7 @@ export default function Home() {
 
           {/* Mobile Menu */}
           <div
-            className={`lg:hidden fixed top-20 right-0 w-80 max-w-[90vw] max-h-[calc(100vh-2rem)] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 rounded-sm ${
+            className={`lg:hidden fixed top-20 right-0 w-80 max-w-[50vw] max-h-[calc(100vh-2rem)] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 rounded-sm ${
               isMenuOpen ? "translate-x-0" : "translate-x-full"
             }`}
           >
@@ -226,7 +226,7 @@ export default function Home() {
 
               <button
                 onClick={handleClick}
-                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center w-fit"
+                className="rgb-button group relative cursor-pointer overflow-hidden whitespace-nowrap px-4 sm:px-6 py-2 sm:py-4 text-black [background:var(--bg)] [border-radius:var(--radius)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_8px_rgba(120,120,120,0.7)] flex justify-center w-fit"
                 style={
                   {
                     "--spread": "90deg",
@@ -439,11 +439,11 @@ export default function Home() {
             className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
             style={{
               fontFamily: "Poppins",
-              fontSize: "clamp(1rem, 3vw, 2.5rem)",
+              fontSize: "clamp(0.75rem, 2vw, 1.5rem)",
               color: "#e68c3a",
             }}
           >
-            You go to planning partner
+            Schedule together according to the weather.
           </div>
 
           <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">
@@ -465,7 +465,7 @@ export default function Home() {
                   d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
                 />
               </svg>
-              <p className="text-base sm:text-lg">0977966554</p>
+              <p className="text-base sm:text-lg">09779665541</p>
             </div>
 
             {/* Email */}

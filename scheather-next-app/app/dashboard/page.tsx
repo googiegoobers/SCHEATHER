@@ -4,20 +4,20 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { auth } from "@/app/lib/firebaseConfig";
-import { db } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/app/lib/firebaseConfig";
 import CalendarComponent from "@/app/components/Calendar";
 import EventForm from "@/app/components/EventForm";
 import HamburgerCal from "@/app/components/HamburgerCal";
 import ProfileUser from "@/app/components/ProfileUser";
+import InvitationPage from "@/app/components/InvitationPage";
 import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
 //for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
-  sunny: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
-  clear: { day: "/icons/sunny-day.png", night: "/icons/clear-night.png" },
+  sunny: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
+  clear: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
 
   "partly cloudy": {
     day: "/icons/cloudy-day.png",
@@ -38,12 +38,12 @@ const iconMap: Record<string, { day: string; night: string }> = {
     night: "/icons/rain-night.png",
   },
   "light rain shower": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "light rain": {
-    day: "/icons/light-rain-day.png",
-    night: "/icons/light-rain-night.png",
+    day: "/icons/rain-day.png",
+    night: "/icons/rain-night.png",
   },
   "moderate rain": {
     day: "/icons/rain-day.png",
@@ -118,6 +118,7 @@ export default function Dashboard() {
   //for pofile
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const auth = getAuth();
+  const [openInvitePage, setOpenInvitePage] = useState("");
 
   //creation year
   useEffect(() => {
@@ -131,7 +132,7 @@ export default function Dashboard() {
       }
     });
 
-    return () => unsubscribe(); // ✅ clean up listener
+    return () => unsubscribe();
   }, []);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -185,7 +186,7 @@ export default function Dashboard() {
       }
     };
     fetchAvatarFromFirestore();
-  });
+  }, []);
 
   const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
   //avatar dropdown
@@ -235,27 +236,16 @@ export default function Dashboard() {
   const firstName = name ? name.split(" ")[0] : "there";
 
   useEffect(() => {
-    const fetchWeatherFromWeatherAPI = async (lat: number, lon: number) => {
+    const fetchWeather = async (lat: number, lon: number) => {
       try {
-        const weatherRes = await fetch(
-          `https://api.weatherapi.com/v1/forecast.json?key=70584dbbf10a4afab2320837252606&q=${lat},${lon}&days=1&aqi=no&alerts=no`
-        );
-
-        const data = await weatherRes.json();
-
-        if (!weatherRes.ok || !data?.location) {
-          setError("Failed to fetch weather data.");
+        const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+        if (!res.ok) {
+          const text = await res.text();
+          setError(text || "Failed to fetch weather data.");
           return;
         }
-
-        setWeather({
-          city: data.location.name,
-          country: data.location.country,
-          localtime: data.location.localtime,
-          current: data.current,
-          forecast: data.forecast.forecastday[0], // today’s forecast
-          is_day: data.current.is_day,
-        });
+        const data = await res.json();
+        setWeather(data);
       } catch (err) {
         console.error(err);
         setError("An error occurred.");
@@ -264,9 +254,9 @@ export default function Dashboard() {
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchWeatherFromWeatherAPI(latitude, longitude);
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          fetchWeather(latitude, longitude);
         },
         () => {
           setError("Location permission denied.");
@@ -336,18 +326,13 @@ export default function Dashboard() {
     };
   }, []);
 
-  //formatting the date into 9:00 PM
-  function formatLocalTime(localtime: string) {
-    const [, timePart] = localtime.split(" "); // "21:00"
-    const [hourStr, minuteStr] = timePart.split(":");
-    let hour = parseInt(hourStr);
-    const minute = minuteStr;
-    const ampm = hour >= 12 ? "PM" : "AM";
-
-    hour = hour % 12 || 12;
-
-    return `${hour}:${minute} ${ampm}`;
-  }
+  //getting the time since lahi ang time sa weatherAPI
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
@@ -437,7 +422,15 @@ export default function Dashboard() {
 
                 {isAvatarDropdownOpen && (
                   <div className="avatar-dropdown absolute right-0 top-14 bg-white shadow-lg rounded-md p-4 z-50 grid grid-cols-2 gap-4 w-40">
-                    {["cat1", "cat2", "capy1", "axolotl", "blackCat", "greyCat", "pungen"].map((name) => (
+                    {[
+                      "cat1",
+                      "cat2",
+                      "capy1",
+                      "axolotl",
+                      "blackCat",
+                      "greyCat",
+                      "pungen",
+                    ].map((name) => (
                       <img
                         key={name}
                         src={`/avatar/${name}.jpg`}
@@ -564,15 +557,22 @@ export default function Dashboard() {
                 <div data-layer="Hamburger calendar">
                   <HamburgerCal />
                 </div>
-                <a>
-                  <div className="text-white text-xl mb-6 mt-6">
+                <div className="text-white text-xl mb-6 mt-6">
+                  <a
+                    onClick={() => {
+                      setOpenInvitePage("invitation");
+                    }}
+                    className="cursor-pointer"
+                  >
                     Invitations
-                  </div>
-
-                  <div className="text-white text-xl mb-6">Invitations</div>
-                </a>
+                  </a>
+                </div>
                 <a>
-                  <div className="text-white text-xl mb-6">To-do list</div>
+                  <Link href="/ToDoList">
+                    <div className="text-white text-xl mb-6 cursor pointer">
+                      To-do list
+                    </div>
+                  </Link>
                 </a>
 
                 <div className="flex-grow"></div>
@@ -580,84 +580,97 @@ export default function Dashboard() {
             </>
           )}
         </header>
-        {/* // Main content area/ */}
-        <main className="pt-20 scroll-mt-50">
-          {/* Full-width blue background */}
-          <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
-            {/* div inside of the blue background */}
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
-              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">
-                <h1
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
-                  style={{ fontFamily: "Poppins" }}
-                >
-                  Welcome, {firstName}!
-                </h1>
-              </div>
 
-              <div className="flex justify-center items-start min-h-[16rem] px-2 sm:px-6 scale-95 sm:scale-100">
-                {weather?.localtime ? (
-                  // transition div
-                  <div
-                    className={`transition-transform duration-700 ease-out ${
-                      fadeIn ? "translate-y-0" : "translate-y-8"
-                    }`}
-                  >
-                    {/*  container of the city, temp, and description */}
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="philTime flex flex-col sm:flex-row gap-4 sm:gap-6">
-                        <div className="text-[color:#e68c3a]  text-xl font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                          {weather?.city}
-                        </div>
-                        <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                          {formatLocalTime(weather?.localtime)}
-                        </div>
-                      </div>
-                      {/* weather forcast container */}
-                      <div className="forcast flex items-center justify-center">
-                        {/* Temperature block */}
-                        <div>
-                          <div className="flex items-start">
-                            <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
-                              {weather.current.temp_c.toFixed(1)}
-                            </span>
-                            <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
-                              °C
-                            </span>
-                            <img
-                              src={
-                                // i toLowerCase siya aron mabasa niya tong naa sa iconMap for the icons assigned
-                                (iconMap[
-                                  weather?.current?.condition?.text.toLowerCase()
-                                ] || iconMap["default"])[
-                                  isDayTime() ? "day" : "night"
-                                ]
-                              }
-                              alt={weather?.current?.condition?.text}
-                              className="w-28 sm:w-30 h-28"
-                            />
-                          </div>
-                          <div className="text-white text-xl font-normal font-['Overpass'] capitalize">
-                            {weather?.current?.condition?.text.toLowerCase()}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-64 h-64 flex items-center justify-center">
-                    <DotLottieReact src="/lottie.lottie" loop autoplay />
-                  </div>
-                )}
-              </div>
-            </div>
+        {openInvitePage == "invitation" && (
+          <div className="call-the-component absolute  inset-0 top-30 bg-white z-30 overflow-auto">
+            <InvitationPage onClose={() => setOpenInvitePage("")} />
           </div>
-        </main>
-        {/* for calendar */}
-        <div className="p-8">
-          <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
-          <CalendarComponent />
-        </div>
+        )}
+        {openInvitePage != "invitation" && (
+          <div>
+            {/* // Main content area/ */}
+            <main className="pt-20 scroll-mt-50">
+              {/* Full-width blue background */}
+              <div className="w-full bg-[color:#213E60] backdrop-blur-2xl">
+                {/* div inside of the blue background */}
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4 sm:px-6 lg:px-20 py-8">
+                  <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left w-full">
+                    <h1
+                      className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
+                      style={{ fontFamily: "Poppins" }}
+                    >
+                      Welcome, {firstName}!
+                    </h1>
+                  </div>
+
+                  <div className="flex justify-center items-start min-h-[16rem] px-2 sm:px-6 scale-95 sm:scale-100">
+                    {weather?.localtime ? (
+                      // transition div
+                      <div
+                        className={`transition-transform duration-700 ease-out ${
+                          fadeIn ? "translate-y-0" : "translate-y-8"
+                        }`}
+                      >
+                        {/*  container of the city, temp, and description */}
+                        <div className="flex flex-col items-center gap-2 text-center">
+                          <div className="philTime flex flex-col sm:flex-row gap-4 sm:gap-6">
+                            <div className="text-[color:#e68c3a]  text-xl font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                              {weather?.city}
+                            </div>
+                            <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
+                              {time}
+                            </div>
+                          </div>
+                          {/* weather forcast container */}
+                          <div className="forcast flex items-center justify-center">
+                            {/* Temperature block */}
+                            <div>
+                              <div className="flex items-start">
+                                <span className="text-white text-8xl font-normal font-['Overpass'] [text-shadow:_-4px_8px_50px_rgb(0_0_0_/_0.10)]">
+                                  {weather.current.temp_c.toFixed(1)}
+                                </span>
+                                <span className="text-white text-4xl font-normal font-['Overpass'] ml-1 mt-1">
+                                  °C
+                                </span>
+                                <img
+                                  src={
+                                    // i toLowerCase siya aron mabasa niya tong naa sa iconMap for the icons assigned
+                                    (iconMap[
+                                      weather?.current?.condition?.text.toLowerCase()
+                                    ] || iconMap["default"])[
+                                      isDayTime() ? "day" : "night"
+                                    ]
+                                  }
+                                  alt={weather?.current?.condition?.text}
+                                  className="w-28 sm:w-30 h-28"
+                                />
+                              </div>
+                              <div className="text-white text-xl font-normal font-['Overpass'] capitalize">
+                                {weather?.current?.condition?.text.toLowerCase()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-64 h-64 flex items-center justify-center">
+                        <DotLottieReact src="/lottie.lottie" loop autoplay />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </main>
+            {/* for calendar */}
+            <div className="p-8">
+              <h1 className="text-3xl font-bold mb-10">Your Event Calendar</h1>
+              <CalendarComponent />
+            </div>
+            <footer className="w-full bg-[color:#213E60] p-5 text-center text-white">
+              <p>Scheather</p>
+            </footer>
+          </div>
+        )}
       </div>
     </div>
   );

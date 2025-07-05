@@ -6,9 +6,15 @@ const LOCATIONIQ_API_KEY = "pk.4d87f3a510b82175a974baefff9f5737";
 const LocationAutocomplete = ({
   value,
   onChange,
+  onSelect,
 }: {
   value: string;
   onChange: (value: string) => void;
+  onSelect: (select: {
+    display_name: string;
+    lat: string;
+    lon: string;
+  }) => void;
 }) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -44,9 +50,15 @@ const LocationAutocomplete = ({
     timeoutRef.current = setTimeout(() => fetchSuggestions(newValue), 300);
   };
 
-  const handleSelect = (value: string) => {
-    onChange(value);
-    setShowDropdown(false);
+  const handleSelect = (displayName: string) => {
+    const selected = suggestions.find(
+      (item) => item.display_name === displayName
+    );
+    if (selected) {
+      onSelect(selected);
+      onChange(displayName);
+      setShowDropdown(false);
+    }
   };
 
   return (

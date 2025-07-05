@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, addDoc } from "firebase/firestore";
-import { db, auth } from "@/app/lib/firebaseConfig";
+import { db } from "@/app/lib/firebaseConfig";
 import "./Calendar.css";
 import { User } from "firebase/auth";
 import LocationAutocomplete from "./LocationAutocomplete";
@@ -31,6 +31,53 @@ const EventForm: React.FC<EventFormProps> = ({
     budgetList: [],
     participants: [],
   });
+
+  // i-edit ang date (newEvent.start) nga mabasa siya sa weatherapi
+  const eventDateTime = newEvent.start; // e.g. "2025-07-06T14:30"
+  const eventDate = newEvent.start.split("T")[0];
+  const eventHour = new Date(eventDateTime).getHours();
+
+  // for coordinates
+  const [locationText, setLocationText] = useState("");
+  const [coordinates, setCoordinates] = useState<{
+    lat: string;
+    lon: string;
+  } | null>(null);
+
+  // Weather state
+  const [weather, setWeather] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      if (!coordinates || !eventDate) return;
+
+      const key = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+      if (!key) {
+        console.error("Missing Weather API Key");
+        return;
+      }
+
+      try {
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${key}&q=${coordinates.lat},${coordinates.lon}&dt=${eventDate}&aqi=no&alerts=no`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!res.ok || !data.forecast) {
+          throw new Error("Failed to fetch weather data");
+        }
+
+        const forecast = data.forecast.forecastday[0];
+        const hourData = forecast.hour[eventHour]; // ← get weather for specific time
+
+        setWeather(hourData); //specific day with the starting time
+      } catch (error) {
+        console.error("Weather fetch error:", error);
+        setWeather(null);
+      }
+    };
+
+    fetchWeather();
+  }, [coordinates, eventDate]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -100,9 +147,9 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="w-116 h-16 left-[60px] top-[31px] absolute justify-start text-cyan-900 text-5xl font-bold font-['Montserrat']">
             EVENT DETAILS
           </div>
-          <div className="w-[900px] h-0 left-[26.07px] top-[102.07px] absolute opacity-50 outline outline-2 outline-offset-[-1px] outline-stone-900"></div>{" "}
+          <div className="w-[900px] h-0 left-[26.07px] top-[102.07px] absolute opacity-50 outline-2 outline-offset-[-1px] outline-stone-900"></div>{" "}
           {/*line*/}
-          <div className="w-[900px] h-0 left-[26px] top-[540px] absolute opacity-50 outline outline-1 outline-offset-[-0.50px] outline-stone-900"></div>{" "}
+          <div className="w-[900px] h-0 left-[26px] top-[540px] absolute opacity-50 outline-1 outline-offset-[-0.50px] outline-stone-900"></div>{" "}
           {/*line*/}
           <div className="w-60 left-[102px] top-[130px] absolute justify-start text-stone-900 text-3xl font-bold font-['Montserrat']">
             <input
@@ -141,15 +188,32 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="w-150 left-[102px] top-[334px] absolute justify-start text-stone-900 text-sm font-['Montserrat']">
             <LocationAutocomplete
               value={newEvent.location}
-              onChange={(val) =>
-                setNewEvent((prev) => ({ ...prev, location: val }))
-              }
+              onChange={(val) => {
+                setNewEvent((prev) => ({ ...prev, location: val }));
+
+                // If mu clear sa location input, clear weather and coords
+                if (val === "") {
+                  setCoordinates(null);
+                  setWeather(null);
+                }
+              }}
+              onSelect={(item) => {
+                setCoordinates({ lat: item.lat, lon: item.lon });
+                // Weather kay mu update automatically via useEffect
+              }}
             />
           </div>
-          <div className="w-64 h-16 left-[102px] top-[394px] absolute justify-start text-stone-900/75 text-lg font-semibold font-['Montserrat']">
-            The weather is 32° Celsius
+          <div className="w-64 h-16 left-[102px] top-[385px] absolute justify-start text-stone-900/75 text-lg font-semibold font-['Montserrat']">
+            {weather && (
+              <div className="flex items-center gap-2 text-sm text-black">
+                <img src={weather.condition.icon} alt="Weather Icon" />
+                <p>
+                  {weather.condition.text}, {weather.temp_c}°C
+                </p>
+              </div>
+            )}
           </div>
-          <label className="left-[102px] top-[440px] absolute flex items-center">
+          <label className="left-[102px] top-[445px] absolute flex items-center">
             <input
               name="isAllDay"
               type="checkbox"
@@ -202,7 +266,7 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="w-40 h-5 left-[752px] top-[787px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">
             Pending
           </div>
-          <div className="w-8 h-7 left-[904px] top-[47px] absolute outline outline-[1.52px] outline-offset-[-0.76px] outline-black" />{" "}
+          <div className="w-8 h-7 left-[904px] top-[47px] absolute outline-[1.52px] outline-offset-[-0.76px] outline-black" />{" "}
           {/* Icon placeholder */}
           <div style={{ height: "600px" }} /> {/* Spacer for button */}
           <div className="flex justify-center items-center absolute left-1/2 transform -translate-x-1/2 bottom-10 top-[1000px]">

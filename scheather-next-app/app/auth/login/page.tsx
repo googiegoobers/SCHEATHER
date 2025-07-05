@@ -304,22 +304,22 @@ export default function Home() {
           </button>
 
           <div>
-            <p className="text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins']">
+            <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
               Forgot Password?
             </p>
             <Link href="/auth/forgetPassword">
-              <p className="text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+              <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
                 Reset Password
               </p>
             </Link>
           </div>
 
           <div>
-            <p className=" text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins']">
+            <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
               Don't have an account?
             </p>
             <Link href="/auth/signup">
-              <p className=" text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+              <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
                 Sign Up
               </p>
             </Link>

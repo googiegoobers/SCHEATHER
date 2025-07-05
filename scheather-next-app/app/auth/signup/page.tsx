@@ -273,7 +273,7 @@ const SignUpCard: React.FC = () => {
               <p className="text-[#223F61] font-normal font-['Poppins'] flex-1">
                 Already Have an Account?
               </p>
-              <Link href="/auth/forgetPassword" className="w-auto">
+              <Link href="/auth/login" className="w-auto">
                 <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right">
                   Log in
                 </p>
@@ -402,10 +402,13 @@ const SignUpCard: React.FC = () => {
             Sign up
           </button>
 
-          <div className="flex justify-center mt-4">
+          <div>
+            <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
+              Already Have an Account?
+            </p>
             <Link href="/auth/login">
-              <p className="text-cyan-900 text-xs font-normal font-['Poppins'] hover:underline cursor-pointer">
-                Already have an account? Log in here
+              <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
+                Log in
               </p>
             </Link>
           </div>

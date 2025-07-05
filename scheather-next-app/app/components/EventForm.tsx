@@ -266,7 +266,13 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="w-40 h-5 left-[752px] top-[787px] absolute justify-start text-stone-900/75 text-base font-normal font-['Montserrat']">
             Pending
           </div>
-          <div className="w-8 h-7 left-[904px] top-[47px] absolute outline-[1.52px] outline-offset-[-0.76px] outline-black" />{" "}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-3xl text-gray-500 hover:text-gray-800"
+            aria-label="Close"
+          >
+            &times;
+          </button>
           {/* Icon placeholder */}
           <div style={{ height: "600px" }} /> {/* Spacer for button */}
           <div className="flex justify-center items-center absolute left-1/2 transform -translate-x-1/2 bottom-10 top-[1000px]">

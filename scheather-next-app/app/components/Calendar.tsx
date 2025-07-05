@@ -15,6 +15,7 @@ import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm"; // Make sure you have this
 import OutsideClickHandler from "react-outside-click-handler"; //naa sa type folder under .next (gisunod ra nako ang gisulti sa copilot sa vs code hahahah, it worked!, so that OusideEvenntHandler mugana)
 import { onAuthStateChanged } from "firebase/auth";
+import EventDetails from "./EventDetails"; // Import the EventDetails component
 
 const localizer = momentLocalizer(moment);
 
@@ -34,6 +35,8 @@ const CalendarComponent: React.FC = () => {
     end: Date;
   } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(null);
+  const [showEventDetails, setShowEventDetails] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -101,6 +104,10 @@ const CalendarComponent: React.FC = () => {
         components={{
           toolbar: (props) => <CustomNavCal {...props} />,
         }}
+        onSelectEvent={(event) => {
+          setSelectedEvent(event);
+          setShowEventDetails(true);
+        }}
       />
 
       {showForm && selectedSlot && (
@@ -132,6 +139,12 @@ const CalendarComponent: React.FC = () => {
             </div>
           </OutsideClickHandler>
         </div>
+      )}
+      {showEventDetails && selectedEvent && (
+        <EventDetails
+          event={selectedEvent}
+          onClose={() => setShowEventDetails(false)}
+        />
       )}
     </div>
   );

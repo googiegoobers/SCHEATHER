@@ -1,6 +1,7 @@
 import "./globals.css";
 import { ClientProviders } from "./ClientProviders";
-// app/layout.tsx or app/page.tsx
+import { ReactNode } from "react";
+import Script from "next/script";
 
 import {
   Poppins,
@@ -10,7 +11,6 @@ import {
   Roboto,
 } from "next/font/google";
 import { Metadata } from "next";
-
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -49,7 +49,7 @@ const cedarvilleCursive = Cedarville_Cursive({
 export const metadata: Metadata = {
   title: "Scheather",
   icons: {
-    icon: "/logo.png",
+    icon: "/hero-logo.png",
   },
 };
 
@@ -63,11 +63,9 @@ export default function RootLayout({
       lang="en"
       className={`${poppins.variable} ${inter.variable} ${montserrat.variable} ${cedarvilleCursive.variable} ${roboto.variable}`}
     >
-      <body> 
-        <ClientProviders>
-          {children}
-        </ClientProviders>
-    </body>
+      <body>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
     </html>
   );
 }

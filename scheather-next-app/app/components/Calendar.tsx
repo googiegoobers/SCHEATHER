@@ -9,11 +9,12 @@ import {
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { db } from "@/app/lib/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { auth, db } from "@/app/lib/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm"; // Make sure you have this
 import OutsideClickHandler from "react-outside-click-handler"; //naa sa type folder under .next (gisunod ra nako ang gisulti sa copilot sa vs code hahahah, it worked!, so that OusideEvenntHandler mugana)
+import { onAuthStateChanged } from "firebase/auth";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,6 +27,7 @@ interface FirestoreEvent {
 
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     start: Date;
@@ -34,26 +36,43 @@ const CalendarComponent: React.FC = () => {
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     const fetchEvents = async () => {
+      if (!currentUser) return;
+
       try {
-        const snapshot = await getDocs(collection(db, "events"));
-        const eventsData: FirestoreEvent[] = snapshot.docs.map((doc) => {
+        const eventsCollection = collection(db, "events");
+        const q = query(
+          eventsCollection,
+          where("createdBy", "==", currentUser.uid)
+        );
+
+        const snapshot = await getDocs(q);
+        const eventsData = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,
             title: data.title,
-            start: new Date(data.start),
-            end: new Date(data.end),
+            start: new Date(data.start?.toDate?.() || data.start),
+            end: new Date(data.end?.toDate?.() || data.end),
           };
         });
+
         setEvents(eventsData);
-      } catch (err) {
-        console.error("Error fetching events:", err);
+      } catch (error) {
+        console.error("Error fetching events:", error);
       }
     };
 
     fetchEvents();
-  }, []);
+  }, [currentUser]);
 
   const handleSelectSlot = (slotInfo: any) => {
     setSelectedSlot({
@@ -85,7 +104,7 @@ const CalendarComponent: React.FC = () => {
       />
 
       {showForm && selectedSlot && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-[1px] bg-opacity-50 flex justify-center items-center z-50 pointer-events-none">
+        <div className="fixed inset-0 bg-[#383734]/50 backdrop-blur-[1px] bg-opacity-50 flex justify-center items-center z-50 pointer-events-none overflow-hidden">
           <OutsideClickHandler
             onOutsideClick={() => {
               setSlotManuallySelected(false); // disable ang trigger to open even form if nag open sa event form then mutap outside
@@ -93,8 +112,7 @@ const CalendarComponent: React.FC = () => {
               setTimeout(() => setSlotManuallySelected(true), 100); //after nga muclick outside, enable re-trigger after 100ms
             }}
           >
-            <div className="bg-white p-4 rounded shadow w-full max-w-md pointer-events-auto">
-              {/* pop-up event */}
+            <div className="relative w-[968.86px] h-[698px] bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
               <EventForm
                 start={selectedSlot.start.toISOString().slice(0, 16)}
                 end={selectedSlot.end.toISOString().slice(0, 16)}
@@ -109,6 +127,7 @@ const CalendarComponent: React.FC = () => {
                     },
                   ])
                 }
+                currentUser={currentUser}
               />
             </div>
           </OutsideClickHandler>

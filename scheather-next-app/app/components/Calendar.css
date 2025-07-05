@@ -51,3 +51,12 @@
 .rbc-calendar {
   min-height: 900px;
 }
+
+
+/* eventform styling */
+
+.event-input-text{
+    border-width: 1.5px;
+    border-radius: 8px;
+    padding: 8px
+}

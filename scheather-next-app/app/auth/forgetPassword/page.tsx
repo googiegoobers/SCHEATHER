@@ -136,7 +136,7 @@ export default function Home() {
       <div className="lg:hidden flex flex-col flex-1 w-full overflow-auto">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 w-full max-w-md mx-auto px-4 py-8"
+          className="lg:hidden flex flex-col items-center w-full min-h-screen py-8 px-4"
         >
           <div className="ForgetPassword2Phone w-96 h-[812px] relative bg-white overflow-hidden">
             <div className="ForgetPassword left-[99px] top-[33px] absolute text-center justify-start text-[#223F61] text-xl font-bold font-['Poppins']">

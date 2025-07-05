@@ -35,7 +35,7 @@ const CalendarComponent: React.FC = () => {
   } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
-  useEffect(() =>{
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
@@ -45,11 +45,14 @@ const CalendarComponent: React.FC = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      if(!currentUser) return;
+      if (!currentUser) return;
 
       try {
         const eventsCollection = collection(db, "events");
-        const q = query(eventsCollection, where("createdBy", "==", currentUser.uid));
+        const q = query(
+          eventsCollection,
+          where("createdBy", "==", currentUser.uid)
+        );
 
         const snapshot = await getDocs(q);
         const eventsData = snapshot.docs.map((doc) => {
@@ -110,24 +113,24 @@ const CalendarComponent: React.FC = () => {
             }}
           >
             <div className="relative w-[968.86px] h-[698px] bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
-                <EventForm
-                  start={selectedSlot.start.toISOString().slice(0, 16)}
-                  end={selectedSlot.end.toISOString().slice(0, 16)}
-                  onClose={() => setShowForm(false)}
-                  onEventCreated={(newEvt) =>
-                    setEvents((prev) => [
-                      ...prev,
-                      {
-                        ...newEvt,
-                        start: new Date(newEvt.start),
-                        end: new Date(newEvt.end),
-                      },
-                    ])
-                  }
-                  currentUser ={currentUser}
-                />
+              <EventForm
+                start={selectedSlot.start.toISOString().slice(0, 16)}
+                end={selectedSlot.end.toISOString().slice(0, 16)}
+                onClose={() => setShowForm(false)}
+                onEventCreated={(newEvt) =>
+                  setEvents((prev) => [
+                    ...prev,
+                    {
+                      ...newEvt,
+                      start: new Date(newEvt.start),
+                      end: new Date(newEvt.end),
+                    },
+                  ])
+                }
+                currentUser={currentUser}
+              />
             </div>
-          </OutsideClickHandler>          
+          </OutsideClickHandler>
         </div>
       )}
     </div>

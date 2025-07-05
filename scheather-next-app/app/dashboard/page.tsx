@@ -120,7 +120,7 @@ export default function Dashboard() {
   const auth = getAuth();
   const [openInvitePage, setOpenInvitePage] = useState("");
 
-  //creation year
+  //creation year for profile
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

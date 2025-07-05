@@ -163,14 +163,7 @@ export default function Dashboard() {
   const [avatar, setAvatar] = useState("/avatar/cat1.jpg");
 
   // setting the selected avatar from localStorage if available
-  useEffect(() => {
-    const savedAvatar = localStorage.getItem("selectedAvatar");
-    if (savedAvatar) {
-      setAvatar(savedAvatar);
-    }
-  }, []);
-
-  //fetching the avatar path from the database
+  // fetching the avatar path from the database
   useEffect(() => {
     const fetchAvatarFromFirestore = async () => {
       const user = auth.currentUser;
@@ -181,10 +174,19 @@ export default function Dashboard() {
           const data = userDoc.data();
           if (data.avatarPath) {
             setAvatar(data.avatarPath);
+            localStorage.setItem("selectedAvatar", data.avatarPath); // keep localStorage in sync
+            return;
           }
         }
       }
+
+      // fallback to localStorage only if no avatar in Firestore
+      const savedAvatar = localStorage.getItem("selectedAvatar");
+      if (savedAvatar) {
+        setAvatar(savedAvatar);
+      }
     };
+
     fetchAvatarFromFirestore();
   }, []);
 
@@ -326,13 +328,26 @@ export default function Dashboard() {
     };
   }, []);
 
-  //getting the time since lahi ang time sa weatherAPI
-  const now = new Date();
-  const time = now.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  //getting the time since lahi ang time sa weatherAPI, refresh every second aron ma update and time
+  const [currentTime, setCurrentTime] = useState<string>("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      setCurrentTime(timeStr);
+    };
+
+    updateTime(); // initialize dayun
+
+    const interval = setInterval(updateTime, 1000); // update every second
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
@@ -618,7 +633,7 @@ export default function Dashboard() {
                               {weather?.city}
                             </div>
                             <div className="text-white text-lg font-normal font-['Overpass'] [text-shadow:_-2px_3px_1px_rgb(0_0_0_/_0.10)]">
-                              {time}
+                              {currentTime}
                             </div>
                           </div>
                           {/* weather forcast container */}

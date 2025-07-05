@@ -68,7 +68,6 @@ export default function Home() {
           <div className="hidden lg:flex items-center gap-4 ml-auto">
             <Link href="/" passHref>
               <h1 className="text-black text-sm xl:text-base hover:cursor-pointer after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
-
                 Back to Landing Page
               </h1>
             </Link>
@@ -79,7 +78,7 @@ export default function Home() {
           className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"
         >
           {/*Left Side of the Container*/}
-          <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
+          <div className="hidden lg:flex relative Justify-center flex lg:top-[7vh] lg:px-[5vw] flex-col">
             <Link href="/">
               <h1
                 className=" text-[#223F61] text-xl sm:text-5xl font-medium"
@@ -305,22 +304,22 @@ export default function Home() {
           </button>
 
           <div>
-            <p className="text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins']">
+            <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
               Forgot Password?
             </p>
             <Link href="/auth/forgetPassword">
-              <p className="text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+              <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
                 Reset Password
               </p>
             </Link>
           </div>
 
           <div>
-            <p className=" text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins']">
+            <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
               Don't have an account?
             </p>
             <Link href="/auth/signup">
-              <p className=" text-center justify-start text-[#223F61] text-xs font-normal font-['Poppins'] underline">
+              <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
                 Sign Up
               </p>
             </Link>

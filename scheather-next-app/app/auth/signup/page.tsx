@@ -96,10 +96,10 @@ const SignUpCard: React.FC = () => {
             Scheather
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8 absolute">
+          {/* Desktop Navigation - right aligned */}
+          <div className="hidden lg:flex items-center gap-4 ml-auto">
             <Link href="/" passHref>
-              <h1 className="ml-300 text-black text-base cursor-pointer relative inline-block after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
+              <h1 className="text-black text-sm xl:text-base hover:cursor-pointer after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
                 Back to Landing Page
               </h1>
             </Link>
@@ -107,7 +107,7 @@ const SignUpCard: React.FC = () => {
         </header>
         <div className="mt-30 lg:w-[85vw] lg:h-[85vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0">
           {/*Left Side of the Container*/}
-          <div className="container-left-side hidden lg:flex">
+          <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[9vw] flex-col">
             <form onSubmit={handleSubmit}>
               <Link href="/">
                 <h1
@@ -257,22 +257,24 @@ const SignUpCard: React.FC = () => {
 
               {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
-              <button
-                type="submit"
-                className="w-50 h-11 mt-3 ml-15 bg-[#223F61] text-stone-100 rounded-[30px] outline-2 
+              <div className="flex flex-col items-center w-full mt-6 gap-4">
+                <button
+                  type="submit"
+                  className="w-full max-w-xs h-10 bg-[#223F61] text-stone-100 rounded-[30px] outline-2 
                     outline-offset-[-2px] outline-[#223F61] flex items-center justify-center text-xl font-normal
                     font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
-              >
-                Sign up
-              </button>
+                >
+                  Sign up
+                </button>
+              </div>
             </form>
 
-            <div className="Login-link">
-              <p className="text-[#223F61] font-normal font-['Poppins']">
-                Already have an account?
+            <div className="w-full flex items-center mb-3 mt-5 text-base lg:text-lg">
+              <p className="text-[#223F61] font-normal font-['Poppins'] flex-1">
+                Already Have an Account?
               </p>
-              <Link href="/auth/login">
-                <p className="text-[#223F61] font-normal font-['Poppins'] hover:underline cursor-pointer ml-23">
+              <Link href="/auth/login" className="w-auto">
+                <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right">
                   Log in
                 </p>
               </Link>
@@ -400,10 +402,13 @@ const SignUpCard: React.FC = () => {
             Sign up
           </button>
 
-          <div className="flex justify-center mt-4">
+          <div>
+            <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
+              Already Have an Account?
+            </p>
             <Link href="/auth/login">
-              <p className="text-cyan-900 text-xs font-normal font-['Poppins'] hover:underline cursor-pointer">
-                Already have an account? Log in here
+              <p className="text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
+                Log in
               </p>
             </Link>
           </div>

@@ -493,7 +493,7 @@ export default function Dashboard() {
                 onClick={closeMenu}
               ></div>
               {/* Sidebar menu */}
-              <aside className="fixed top-20 left-0 max-h-[calc(100vh-2rem)] w-64 bg-[color:#213E60] z-50 p-6 rounded-tr-[10px] rounded-br-[10px] overflow-hidden shadow-lg items-center flex flex-col">
+              <aside className="fixed top-20 left-0 max-h-[calc(100vh-2rem)] w-64 bg-[color:#213E60] z-50 lg:px-2 lg:py-6 xl:p-6 rounded-tr-[10px] rounded-br-[10px] overflow-hidden shadow-lg items-center flex flex-col">
                 <div data-layer="Hamburger calendar">
                   <HamburgerCal />
                 </div>
@@ -501,16 +501,12 @@ export default function Dashboard() {
 
                   <div className="text-white text-xl mb-6 mt-6">Invitations</div>
 
-                  <div className="text-white text-xl mb-6">Invitations</div>
+                  {/*<div className="text-white text-xl mb-6">Invitations</div> */}
 
                 </a>
-                <a>
-                  <Link href="/ToDoList">
+                <Link href="/ToDoList">
                     <div className="text-white text-xl mb-6 cursor pointer">To-do list</div>
-                  </Link>
-                  
-                </a>
-
+                </Link>
                 <div className="flex-grow"></div>
               </aside>
             </>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/app/lib/firebaseConfig";
 import "./Calendar.css";
 import { User } from "firebase/auth";
@@ -15,11 +15,6 @@ interface EventFormProps {
   currentUser: User | null;
 }
 
-const options = [
-  { label: "Kanya-Kanyang Bayad", value: "a" },
-  { label: "Equal", value: "b" },
-];
-
 const EventForm: React.FC<EventFormProps> = ({
   start,
   end,
@@ -27,6 +22,45 @@ const EventForm: React.FC<EventFormProps> = ({
   onEventCreated,
   currentUser,
 }) => {
+  const [userQuery, setUserQuery] = useState("");
+  const [userResults, setUserResults] = useState<any[]>([]);
+  const [inviteList, setInviteList] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]); // <-- store fetched users
+
+  // Fetch users from Firestore on mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const users = querySnapshot.docs.map((doc) => doc.data());
+        setAllUsers(users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userQuery.trim() === "") {
+      setUserResults([]);
+      return;
+    }
+    setUserResults(
+      allUsers.filter(
+        (user: any) =>
+          user.email &&
+          user.email.toLowerCase().includes(userQuery.toLowerCase()) &&
+          !inviteList.some((inv) => inv.email === user.email)
+      )
+    );
+  }, [userQuery, inviteList, allUsers]);
+
+  const options = [
+    { label: "Kanya-Kanyang Bayad", value: "a" },
+    { label: "Divide by selected participants", value: "b" },
+  ];
+
   const [newEvent, setNewEvent] = useState({
     title: "",
     location: "",
@@ -154,6 +188,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
+      inviteList, // <-- ensure inviteList is saved
       createdBy: currentUser.uid,
     };
 
@@ -284,7 +319,35 @@ const EventForm: React.FC<EventFormProps> = ({
         <div className="name-container flex flex-col items-center">          
           <div className="h-0 w-full opacity-50 outline outline-1 outline-offset-[-0.50px] outline-stone-900 my-2"></div>          
             {/* Search bar goes here */}
-            <div className="w-4/5 h-16 max-w-[720px] bg-white rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-0.50px] outline-zinc-300 inline-flex justify-start items-center gap-1 overflow-hidden mx-auto mb-4 mt-4">
+            <div className="w-4/5 h-16 max-w-[720px] bg-white rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-0.50px] outline-zinc-300 inline-flex justify-start items-center gap-1 overflow-visible relative mx-auto mb-4 mt-4">
+              <input
+                type="text"
+                className="w-full h-full px-6 rounded-3xl focus:outline-none text-lg"
+                placeholder="Search by email"
+                value={userQuery}
+                onChange={(e) => setUserQuery(e.target.value)}
+              />
+              {/* DEBUG: Show userResults as JSON */}
+              <div className="text-xs text-red-500 absolute left-0 top-full bg-white z-50">
+                {userResults.length > 0 ? JSON.stringify(userResults) : 'No results'}
+              </div>
+              {userResults.length > 0 && userQuery && (
+                <div className="absolute left-0 right-0 top-full bg-yellow-200 border-4 border-red-500 rounded-b-2xl shadow z-50" style={{ minHeight: 40 }}>
+                  {userResults.map((user) => (
+                    <div
+                      key={user.email}
+                      className="px-4 py-2 hover:bg-blue-100 cursor-pointer flex items-center"
+                      onClick={() => {
+                        setInviteList([...inviteList, user]);
+                        setUserQuery("");
+                        setUserResults([]);
+                      }}
+                    >
+                      <span className="font-bold mr-2">{user.email}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex-1 self-stretch p-1 relative flex justify-start items-center">
                 <div className="flex-1 self-stretch px-5 flex justify-start items-center gap-2.5">
                   <div className="justify-center"></div>
@@ -296,6 +359,26 @@ const EventForm: React.FC<EventFormProps> = ({
           </div>
           {/* ...rest of invite list content... */}
         </div>
+
+        <div className="flex flex-wrap gap-2 mt-2">
+          {inviteList.map((user) => (
+            <div
+              key={user.email}
+              className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+            >
+              {user.email}
+              <button
+                className="ml-2 text-red-500 hover:text-red-700"
+                onClick={() =>
+                  setInviteList(inviteList.filter((u) => u.email !== user.email))
+                }
+                type="button"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div> 
         
         <div className="invites-container p-4 space-y-4 flex flex-row justify-between">
           <div className="name-container">

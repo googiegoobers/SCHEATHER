@@ -160,7 +160,6 @@ const EventForm: React.FC<EventFormProps> = ({
     try {
       const docRef = await addDoc(collection(db, "events"), eventToSave);
       onEventCreated({ ...eventToSave, id: docRef.id });
-      alert("Event created!");
       onClose();
     } catch (err) {
       console.error("Error adding event:", err);
@@ -182,12 +181,21 @@ const EventForm: React.FC<EventFormProps> = ({
     <div>
       <form
         onSubmit={handleSubmit}
-        className="w-[90vh] max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] h-[90vh] overflow-y-auto bg-white shadow-lg rounded-lg p-4 md:p-6 flex flex-col gap-4"
+        className="w-full max-w-full sm:max-w-[95vw] md:max-w-[700px] lg:max-w-[900px] xl:max-w-[1000px] 2xl:max-w-[1200px] mx-auto h-[90vh] max-h-screen overflow-y-auto transition-all duration-500 bg-white shadow-lg rounded-lg p-6 md:p-6 flex flex-col gap-4"
       >
         <div className="event-creation flex flex-col w-full">
-          <p className="justify-start text-[color:#213E60] text-5xl font-bold font-['Montserrat'] p-2">
-            EVENT DETAILS
-          </p>
+          <div className="flex flex-row justify-between items-center">
+            <p className="justify-start text-[color:#213E60] text-5xl font-bold font-['Montserrat'] p-2">
+              EVENT DETAILS
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className=" top-6 right-8 sm:hidden text-black text-2xl font-bold z-50"
+            >
+              X
+            </button>
+          </div>
           <div className="h-0  w-[97%] relative opacity-50 outline-2 outline-offset-[-1px] outline-stone-900"></div>{" "}
           <div className="w-full text-stone-900 text-xl md:text-2xl font-bold font-['Montserrat'] px-2 md:px-4 p-2">
             <input
@@ -333,13 +341,18 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <p className="text-[color:#213E60] text-3xl font-bold">Budget</p>
             </div>
-
-            {checked && (
-              <div>
-                <BudgetDropdown options={options} onSelect={handleSelect} />
-                {selectedOption === "Equal" && <div></div>}
+            <div
+              className={`transition-all duration-500 overflow-hidden ${
+                checked ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="container-of-content pt-4">
+                <div>
+                  <BudgetDropdown options={options} onSelect={handleSelect} />
+                  {selectedOption === "Equal" && <div></div>}
+                </div>
               </div>
-            )}
+            </div>
           </div>
 
           {showPopup && (
@@ -366,12 +379,11 @@ const EventForm: React.FC<EventFormProps> = ({
           )}
 
           {checked && (
-            //dri ibutang ang accepted same sa invites
             <div className="container-of-content">
               <div className="list-of-bayranan space-y-4">
                 {/* Input for new item */}
                 <p>Enter list:</p>
-                <div className="flex flex-col md:flex-row items-center gap-2">
+                <div className="flex flex-col md:flex-row items-center gap-2 justify-center ">
                   <input
                     type="text"
                     placeholder="Item (e.g., Transportation)"
@@ -458,7 +470,6 @@ const EventForm: React.FC<EventFormProps> = ({
             </div>
           )}
         </div>
-
         <div className="create-event-btn flex justify-center items-center bottom-10 pt=8">
           <button
             type="submit"

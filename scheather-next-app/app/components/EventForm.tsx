@@ -52,6 +52,10 @@ const EventForm: React.FC<EventFormProps> = ({
     }[]
   >([]);
 
+  const totalAmount = budgetItems.reduce((sum, item) => {
+    return sum + parseFloat(item.amount || "0");
+  }, 0);
+
   // for the lista of the bayranan or mga kagastusan
   const [newItem, setNewItem] = useState({ label: "", amount: "" });
   const addBudgetItem = () => {
@@ -60,11 +64,29 @@ const EventForm: React.FC<EventFormProps> = ({
       setNewItem({ label: "", amount: "" });
     }
   };
+
+  //delete sa items nga gibutang
   const handleDelete = (indexToDelete: number) => {
     setBudgetItems((prevItems) =>
       prevItems.filter((_, index) => index !== indexToDelete)
     );
   };
+
+  // kanya-kanyang bayad
+  const [indivPay, setIndivPay] = useState({ money: "" });
+
+  const totalAmot = budgetItems.reduce((sum, item) => {
+    return sum + parseFloat(item.amount || "0");
+  }, 0);
+
+  const numberOfPeople = newEvent.inviteList.length || 1; // default to 1 to avoid division by 0
+  const individualPayment = totalAmot / numberOfPeople;
+
+  // Optionally store it
+  useEffect(() => {
+    setIndivPay({ money: individualPayment.toFixed(2) });
+  }, [totalAmot, newEvent.inviteList]);
+
   // for toogle switch
   const [checked, setChecked] = useState(false);
 
@@ -265,13 +287,13 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
             )}
           </div>
-          <label className="w-auto text-stone-900 text-sm font-['Montserrat'] pl-8 pr-4 pt-2">
+          <label className="w-auto  text-stone-900 text-sm font-['Montserrat'] pl-8 pr-4 pt-2 gap-2 items-center">
             <input
               name="isAllDay"
               type="checkbox"
               checked={newEvent.isAllDay}
               onChange={handleChange}
-              className="font-[Montserrat]"
+              className="font-[Montserrat] text-[#dc9b54] pr-2"
             />
             All Day
           </label>
@@ -342,41 +364,18 @@ const EventForm: React.FC<EventFormProps> = ({
               <p className="text-[color:#213E60] text-3xl font-bold">Budget</p>
             </div>
             <div
-              className={`transition-all duration-500 overflow-hidden ${
+              className={`transition-all duration-500 ${
                 checked ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
               <div className="container-of-content pt-4">
                 <div>
                   <BudgetDropdown options={options} onSelect={handleSelect} />
-                  {selectedOption === "Equal" && <div></div>}
+                  {/* {selectedOption === "Equal" && <div></div>} */}
                 </div>
               </div>
             </div>
           </div>
-
-          {showPopup && (
-            <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md text-center">
-                <label className="block text-[#213E60] font-bold mb-2">
-                  Enter the estimated total
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g. 250.00"
-                  value={equalMoney}
-                  onChange={(e) => setEqualMoney(e.target.value)}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#213E60]"
-                />
-                <button
-                  onClick={() => setShowPopup(false)}
-                  className="mt-4 bg-[#213E60] text-white px-4 py-2 rounded hover:bg-[#94B6EF] cursor-pointer"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          )}
 
           {checked && (
             <div className="container-of-content">
@@ -427,6 +426,7 @@ const EventForm: React.FC<EventFormProps> = ({
                         <button
                           onClick={() => handleDelete(index)}
                           className="text-red-500 hover:underline text-sm cursor-pointer"
+                          type="button"
                         >
                           X
                         </button>
@@ -440,6 +440,10 @@ const EventForm: React.FC<EventFormProps> = ({
                       </div>
                     </div>
                   ))}
+                  <div className="total-below p-2 flex flex-row justify-between border-t-2">
+                    <div className="label-total">TOTAL</div>
+                    <div className="total-if-equal">{totalAmount}</div>
+                  </div>
                 </div>
               </div>
               <div className="label flex flex-row justify-between pl-4 pr-4 border-b p-2">
@@ -460,12 +464,25 @@ const EventForm: React.FC<EventFormProps> = ({
                       toothless@gmail.com
                     </p>
                   </div>
-                  <div className="bayranan text-black">100.00</div>
+
+                  {selectedOption === "Kanya-Kanyang Bayad" && (
+                    <div className="flex flex-end">
+                      <input
+                        type="number"
+                        placeholder="click"
+                        value={indivPay.money}
+                        onChange={(e) =>
+                          setIndivPay({ ...indivPay, money: e.target.value })
+                        }
+                        className="border-b p-2 w-full md:w-[5vw] text-right"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
-                <div className="total-if-equal">{equalMoney}</div>
+                <div className="total-if-equal">{totalAmount}</div>
               </div>
             </div>
           )}

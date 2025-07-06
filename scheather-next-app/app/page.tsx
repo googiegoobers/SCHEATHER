@@ -298,14 +298,15 @@ export default function Home() {
             className="text-4xl md:text-5xl font-bold text-white mb-4"
             style={{ fontFamily: "Montserrat" }}
           >
-            Your go to planning partner
+            Your go-to smart scheduling partner
           </h1>
           <p
             className="text-[color:#f4f2ef] max-w-xl mx-auto text-base "
             style={{ fontFamily: "Poppins" }}
           >
-            Our platform helps groups effortlessly plan events by combining
-            real-time weather forecasts with intuitive scheduling tools.
+            Our platform helps groups effortlessly plan events by 
+            combining real-time weather forecasts with collaborative scheduling tools, 
+            so you can confidently schedule without worrying about unexpected events.
           </p>
         </div>
 
@@ -326,19 +327,18 @@ export default function Home() {
               className="text-xl font-semibold text-white"
               style={{ fontFamily: "Montserrat" }}
             >
-              We believe in doing
+              We believe in smarter planning
             </h3>
             <p
               className="text-white font-lg"
               style={{ fontFamily: "Montserrat" }}
             >
-              Eliminate the stress of planning by providing a smart,
-              collaborative solution.
+              We eliminate the stress of organizing events by providing an intelligent, shared solution:
             </p>
             <ul className="list-disc list-inside text-white space-y-1 font-medium">
-              <li>Invite you friends, groupmates, etc.</li>
-              <li>Easier breakdown of budget for group events</li>
-              <li>Aware of the weather if under 1 week scheduling</li>
+              <li>Invite you friends, groupmates, and colleagues.</li>
+              <li>Easily break down budgets for group events.</li>
+              <li>Stay informed with accurate weather forecasts for events scheduled within the next 7 days.</li>
             </ul>
           </div>
         </div>
@@ -377,7 +377,7 @@ export default function Home() {
                     fontFamily: "Montserrat",
                   }}
                 >
-                  Schedule group events.
+                  Collaborative scheduling and planning with invited users.
                 </p>
               </div>
             </div>
@@ -395,7 +395,7 @@ export default function Home() {
                     fontFamily: "Montserrat",
                   }}
                 >
-                  Have weather alerts within a span of one week.
+                  Get weather forecasts on events scheduled within a week.
                 </p>
               </div>
             </div>
@@ -413,7 +413,7 @@ export default function Home() {
                     fontFamily: "Montserrat",
                   }}
                 >
-                  Group events, invites and more.
+                  Group events, invites, budgeting, and more.
                 </p>
               </div>
             </div>
@@ -436,14 +436,16 @@ export default function Home() {
             Scheather
           </div>
           <div
-            className="text-white text-center lg:text-left order-1 lg:order-1 pt-5"
+            className="text-white text-center lg:text-center order-1 lg:order-1 pt-5"
             style={{
               fontFamily: "Poppins",
               fontSize: "clamp(0.75rem, 2vw, 1.5rem)",
               color: "#e68c3a",
             }}
           >
-            Schedule together according to the weather.
+            
+            Your reliable planning partner for stress-free group events.
+            <br/>Schedule together according to the weather.
           </div>
 
           <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">

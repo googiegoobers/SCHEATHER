@@ -112,7 +112,7 @@ const CalendarComponent: React.FC = () => {
               setTimeout(() => setSlotManuallySelected(true), 100); //after nga muclick outside, enable re-trigger after 100ms
             }}
           >
-            <div className="relative w-[968.86px] h-[698px] bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
+            <div className="relative rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
               <EventForm
                 start={selectedSlot.start.toISOString().slice(0, 16)}
                 end={selectedSlot.end.toISOString().slice(0, 16)}

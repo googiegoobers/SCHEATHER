@@ -240,7 +240,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchWeather = async (lat: number, lon: number) => {
       try {
-        const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+        const res = await fetch(`/api/weather/today?lat=${lat}&lon=${lon}`);
         if (!res.ok) {
           const text = await res.text();
           setError(text || "Failed to fetch weather data.");

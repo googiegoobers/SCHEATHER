@@ -6,6 +6,7 @@ import { auth } from "@/app/lib/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { updatePassword } from "firebase/auth";
 import { useSearchParams } from "next/navigation";
+import { div } from "three/tsl";
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
@@ -65,11 +66,12 @@ export default function Home() {
             Scheather
           </div>
 
-          {/* Desktop Navigation - right aligned */}
           <div className="hidden lg:flex items-center gap-4 ml-auto">
-            <Link href="/" passHref>
+            <Link href={isChangePassword ? "/dashboard" : "/"} passHref>
               <h1 className="text-black text-sm xl:text-base hover:cursor-pointer after:block after:h-[2px] after:bg-[#e68c3a] after:absolute after:bottom-0 after:left-0 after:w-0 after:transition-all after:duration-300 hover:after:w-full">
-                Back to Landing Page
+                {isChangePassword
+                  ? "Back to Dashboard"
+                  : "Back to Landing Page"}
               </h1>
             </Link>
           </div>
@@ -112,15 +114,17 @@ export default function Home() {
             </form>
 
             <div className="w-full flex items-center mb-3 mt-20 text-base lg:text-lg">
-              <p className="text-[#223F61] font-normal font-['Poppins'] flex-1">
-                Already Have an Account?
-              </p>
               {!isChangePassword && (
-                <Link href="/auth/login" className="w-auto">
-                  <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right">
-                    Log in
+                <div>
+                  <p className="text-[#223F61] font-normal font-['Poppins'] flex-1">
+                    Already Have an Account?
                   </p>
-                </Link>
+                  <Link href="/auth/login" className="w-auto">
+                    <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right">
+                      Log in
+                    </p>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -143,10 +147,11 @@ export default function Home() {
               {isChangePassword ? "Change Password" : "Forgot Password"}
             </div>
 
-            <Link href="/">
+            <Link href={isChangePassword ? "/dashboard" : "/"} passHref>
               <img
-                className="left-[55px] top-[35px] absolute"
                 src="/left arrow.svg"
+                alt="Back"
+                className="absolute left-[20px] top-[20px] block lg:hidden"
               />
             </Link>
 
@@ -187,13 +192,16 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center w-full mt-6">
-              <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
-                Do you have an account?
-              </p>
               {!isChangePassword && (
-                <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
-                  Log in
-                </p>
+                <div>
+                  <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
+                    Do you have an account?
+                  </p>
+
+                  <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">
+                    Log in
+                  </p>
+                </div>
               )}
             </div>
           </div>

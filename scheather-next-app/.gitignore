@@ -42,3 +42,8 @@ next-env.d.ts
 
 # for the weather api
 .env.local
+
+# Firebase admin scripts and keys (never commit these!)
+app/lib/backfill-users.cjs
+app/lib/backfill-users.js
+app/lib/serviceAccountKey.json 

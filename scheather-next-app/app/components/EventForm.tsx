@@ -94,6 +94,10 @@ const EventForm: React.FC<EventFormProps> = ({
       setNewItem({ label: "", amount: "" });
     }
   };
+  //total amount of added items
+  const totalAmount = budgetItems.reduce((total, item) => {
+    return total + parseFloat(item.amount);
+  }, 0);
   const handleDelete = (indexToDelete: number) => {
     setBudgetItems((prevItems) =>
       prevItems.filter((_, index) => index !== indexToDelete)
@@ -114,35 +118,38 @@ const EventForm: React.FC<EventFormProps> = ({
 
   useEffect(() => {
     const fetchWeather = async () => {
-      if (!coordinates || !eventDate) return;
-
-      const key = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
-      if (!key) {
-        console.error("Missing Weather API Key");
-        return;
-      }
+      if (!coordinates || !eventDate || eventHour === undefined) return;
 
       try {
-        const url = `https://api.weatherapi.com/v1/forecast.json?key=${key}&q=${coordinates.lat},${coordinates.lon}&dt=${eventDate}&aqi=no&alerts=no`;
-        const res = await fetch(url);
-        const data = await res.json();
+        const res = await fetch(
+          `/api/weather/days?lat=${coordinates.lat}&lon=${coordinates.lon}&date=${eventDate}`
+        );
 
-        if (!res.ok || !data.forecast) {
-          throw new Error("Failed to fetch weather data");
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Weather API error:", errorText);
+          setWeather(null);
+          return;
         }
 
-        const forecast = data.forecast.forecastday[0];
-        const hourData = forecast.hour[eventHour]; // ← get weather for specific time
+        const data = await res.json();
 
-        setWeather(hourData); //specific day with the starting time
-      } catch (error) {
-        console.error("Weather fetch error:", error);
+        const hourData = data?.forecast?.hour?.[eventHour];
+        if (!hourData) {
+          console.warn("No forecast for the specified hour.");
+          setWeather(null);
+          return;
+        }
+
+        setWeather(hourData);
+      } catch (err) {
+        console.error("Client fetch failed:", err);
         setWeather(null);
       }
     };
 
     fetchWeather();
-  }, [coordinates, eventDate]);
+  }, [coordinates, eventDate, eventHour]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -443,7 +450,7 @@ const EventForm: React.FC<EventFormProps> = ({
               <p className="text-[color:#213E60] text-3xl font-bold">Budget</p>
             </div>
             <div
-              className={`transition-all duration-500 overflow-hidden ${
+              className={`transition-all duration-500 ${
                 checked ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
@@ -513,10 +520,12 @@ const EventForm: React.FC<EventFormProps> = ({
                 </div>
 
                 {/* Render budget items */}
-                <div className="pb-8 space-y-2">
+                <div className="p-4 space-y-2">
                   <div className="labels flex flex-row justify-between">
-                    <p>List of items:</p>
-                    <p>Price</p>
+                    <p className=" bold text-xl text-[#213E60]">
+                      List of items:
+                    </p>
+                    <p className=" bold text-xl text-[#213E60]">Price</p>
                   </div>
                   {budgetItems.map((item, index) => (
                     <div
@@ -541,6 +550,11 @@ const EventForm: React.FC<EventFormProps> = ({
                       </div>
                     </div>
                   ))}
+
+                  <div className="total-below p-2 flex flex-row justify-between border-t-2">
+                    <div className="label-total">TOTAL</div>
+                    <div className="total-if-equal">₱{totalAmount} </div>
+                  </div>
                 </div>
               </div>
               <div className="label flex flex-row justify-between pl-4 pr-4 border-b p-2">

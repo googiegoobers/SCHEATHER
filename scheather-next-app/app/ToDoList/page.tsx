@@ -219,7 +219,7 @@ const patchTask = (id: string, data: Partial<Task>) => {
                       </span>
                     </button>
 
-                    {/* ───────────── Starred button ───────────── */}
+                    {/* Starred button */}
                     <button
                       onClick={() => setActiveTab('starred')}
                       className={`
@@ -351,7 +351,7 @@ const patchTask = (id: string, data: Partial<Task>) => {
                     ) : (
                       visibleTasks.map(({ id, text, completed, starred }) => (
                         <div key={id} className="flex items-center gap-4 mt-4 relative">
-                          {/* ✔ checkbox */}
+                          {/* checkbox */}
                           <button
                             onClick={() => patchTask(id, { completed: !completed })}
                             className="relative w-6 h-6 focus:outline-none"

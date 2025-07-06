@@ -6,8 +6,9 @@ import Script from "next/script";
 // import {AuthContextProvider} from "@/app/context/AuthContext";
 
 import React, { useState } from "react";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/app/lib/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { UserAuth } from "@/app/context/AuthContext";
 
@@ -17,29 +18,61 @@ export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { user, googleSignIn, logOut } = UserAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log("Login successful:", userCredential.user);
-      // alert("Login successful! \nWelcome user!");
-      router.push("/dashboard"); // Enable your redirect here
+      const user = userCredential.user;
+      // Fetch user role from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.data();
+      if (userData?.role === "admin") {
+        router.push("/dashboard-admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       console.error("Login error:", error.message);
       alert(`Login failed: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    if (googleLoading) return; // Prevent double click
+    setGoogleLoading(true);
     try {
-      await googleSignIn();
-      router.push("/dashboard");
+      const result = await googleSignIn();
+      // result may not return user, so get current user from auth
+      const user = auth.currentUser;
+      if (!user) throw new Error("No user found after Google Sign-In");
+      // Check if user doc exists, if not, create with default role
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      let userData = userDoc.data();
+      if (!userDoc.exists()) {
+        // Set default role for new Google users
+        await setDoc(userRef, { email: user.email, role: "user" });
+        userData = { role: "user" };
+      }
+      if (userData?.role === "admin") {
+        router.push("/dashboard-admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       alert(`Google Sign-In failed: ${error.message}`);
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -160,6 +193,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={handleLogin}
+                disabled={loading}
                 className="w-full max-w-xs h-10 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] flex items-center justify-center text-[18px] font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
               >
                 Login
@@ -171,7 +205,8 @@ export default function Home() {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="flex items-center justify-center gap-2 w-full max-w-xs h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat']"
+                disabled={googleLoading}
+                className="flex items-center justify-center gap-2 w-full max-w-xs h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat'] cursor-pointer"
               >
                 <img
                   src="https://developers.google.com/identity/images/g-logo.png"
@@ -282,6 +317,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleLogin}
+            disabled={loading}
             className="w-full max-w-xs h-10 bg-[#223F61] text-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-[#223F61] flex items-center justify-center text-base font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
           >
             Login
@@ -293,6 +329,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleGoogleLogin}
+            disabled={googleLoading}
             className="flex items-center justify-center gap-2 w-full max-w-xs h-10 bg-white border border-gray-300 rounded-[30px] shadow hover:bg-gray-100 transition-colors duration-200 text-[#223F61] font-medium font-['Montserrat']"
           >
             <img

@@ -276,7 +276,27 @@ const EventForm: React.FC<EventFormProps> = ({
             All Day
           </label>
         </div>
+
+        <div className="text-[color:#213E60] text-3xl font-bold">
+          Invite List
+        </div>
         {/* wala pa nako na responsive */}
+        <div className="name-container flex flex-col items-center">          
+          <div className="h-0 w-full opacity-50 outline outline-1 outline-offset-[-0.50px] outline-stone-900 my-2"></div>          
+            {/* Search bar goes here */}
+            <div className="w-4/5 h-16 max-w-[720px] bg-white rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-0.50px] outline-zinc-300 inline-flex justify-start items-center gap-1 overflow-hidden mx-auto mb-4 mt-4">
+              <div className="flex-1 self-stretch p-1 relative flex justify-start items-center">
+                <div className="flex-1 self-stretch px-5 flex justify-start items-center gap-2.5">
+                  <div className="justify-center"></div>
+              </div>
+              <div className="left-[620px] top-[7px] absolute flex justify-end items-center">
+                {/* ...icon code... */}
+              </div>
+            </div>
+          </div>
+          {/* ...rest of invite list content... */}
+        </div>
+        
         <div className="invites-container p-4 space-y-4 flex flex-row justify-between">
           <div className="name-container">
             <div className="text-[color:#213E60] text-3xl font-bold">

@@ -1,6 +1,6 @@
 // backfill-users.js
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json"); // path to your downloaded key
+import admin from "firebase-admin";
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -15,12 +15,15 @@ async function backfillUsers() {
     const listUsersResult = await auth.listUsers(1000, nextPageToken);
     for (const userRecord of listUsersResult.users) {
       const { uid, email, displayName, photoURL } = userRecord;
-      await db.collection("users").doc(uid).set({
-        uid,
-        email,
-        displayName: displayName || "",
-        photoURL: photoURL || "",
-      }, { merge: true });
+      await db.collection("users").doc(uid).set(
+        {
+          uid,
+          email,
+          displayName: displayName || "",
+          photoURL: photoURL || "",
+        },
+        { merge: true }
+      );
       console.log(`Synced user: ${email}`);
     }
     nextPageToken = listUsersResult.pageToken;

@@ -6,6 +6,13 @@ import { useState, useEffect, useRef } from "react";;
 import { auth } from "@/app/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
 
+interface Task {
+  id: string;
+  text: string;
+  completed: boolean;
+  starred: boolean;
+}
+
 function ToDoList()
 {
   const router = useRouter();
@@ -35,6 +42,51 @@ function ToDoList()
   //for the name and email address in the header
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [checked, setChecked] = useState (false);
+  const [starred, setStarred] = useState(false);
+
+  const [tasks, setTasks]   = useState<Task[]>([]);
+  const [newTitle, setNewTitle]   = useState('');
+
+  const [activeTab, setActiveTab] = useState<'all' | 'starred'>('all');
+  //para sa tasks
+ const addTask = () => {
+    if (!newTitle.trim()) return;
+    const newTask: Task = {
+      id: Date.now().toString(),        // or nanoid()
+      text: newTitle.trim(),
+      completed: false,
+      starred: false,
+    };
+    setTasks(t => [...t, newTask]);
+    setNewTitle('');
+    setShowPopup(false);
+
+    // TODO: POST /tasks  (newTask)    <-- call your backend here
+  };
+
+const patchTask = (id: string, data: Partial<Task>) => {
+    setTasks(t =>
+      t.map(task => (task.id === id ? { ...task, ...data } : task))
+    );
+
+    // TODO: PATCH /tasks/{id}  (data)  <-- sync this change
+  };
+  
+  //filter para sa starred tasks
+  const visibleTasks =
+    activeTab === 'starred' ? tasks.filter(t => t.starred) : tasks;
+
+  const removeTask = (id: string) => {
+    setTasks(t => t.filter(task => task.id !== id));
+
+    // TODO: DELETE /tasks/{id}
+  };
+
+  
+
 
     return(
         <div className="bg-white flex items-center justify-center inset-0 fixed overflow-hidden">
@@ -77,45 +129,291 @@ function ToDoList()
               <div data-layer="Rectangle 30" className="Rectangle30 lg:w-80 h-full left-[-5px] top-[80px] absolute bg-[#223F61]">
                 
                 <div data-layer="buttons" className="p-10 flex flex-col space-y-5">
-                    <div data-layer="Rectangle 32" className="Rectangle32 w-38 h-15 left-[23px] bg-[#E68C3A] rounded-[30px] flex items-center px-3 gap-2">
-                      <img src="/plus.png" className="star lg:w-10 lg:h-10"/>
-                      <p data-layer="Create" className="Create lg:left-[60px] lg:top-[15px] text-center justify-start text-white text-xl font-normal font-['Poppins']">Create</p>
-                    </div>
+                    {/* create button */}
+                    <button data-layer="Rectangle 32"
+                    onClick={() => setShowPopup(true)}
+                    className="Rectangle32 group relative inline-flex items-center gap-2 cursor-pointer w-38 h-15 px-3 rounded-[30px]
 
-                    <div data-layer="Rectangle 33" className="Rectangle33 lg:w-65 h-10 lg:left-[23px] bg-white rounded-[30px] flex items-center px-8 gap-2">
-                      <img src="/circle-check.png" className="circle-Checked lg:w-8 lg:h-8" />
-                      <p data-layer="All tasks" className="AllTasks lg:left-[80px] text-center justify-start text-blue-300 text-xl font-normal font-['Poppins']">All tasks</p>
-                    </div>
+                          /* ─── default look ─── */
+                          bg-[#E68C3A] text-white
 
-                    <div data-layer="Rectangle 34" className="Rectangle34 lg:w-65 h-10 lg:left-[23px] bg-orange-400 rounded-[30px] flex items-center px-9 gap-2">
-                      <img src="/star.png" className="circle-Checked lg:w-6 lg:h-6" />
-                      <p data-layer="Starred" className="Starred lg:left-[80px] lg:top-[5px] text-center justify-start text-white text-xl font-normal font-['Poppins']">Starred</p>
-                    </div>
+                          /* ─── press animation ─── */
+                          transition-all duration-100 ease-out
+                          active:scale-95 active:duration-50 active:ease-in
+                          active:bg-white">
+                      <img src="/plus.png" className="star lg:w-10 lg:h-10 pointer-events-none
+                          transition-opacity duration-100 ease-out
+                          group-active:opacity-0"/>
+                      <img src="/plus orange.png" className="star lg:w-10 lg:h-10 absolute left-3 opacity-0 pointer-events-none
+                          transition-opacity duration-100 ease-in
+                          group-active:opacity-100"/>
+                      <span data-layer="Create" className="Create text-xl font-normal font-['Poppins'] select-none pointer-events-none
+                          transition-colors duration-100 ease-out
+                          group-active:text-[#E68C3A]">Create</span>
+                    </button>
+
+                    {/* Popup Modal */}
+                    {showPopup && (
+                      <div className="bgPopup fixed top-20 h-full inset-0 bg-black/30 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 shadow-lg w-[40vw] text-center absolute top-20">
+                          <div className="wrappertext flex flex-row justify-center">
+                              <h2 className="text-lg font-semibold mb-4">Create New Task</h2>
+                              <h1 
+                                  onClick={() => setShowPopup(false)}
+                                  className="text-lg font-semibold mb-4 right-10 absolute cursor-pointer">X</h1>
+                          </div>
+                          
+                          <div className=" p-2 mx-10 my-2 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                              <input
+                                value={newTitle}
+                                onChange={e => setNewTitle(e.target.value)} 
+                                placeholder="Add Title"
+                                className="inputTask w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"/>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-4">
+                            This is where you can add your form or create content.
+                          </p>
+                          <button
+                            onClick={addTask}
+                            className="mt-2 px-4 py-2 bg-[#E68C3A] text-white rounded-[20px] hover:bg-[#d27d2c] transition-colors">
+                            Add Task
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* All Task button */}
+                   <button
+                      onClick={() => setActiveTab('all')}
+                      className={`
+                        group relative inline-flex items-center gap-2 cursor-pointer
+                        lg:w-65 h-10 px-8 rounded-[30px]
+                        transition-all duration-100 ease-out active:scale-95 active:duration-50 active:ease-in
+                        ${activeTab === 'all' ? 'bg-white' : 'bg-[#223F61] text-white'}`}>
+                      {/* unchecked icon */}
+                      <img
+                        src="/circle-check-white.png"
+                        alt=""
+                        className={`
+                          lg:w-8 lg:h-8 pointer-events-none transition-opacity duration-100
+                          ${activeTab === 'all' ? 'opacity-0' : 'opacity-100'}
+                          group-active:opacity-0
+                        `}
+                      />
+                      {/* checked icon */}
+                      <img
+                        src="/circle-check.png"
+                        alt=""
+                        className={`
+                          lg:w-8 lg:h-8 absolute left-8 pointer-events-none transition-opacity duration-100
+                          ${activeTab === 'all' ? 'opacity-100' : 'opacity-0'}
+                          group-active:opacity-100`}/>
+
+                      <span
+                        className={`
+                          text-xl font-normal font-['Poppins'] select-none pointer-events-none
+                          transition-colors duration-100
+                          ${activeTab === 'all' ? 'text-[#94B7EF]' : 'text-white'}
+                          group-active:text-[#94B7EF]'`}>
+                        All tasks
+                      </span>
+                    </button>
+
+                    {/* ───────────── Starred button ───────────── */}
+                    <button
+                      onClick={() => setActiveTab('starred')}
+                      className={`
+                        group relative inline-flex items-center gap-2 cursor-pointer
+                        lg:w-65 h-10 px-9 rounded-[30px]
+                        transition-all duration-100 ease-out active:scale-95 active:duration-50 active:ease-in
+                        ${activeTab === 'starred' ? 'bg-white' : 'bg-[#223F61] text-white'}`}>
+                      {/* empty star */}
+                      <img
+                        src="/star.png"
+                        alt=""
+                        className={`
+                          lg:w-6 lg:h-6 pointer-events-none transition-opacity duration-100
+                          ${activeTab === 'starred' ? 'opacity-0' : 'opacity-100'}
+                          group-active:opacity-0`}/>
+                      {/* filled star */}
+                      <img
+                        src="/star light blue.png"
+                        alt=""
+                        className={`
+                          lg:w-6 lg:h-6 absolute left-9 pointer-events-none transition-opacity duration-100
+                          ${activeTab === 'starred' ? 'opacity-100' : 'opacity-0'}
+                          group-active:opacity-100`}/>
+
+                      <span
+                        className={`
+                          text-xl font-normal font-['Poppins'] select-none pointer-events-none
+                          transition-colors duration-100
+                          ${activeTab === 'starred' ? 'text-[#94B7EF]' : 'text-white'}
+                          group-active:text-[#94B7EF]'`}>
+                        Starred
+                      </span>
+                    </button>
                 </div>
                 
                 <div data-layer="lists" className="flex flex-col space-y-5 px-10">
                   <div data-layer="Line 2" className="Line2 w-65 h-0 outline outline-1 outline-offset-[-0.50px] outline-white"></div>
                     <div data-layer="listbox" className="flex flex-row items-center pl-10 space-x-5">
                       <div data-layer="bullet" className="bullet lg:w-3 lg:h-3  bg-zinc-300 rounded-full" />
-                      <p data-layer="Lists" className="Lists text-center justify-start text-white text-xl font-normal font-['Poppins']">Lists</p>
+                      <p data-layer="Tasks" className="Lists text-center justify-start text-white text-xl font-normal font-['Poppins']">Tasks</p>
                     </div>
                 </div>
 
                 </div>
-              {/* Task/list box rectangle basta kana*/}
-              <div data-layer="Rectangle 31" className="listbox w-[739px] h-96 left-110 top-10 absolute bg-[#223F61] rounded-[30px] absolute relative">
-                    <img src="/dots-vertical.png"className="absolute left-[670px] top-[15px]"/>
-                  <p data-layer="Title" className="Title left-[50px] top-[30px] absolute text-center justify-start text-white text-2xl font-normal font-['Poppins']">Title</p>
-                  <div data-layer="Line 3" className="Line3 w-[688.01px] h-0 left-[30px] top-[70px] absolute outline outline-1 outline-offset-[-0.50px] outline-white"/>
-                  <div data-layer="Add a task button">
-                    <img src="/circle-check-white.png" className="circle-checked-white w-6 h-6 absolute left-[40px] top-[90px] "/>
-                    <p data-layer="Add a task" className="AddATask left-[80px] top-[90px] absolute text-center justify-start text-white text-xl font-normal font-['Poppins']">Add a task</p>
+              {/* Task box rectangle basta kana*/}
+              {activeTab === 'all' && (
+                <div className="relative w-[739px] h-96 bg-[#223F61] rounded-[30px] p-6 listbox mt-10 ml-100">
+                {/* Title */}
+                <p className="text-white text-2xl font-normal font-['Poppins'] mb-2">My Tasks</p>
+                
+                {/* Divider line */}
+                <div className="w-full h-px bg-white my-2" />
+
+                {/* Task Row */}
+                {tasks.map(({ id, text, completed, starred }) => (
+                <div 
+                key={id}
+                className="flex items-center gap-4 mt-6 relative">
+                  <button
+                    type="button"
+                    onClick={() => patchTask(id, { completed: !completed })}                 //flip state on click
+                    className="focus:outline-none select-none">
+                      <img
+                        src="/unchecked.png"
+                        alt="Unchecked circle"
+                        className={`w-6 h-6 transition-opacity
+                                    ${completed ? 'opacity-0' : 'opacity-100'}`}/>
+                      {/* checked circle */}
+                      <img
+                        src="/circle-check-white.png"
+                        alt="Checked circle"
+                        className={`w-6 h-6 absolute left-0 top-0 transition-opacity
+                                    ${completed ? 'opacity-100' : 'opacity-0'}`}/>
+                  </button>
+
+                  <input
+                    value={text}
+                    onChange={e => patchTask(id, { text: e.target.value })}
+                    placeholder="Insert Task"
+                    className=" absolute left-10 text-white text-xl font-normal w-full h-full px-3 bg-transparent
+                              placeholder:text-white/50 lg:text-lg sm:text-sm font-['Montserrat']
+                              rounded-[30px] outline-none"/>
+                  <div className="flex flex-row space-x-10 absolute right-10">
+                      <button
+                        type="button"
+                        onClick={() => patchTask(id, { starred: !starred })}
+                        className="relative w-6 h-6 flex-shrink-0 focus:outline-none cursor-pointer">
+                        {/* Empty star */}
+                        <img
+                          src="/star.png"
+                          alt="Empty star"
+                          className={`w-full h-full transition-opacity
+                                      ${starred ? 'opacity-0' : 'opacity-100'}`}/>
+
+                        {/* Filled star */}
+                        <img
+                          src="/star white filled.png"
+                          alt="Filled star"
+                          className={`w-full h-full absolute left-0 top-0 transition-opacity
+                                      ${starred ? 'opacity-100' : 'opacity-0'}`}/>
+                      </button>
+                      <button 
+                        onClick={() => removeTask(id)}
+                        className="text-lg text-white font-['Poppins'] leading-none">X
+                        
+                      </button>
+                    
                   </div>
-                  <div data-layer="Check List">
-                    <img src="/circle-white.png" className="w-5 h-5 absolute left-[40px] top-[134px]"/>
-                    <p data-layer="Insert task here" className="InsertTextHere left-[80px] top-[130px] absolute text-center justify-start text-white text-xl font-normal font-['Poppins']">Insert Task Here</p>
-                  </div>
+                  
+                </div>
+                ))}
               </div>
+              )}
+              
+                  {/* starred tasks */}
+                  {activeTab === 'starred' && (
+                      <div className="items-center w-[739px] h-96 bg-[#223F61] mt-10 ml-100 text-white rounded-[30px] p-6 ">
+                        <div>
+                           {/* Title */}
+                            <p className="text-white text-2xl font-normal font-['Poppins'] mb-2">Starred Tasks</p>
+                            
+                            {/* Divider line */}
+                            <div className="w-full h-px bg-white my-2" />
+                        </div>
+                    {visibleTasks.length === 0 ? (
+                      <p className="text-center text-white/70">
+                        {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
+                      </p>
+                    ) : (
+                      visibleTasks.map(({ id, text, completed, starred }) => (
+                        <div key={id} className="flex items-center gap-4 mt-4 relative">
+                          {/* ✔ checkbox */}
+                          <button
+                            onClick={() => patchTask(id, { completed: !completed })}
+                            className="relative w-6 h-6 focus:outline-none"
+                          >
+                            <img
+                              src="/unchecked.png"
+                              className={`w-full h-full transition-opacity ${
+                                completed ? 'opacity-0' : 'opacity-100'
+                              }`}
+                              alt=""
+                            />
+                            <img
+                              src="/circle-check-white.png"
+                              className={`w-full h-full absolute inset-0 transition-opacity ${
+                                completed ? 'opacity-100' : 'opacity-0'
+                              }`}
+                              alt=""
+                            />
+                          </button>
+
+                          {/* starred tasks */}
+                          <input
+                            value={text}
+                            onChange={e => patchTask(id, { text: e.target.value })}
+                            placeholder="Insert Task"
+                            className="flex-grow bg-transparent outline-none text-white
+                                      placeholder:text-white/50 text-lg font-['Montserrat']"
+                          />
+
+                          {/* star + delete */}
+                          <div className="flex items-center gap-6">
+                            <button
+                              onClick={() => patchTask(id, { starred: !starred })}
+                              className="relative w-6 h-6 flex-shrink-0 focus:outline-none"
+                            >
+                              <img
+                                src="/star.png"
+                                className={`w-full h-full transition-opacity ${
+                                  starred ? 'opacity-0' : 'opacity-100'
+                                }`}
+                                alt=""
+                              />
+                              <img
+                                src="/star white filled.png"
+                                className={`w-full h-full absolute inset-0 transition-opacity ${
+                                  starred ? 'opacity-100' : 'opacity-0'
+                                }`}
+                                alt=""
+                              />
+                            </button>
+
+                            <button
+                              onClick={() => removeTask(id)}
+                              className="text-lg font-['Poppins'] leading-none cursor-pointer">X
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  )}
+                  
 
             </div>
             {/* Mobile */}

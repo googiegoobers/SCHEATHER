@@ -12,12 +12,9 @@
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.14.2",
     "@lottiefiles/react-lottie-player": "^3.6.0",
-
-    "@react-three/drei": "^10.3.0",
-    "@react-three/fiber": "^9.1.4",
-
+    "@react-three/drei": "^10.4.4",
+    "@react-three/fiber": "^9.2.0",
     "@types/jquery": "^3.5.32",
-
     "@types/moment": "^2.11.29",
     "date-fns": "^4.1.0",
     "firebase": "^11.9.1",

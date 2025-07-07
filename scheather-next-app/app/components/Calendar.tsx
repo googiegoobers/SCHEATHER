@@ -34,6 +34,9 @@ const CalendarComponent: React.FC = () => {
     end: Date;
   } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(
+    null
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -98,6 +101,7 @@ const CalendarComponent: React.FC = () => {
             setShowForm(true);
           }
         }}
+        onSelectEvent={(event) => setSelectedEvent(event)}
         components={{
           toolbar: (props) => <CustomNavCal {...props} />,
         }}
@@ -131,6 +135,26 @@ const CalendarComponent: React.FC = () => {
               />
             </div>
           </OutsideClickHandler>
+        </div>
+      )}
+
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-2xl font-bold">{selectedEvent.title}</h2>
+            <p>
+              Start: {selectedEvent.start.toString()}
+              <br />
+              End: {selectedEvent.end.toString()}
+            </p>
+            {/* Add more event details here */}
+            <button
+              onClick={() => setSelectedEvent(null)}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

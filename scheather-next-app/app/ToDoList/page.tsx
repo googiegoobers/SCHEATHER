@@ -89,375 +89,392 @@ const patchTask = (id: string, data: Partial<Task>) => {
 
 
     return(
-        <div className="bg-white flex items-center justify-center inset-0 fixed overflow-hidden">
-            {/* Desktop */}
-            <div data-layer="To-Do List" className="ToDoListDesktop hidden sm:block w-full h-full relative bg-white overflow-hidden">
+        <div className="bg-white flex items-center justify-center inset-0 fixed overflow-y-auto">
+            {/* DESKTOP*/}
+            <div
+              data-layer="To-Do List"
+              className="ToDoListDesktop hidden sm:block top-30 w-full min-h-screen relative bg-white ">
+              {/* ─── header bar ─── */}
               <div
                 data-layer="Frame 63"
-                className="relative w-full h-20 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.30)] overflow-hidden">
-                {/* Background overlay */}
-                <div className="absolute inset-0 lg:h-20 opacity-20 bg-zinc-300" />
+                className="fixed top-0 left-0 z-80 w-full h-20 bg-white overflow-hidden shadow-[0_4px_8px_rgba(0,0,0,0.30)]">
+                <div className="absolute init-0 lg:h-20 bg-zinc-300 " />
 
-                {/* Back button and title */}
+
                 <Link href="/dashboard">
-                  <div className="absolute top-5 left-14 flex items-center space-x-3 cursor-pointer">
-                    <img src="left arrow.svg" className="w-8 h-8" alt="Back" />
-                    <span className="text-black text-3xl font-normal font-['Cedarville_Cursive']">
+                  <div className="absolute top-5 left-14 flex cursor-pointer items-center space-x-3">
+                    <img src="left arrow.svg" className="h-8 w-8" alt="Back" />
+                    <span className="font-['Cedarville_Cursive'] text-3xl font-normal text-black">
                       Scheather
                     </span>
                   </div>
                 </Link>
 
-                {/* Notifications icon */}
+                {/* notifications icon */}
                 <div
                   data-layer="notifications"
-                  className="absolute top-[15px] left-[1175px] w-16 h-16 overflow-hidden">
+                  className="absolute top-[15px] left-[1175px] h-16 w-16 overflow-hidden"
+                >
                   <div
                     data-layer="icon"
-                    className="absolute top-[5.42px] left-[10.83px] w-11 h-14 bg-Schemes-On-Surface"/>
+                    className="absolute left-[10.83px] top-[5.42px] h-14 w-11 bg-Schemes-On-Surface"
+                  />
                 </div>
 
-                {/* Profile and user info */}
+                {/* profile */}
                 <div className="absolute top-5 right-20 flex items-center space-x-4">
                   <img
                     src={avatar}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-[#e68c3a]"
+                    className="h-10 w-10 cursor-pointer rounded-full object-cover border-2 border-[#e68c3a]"
                   />
-                  <div className="hidden sm:flex flex-col min-w-0 truncate">
-                    <div className="text-black text-sm font-semibold truncate">{name}</div>
-                    <div className="text-black text-xs truncate">{email}</div>
+                  <div className="hidden min-w-0 flex-col truncate sm:flex">
+                    <div className="truncate text-sm font-semibold text-black">{name}</div>
+                    <div className="truncate text-xs text-black">{email}</div>
                   </div>
-
+                
                 </div>
               </div>
-              {/*side bar */}
-              <div data-layer="Rectangle 30" className="Rectangle30 lg:w-80 h-full left-[-5px] top-[80px] absolute bg-[#223F61]">
-                
+
+              {/* ─── sidebar ─── */}
+              <div
+                data-layer="Rectangle 30"
+                className="fixed left-[-5px] top-[80px] h-full bg-[#223F61] lg:w-80"
+              >
+                {/* all sidebar buttons */}
                 <div data-layer="buttons" className="p-10 flex flex-col space-y-5">
-                    {/* create button */}
-                    <button data-layer="Rectangle 32"
-                    onClick={() => setShowPopup(true)}
-                    className="Rectangle32 group relative inline-flex items-center gap-2 cursor-pointer w-38 h-15 px-3 rounded-[30px]
-
-                          /* ─── default look ─── */
-                          bg-[#E68C3A] text-white
-
-                          /* ─── press animation ─── */
-                          transition-all duration-100 ease-out
-                          active:scale-95 active:duration-50 active:ease-in
-                          active:bg-white">
-                      <img src="/plus.png" className="star lg:w-10 lg:h-10 pointer-events-none
-                          transition-opacity duration-100 ease-out
-                          group-active:opacity-0"/>
-                      <img src="/plus orange.png" className="star lg:w-10 lg:h-10 absolute left-3 opacity-0 pointer-events-none
-                          transition-opacity duration-100 ease-in
-                          group-active:opacity-100"/>
-                      <span data-layer="Create" className="Create text-xl font-normal font-['Poppins'] select-none pointer-events-none
-                          transition-colors duration-100 ease-out
-                          group-active:text-[#E68C3A]">Create</span>
-                    </button>
-
-                    {/* Popup Modal */}
-                    {showPopup && (
-                      <div className="bgPopup fixed top-20 h-full inset-0 bg-black/30 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 shadow-lg w-[40vw] text-center absolute top-20">
-                          <div className="wrappertext flex flex-row justify-center">
-                              <h2 className="text-lg font-semibold mb-4">Create New Task</h2>
-                              <h1 
-                                  onClick={() => setShowPopup(false)}
-                                  className="text-lg font-semibold mb-4 right-10 absolute cursor-pointer">X</h1>
-                          </div>
-                          
-                          <div className=" p-2 mx-10 my-2 bg-stone-100 rounded-[30px] outline outline-2 outline-offset-[-2px] outline-zinc-600">
-                              <input
-                                value={newTitle}
-                                onChange={e => setNewTitle(e.target.value)} 
-                                placeholder="Add Title"
-                                className="inputTask w-full h-full px-6 bg-transparent text-stone-900 placeholder:text-stone-900/50 lg:text-lg sm:text-sm font-normal font-['Montserrat'] rounded-[30px] outline-none"/>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-4">
-                            This is where you can add your form or create content.
-                          </p>
-                          <button
-                            onClick={addTask}
-                            className="mt-2 px-4 py-2 bg-[#E68C3A] text-white rounded-[20px] hover:bg-[#d27d2c] transition-colors">
-                            Add Task
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* All Task button */}
-                   <button
-                      onClick={() => setActiveTab('all')}
-                      className={`
-                        group relative inline-flex items-center gap-2 cursor-pointer
-                        lg:w-65 h-10 px-8 rounded-[30px]
-                        transition-all duration-100 ease-out active:scale-95 active:duration-50 active:ease-in
-                        ${activeTab === 'all' ? 'bg-white' : 'bg-[#223F61] text-white'}`}>
-                      {/* unchecked icon */}
-                      <img
-                        src="/circle-check-white.png"
-                        alt=""
-                        className={`
-                          lg:w-8 lg:h-8 pointer-events-none transition-opacity duration-100
-                          ${activeTab === 'all' ? 'opacity-0' : 'opacity-100'}
-                          group-active:opacity-0
-                        `}
-                      />
-                      {/* checked icon */}
-                      <img
-                        src="/circle-check.png"
-                        alt=""
-                        className={`
-                          lg:w-8 lg:h-8 absolute left-8 pointer-events-none transition-opacity duration-100
-                          ${activeTab === 'all' ? 'opacity-100' : 'opacity-0'}
-                          group-active:opacity-100`}/>
-
-                      <span
-                        className={`
-                          text-xl font-normal font-['Poppins'] select-none pointer-events-none
-                          transition-colors duration-100
-                          ${activeTab === 'all' ? 'text-[#94B7EF]' : 'text-white'}
-                          group-active:text-[#94B7EF]'`}>
-                        All tasks
-                      </span>
-                    </button>
-
-                    {/* Starred button */}
-                    <button
-                      onClick={() => setActiveTab('starred')}
-                      className={`
-                        group relative inline-flex items-center gap-2 cursor-pointer
-                        lg:w-65 h-10 px-9 rounded-[30px]
-                        transition-all duration-100 ease-out active:scale-95 active:duration-50 active:ease-in
-                        ${activeTab === 'starred' ? 'bg-white' : 'bg-[#223F61] text-white'}`}>
-                      {/* empty star */}
-                      <img
-                        src="/star.png"
-                        alt=""
-                        className={`
-                          lg:w-6 lg:h-6 pointer-events-none transition-opacity duration-100
-                          ${activeTab === 'starred' ? 'opacity-0' : 'opacity-100'}
-                          group-active:opacity-0`}/>
-                      {/* filled star */}
-                      <img
-                        src="/star light blue.png"
-                        alt=""
-                        className={`
-                          lg:w-6 lg:h-6 absolute left-9 pointer-events-none transition-opacity duration-100
-                          ${activeTab === 'starred' ? 'opacity-100' : 'opacity-0'}
-                          group-active:opacity-100`}/>
-
-                      <span
-                        className={`
-                          text-xl font-normal font-['Poppins'] select-none pointer-events-none
-                          transition-colors duration-100
-                          ${activeTab === 'starred' ? 'text-[#94B7EF]' : 'text-white'}
-                          group-active:text-[#94B7EF]'`}>
-                        Starred
-                      </span>
-                    </button>
-                </div>
-                
-                <div data-layer="lists" className="flex flex-col space-y-5 px-10">
-                  <div data-layer="Line 2" className="Line2 w-65 h-0 outline outline-1 outline-offset-[-0.50px] outline-white"></div>
-                    <div data-layer="listbox" className="flex flex-row items-center pl-10 space-x-5">
-                      <div data-layer="bullet" className="bullet lg:w-3 lg:h-3  bg-zinc-300 rounded-full" />
-                      <p data-layer="Tasks" className="Lists text-center justify-start text-white text-xl font-normal font-['Poppins']">Tasks</p>
-                    </div>
-                </div>
-
-                </div>
-              {/* Task box rectangle basta kana*/}
-              {activeTab === 'all' && (
-                <div className="relative w-[739px] h-96 bg-[#223F61] rounded-[30px] p-6 listbox mt-10 ml-100">
-                {/* Title */}
-                <p className="text-white text-2xl font-normal font-['Poppins'] mb-2">My Tasks</p>
-                
-                {/* Divider line */}
-                <div className="w-full h-px bg-white my-2" />
-
-                {/* Task Row */}
-                {tasks.map(({ id, text, completed, starred }) => (
-                <div 
-                key={id}
-                className="flex items-center gap-4 mt-6 relative">
+                  {/* create */}
                   <button
-                    type="button"
-                    onClick={() => patchTask(id, { completed: !completed })}                 //flip state on click
-                    className="focus:outline-none select-none">
-                      <img
-                        src="/unchecked.png"
-                        alt="Unchecked circle"
-                        className={`w-6 h-6 transition-opacity
-                                    ${completed ? 'opacity-0' : 'opacity-100'}`}/>
-                      {/* checked circle */}
-                      <img
-                        src="/circle-check-white.png"
-                        alt="Checked circle"
-                        className={`w-6 h-6 absolute left-0 top-0 transition-opacity
-                                    ${completed ? 'opacity-100' : 'opacity-0'}`}/>
+                    onClick={() => setShowPopup(true)}
+                    className="group relative inline-flex h-15 w-38 items-center gap-2 cursor-pointer rounded-[30px] bg-[#E68C3A] px-3 text-white transition-all duration-100 active:scale-95 active:bg-white"
+                  >
+                    <img
+                      src="/plus.png"
+                      className="pointer-events-none h-10 w-10 transition-opacity duration-100 group-active:opacity-0 lg:w-10 lg:h-10"
+                    />
+                    <img
+                      src="/plus orange.png"
+                      className="absolute left-3 h-10 w-10 opacity-0 pointer-events-none transition-opacity duration-100 group-active:opacity-100 lg:w-10 lg:h-10"
+                    />
+                    <span className="font-['Poppins'] text-xl font-normal transition-colors duration-100 group-active:text-[#E68C3A]">
+                      Create
+                    </span>
                   </button>
 
-                  <input
-                    value={text}
-                    onChange={e => patchTask(id, { text: e.target.value })}
-                    placeholder="Insert Task"
-                    className=" absolute left-10 text-white text-xl font-normal w-full h-full px-3 bg-transparent
-                              placeholder:text-white/50 lg:text-lg sm:text-sm font-['Montserrat']
-                              rounded-[30px] outline-none"/>
-                  <div className="flex flex-row space-x-10 absolute right-10">
+                  {/* all‑tasks */}
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`group relative inline-flex h-10 items-center gap-2 rounded-[30px] px-8 lg:w-65 transition-all duration-100 active:scale-95 ${
+                      activeTab === 'all' ? 'bg-white' : 'bg-[#223F61] text-white'
+                    }`}
+                  >
+                    <img
+                      src="/circle-check-white.png"
+                      className={`pointer-events-none h-8 w-8 transition-opacity duration-100 ${
+                        activeTab === 'all' ? 'opacity-0' : 'opacity-100'
+                      } group-active:opacity-0`}
+                    />
+                    <img
+                      src="/circle-check.png"
+                      className={`absolute left-8 h-8 w-8 pointer-events-none transition-opacity duration-100 ${
+                        activeTab === 'all' ? 'opacity-100' : 'opacity-0'
+                      } group-active:opacity-100`}
+                    />
+                    <span
+                      className={`font-['Poppins'] text-xl font-normal transition-colors duration-100 ${
+                        activeTab === 'all' ? 'text-[#94B7EF]' : 'text-white'
+                      } group-active:text-[#94B7EF]`}
+                    >
+                      All tasks
+                    </span>
+                  </button>
+
+                  {/* starred */}
+                  <button
+                    onClick={() => setActiveTab('starred')}
+                    className={`group relative inline-flex h-10 items-center gap-2 rounded-[30px] px-9 lg:w-65 transition-all duration-100 active:scale-95 ${
+                      activeTab === 'starred' ? 'bg-white' : 'bg-[#223F61] text-white'
+                    }`}
+                  >
+                    <img
+                      src="/star.png"
+                      className={`h-6 w-6 pointer-events-none transition-opacity duration-100 ${
+                        activeTab === 'starred' ? 'opacity-0' : 'opacity-100'
+                      } group-active:opacity-0`}
+                    />
+                    <img
+                      src="/star light blue.png"
+                      className={`absolute left-9 h-6 w-6 pointer-events-none transition-opacity duration-100 ${
+                        activeTab === 'starred' ? 'opacity-100' : 'opacity-0'
+                      } group-active:opacity-100`}
+                    />
+                    <span
+                      className={`font-['Poppins'] text-xl font-normal transition-colors duration-100 ${
+                        activeTab === 'starred' ? 'text-[#94B7EF]' : 'text-white'
+                      } group-active:text-[#94B7EF]`}
+                    >
+                      Starred
+                    </span>
+                  </button>
+                </div>
+
+                {/* “Tasks” label under the buttons */}
+                <div data-layer="lists" className="flex flex-col space-y-5 px-10">
+                  <div className="w-65 outline-white outline outline-1 outline-offset-[-0.5px]" />
+                  <div className="flex flex-row items-center pl-10 space-x-5">
+                    <div className="h-3 w-3 rounded-full bg-zinc-300" />
+                    <p className="font-['Poppins'] text-xl font-normal text-white">Tasks</p>
+                  </div>
+                </div>
+              </div>
+
+            {/* ─── TASK PANEL: BOTH TABS ─── */}
+            <section className="ml-100 mt-60 w-[65%] rounded-[30px] bg-[#223F61] p-4 mb-24">
+              <p className="text-white text-xl font-['Poppins']">
+                {activeTab === 'starred' ? 'Starred Tasks' : 'My Tasks'}
+              </p>
+              <div className="my-2 h-px w-full bg-white/50" />
+
+              {visibleTasks.length === 0 ? (
+                <p className="py-8 text-center text-white/70">
+                  {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
+                </p>
+              ) : (
+                visibleTasks.map(({ id, text, completed, starred }) => (
+                  <div key={id} className="flex items-center gap-3 py-2">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => patchTask(id, { completed: !completed })}
+                      className="relative h-5 w-5 focus:outline-none"
+                    >
+                      <img
+                        src="/unchecked.png"
+                        className={`h-full w-full transition-opacity ${completed ? 'opacity-0' : ''}`}
+                        alt=""
+                      />
+                      <img
+                        src="/circle-check-white.png"
+                        className={`absolute inset-0 h-full w-full transition-opacity ${
+                          completed ? '' : 'opacity-0'
+                        }`}
+                        alt=""
+                      />
+                    </button>
+
+                    {/* Task Text Input */}
+                    <input
+                      value={text}
+                      onChange={(e) => patchTask(id, { text: e.target.value })}
+                      placeholder="Insert Task"
+                      className="flex-grow bg-transparent text-base text-white placeholder:text-white/50 outline-none font-['Montserrat']"
+                    />
+
+                    {/* Star & Delete Buttons */}
+                    <div className="flex items-center gap-4">
                       <button
-                        type="button"
+                      
                         onClick={() => patchTask(id, { starred: !starred })}
-                        className="relative w-6 h-6 flex-shrink-0 focus:outline-none cursor-pointer">
-                        {/* Empty star */}
+                        className="relative h-5 w-5">
                         <img
                           src="/star.png"
-                          alt="Empty star"
-                          className={`w-full h-full transition-opacity
-                                      ${starred ? 'opacity-0' : 'opacity-100'}`}/>
-
-                        {/* Filled star */}
+                          className={`h-full w-full ${starred ? 'opacity-0' : ''}`}
+                          alt=""
+                        />
                         <img
                           src="/star white filled.png"
-                          alt="Filled star"
-                          className={`w-full h-full absolute left-0 top-0 transition-opacity
-                                      ${starred ? 'opacity-100' : 'opacity-0'}`}/>
+                          className={`absolute inset-0 h-full w-full ${starred ? '' : 'opacity-0'}`}
+                          alt=""
+                        />
                       </button>
-                      <button 
+
+                      <button
                         onClick={() => removeTask(id)}
-                        className="text-lg text-white font-['Poppins'] leading-none">X
-                        
+                        className="text-base text-white"
+                      >
+                        X
                       </button>
-                    
+                    </div>
                   </div>
-                  
+                ))
+              )}
+            </section>
+
+            </div>
+
+              {/* Popup Modal */}
+              {showPopup && (
+                /* ───── overlay ───── */
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+                {/* ───── dialog ───── */}
+                <div
+                  className="
+                    relative rounded-lg bg-white p-6 shadow-lg
+                    w-[90vw]  max-w-sm
+                    sm:w-[75vw] sm:max-w-md
+                    md:w-[60vw]
+                    lg:w-[40vw]
+                  "
+                >
+                  {/* close “X” */}
+                  <button
+                    onClick={() => setShowPopup(false)}
+                    className="absolute right-4 top-4 text-xl font-bold text-gray-500 hover:text-gray-700"
+                  >
+                    ×
+                  </button>
+
+                  {/* title */}
+                  <h2 className="mb-4 text-lg font-semibold text-center">Create New Task</h2>
+
+                  {/* input */}
+                  <div className="mx-auto mb-4 w-full rounded-[30px] bg-stone-100 px-2 outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                    <input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="Add Title"
+                      className="w-full rounded-[30px] bg-transparent px-2 py-2 font-['Montserrat'] text-stone-900 placeholder:text-stone-900/50 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* hint text */}
+                  <div className="flex justify-center">
+                    <p className="mb-4 text-sm text-gray-600 text-center">
+                      This is where you can add your Tasks.
+                    </p>
+                  </div>
+
+                  {/* primary action */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={addTask}
+                      className="rounded-[20px] bg-[#E68C3A] px-4 py-2 text-white transition-colors hover:bg-[#d27d2c]"
+                    >
+                      Add Task
+                    </button>
+                  </div>
                 </div>
-                ))}
+              
               </div>
               )}
-              
-                  {/* starred tasks */}
-                  {activeTab === 'starred' && (
-                      <div className="items-center w-[739px] h-96 bg-[#223F61] mt-10 ml-100 text-white rounded-[30px] p-6 ">
-                        <div>
-                           {/* Title */}
-                            <p className="text-white text-2xl font-normal font-['Poppins'] mb-2">Starred Tasks</p>
-                            
-                            {/* Divider line */}
-                            <div className="w-full h-px bg-white my-2" />
-                        </div>
-                    {visibleTasks.length === 0 ? (
-                      <p className="text-center text-white/70">
-                        {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
-                      </p>
-                    ) : (
-                      visibleTasks.map(({ id, text, completed, starred }) => (
-                        <div key={id} className="flex items-center gap-4 mt-4 relative">
-                          {/* checkbox */}
-                          <button
-                            onClick={() => patchTask(id, { completed: !completed })}
-                            className="relative w-6 h-6 focus:outline-none"
-                          >
-                            <img
-                              src="/unchecked.png"
-                              className={`w-full h-full transition-opacity ${
-                                completed ? 'opacity-0' : 'opacity-100'
-                              }`}
-                              alt=""
-                            />
-                            <img
-                              src="/circle-check-white.png"
-                              className={`w-full h-full absolute inset-0 transition-opacity ${
-                                completed ? 'opacity-100' : 'opacity-0'
-                              }`}
-                              alt=""
-                            />
-                          </button>
 
-                          {/* starred tasks */}
-                          <input
-                            value={text}
-                            onChange={e => patchTask(id, { text: e.target.value })}
-                            placeholder="Insert Task"
-                            className="flex-grow bg-transparent outline-none text-white
-                                      placeholder:text-white/50 text-lg font-['Montserrat']"
-                          />
-
-                          {/* star ug delete */}
-                          <div className="flex items-center gap-6">
-                            <button
-                              onClick={() => patchTask(id, { starred: !starred })}
-                              className="relative w-6 h-6 flex-shrink-0 focus:outline-none"
-                            >
-                              <img
-                                src="/star.png"
-                                className={`w-full h-full transition-opacity ${
-                                  starred ? 'opacity-0' : 'opacity-100'
-                                }`}
-                                alt=""
-                              />
-                              <img
-                                src="/star white filled.png"
-                                className={`w-full h-full absolute inset-0 transition-opacity ${
-                                  starred ? 'opacity-100' : 'opacity-0'
-                                }`}
-                                alt=""
-                              />
-                            </button>
-
-                            <button
-                              onClick={() => removeTask(id)}
-                              className="text-lg font-['Poppins'] leading-none cursor-pointer">X
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  )}
-                  
-
-            </div>
-            {/* Mobile */}
-            <div data-layer="To-Do List" className="ToDoList block lg:hidden w-96 h-[812px] relative bg-white overflow-hidden">
+           {/* Mobile */}
+            <div className="block lg:hidden w-full min-h-screen bg-white overflow-y-auto">
               {/* Header */}
-              <div className="Header z-50 flex top-0 p-5 items-center">
-                <Link href="/dashboard">
-                  <img src="/left arrow.svg" className=" mt-5 ml-5 mr-24"/>
-                </Link>
-                    <p data-layer="Tasks" className="Tasks text-center pt-6 text-[#223F61] text-2xl font-normal font-['Poppins']">Tasks</p>
-                    <div data-layer="navigations" className="flex flex-row justify-center items-center">
-                        <img src="/star filled.png" className="left-[50px] top-[115px] absolute"/>
-                        <p data-layer="My Tasks" className="MyTasks w-20 h-7 left-[126px] top-[113px] absolute text-center justify-start text-blue-300 text-base font-normal font-['Poppins']">My Tasks</p>
-                        <img src="/plus blue.png" className="left-[258px] top-[120px] absolute"/>
-                        <p data-layer="Add Lists" className="AddLists w-20 h-7 left-[271px] top-[116px] absolute text-center justify-start text-[#223F61] text-base font-normal font-['Poppins']">Add Lists</p>
-                    </div>
-              </div>
-              
-              {/* Frame sa header */}
-              <div data-layer="Frame 63" className="absolute w-96 h-36 left-0 top-0 shadow-[0px_4px_8px_rgba(0,0,0,0.30)] overflow-hidden pointer-events-none" />
-              <div data-layer="Frame 64" className="Frame64 z-10 w-full p-2.5 left-[-62px] top-[-10px] absolute inline-flex flex-col justify-start items-start gap-2.5" />
-              <div data-layer="Rectangle 29" className="Rectangle29 z-10 self-stretch h-36 opacity-20 bg-zinc-300" />
-
-              {/* Task box chuchu */}
-              <div data-layer="Rectangle 31" className="Rectangle31 w-72 h-72 left-[12vw] top-[22vh] flex absolute rounded-[30px] bg-[#223F61]">
-                  <p data-layer="Title" className="Title left-8 top-4 absolute text-center justify-start text-white text-xl font-normal font-['Poppins']">Title</p>
-                  <img src="/dots-vertical.png" className="w-6 h-6 top-5 right-6 absolute"/>
-                  <div data-layer="Line 3" className="Line3 w-65 h-0 left-3 top-13 absolute outline outline-1 outline-offset-[-0.50px] outline-white"></div>
-                  <div data-layer="add task button" className=" p-6 flex flex-row space-x-4 top-10 absolute">
-                    <div data-layer="Ellipse 43" className="Ellipse43 w-5 h-5 rounded-full border-[1.50px] border-white" />
-                    <p data-layer="Insert Task Here" className="InsertTaskHere text-center justify-start text-white text-base font-normal font-['Poppins']">Insert Task Here</p>
-                  </div>
-              </div>
-
-                <div data-layer="Rectangle 54" className="Rectangle54 w-12 h-12 left-[297px] top-[728px] absolute bg-[#E68C3A] rounded-2xl">
-                    <img src="/plus.png" />
+              <header className="flex flex-col px-6 pt-6 space-y-3">
+                {/* title */}
+                <div className="flex items-center m-5 space-x-4">
+                  <Link href="/dashboard">
+                    <img src="/left arrow.svg" className="w-6 h-6" alt="Back" />
+                  </Link>
+                  <p className="text-[#223F61] ml-20 text-2xl font-normal font-['Poppins']">
+                    Tasks
+                  </p>
                 </div>
+
+                {/* starred ug My Tasks */}
+                <div className="flex items-center justify-center space-x-20">
+                  <button
+                    onClick={() => setActiveTab('starred')}
+                    className="relative w-5 h-5 focus:outline-none"
+                  >
+                    <img
+                      src="/star filled.png"
+                      alt="star"
+                      className={`w-full h-full transition-opacity duration-150
+                                  ${activeTab === 'starred' ? 'opacity-0' : 'opacity-100'}`}
+                    />
+                    <img
+                      src="/star filled light blue.png"
+                      alt="star active"
+                      className={`absolute inset-0 w-full h-full transition-opacity duration-150
+                                  ${activeTab === 'starred' ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`
+                      text-base font-normal font-['Poppins']
+                      transition-colors duration-150
+                      ${activeTab === 'all' ? 'text-blue-300' : 'text-[#223F61]'}`}>
+                    My Tasks
+                  </button>
+                </div>
+              </header>
+
+              {/* Divider shadow */}
+              <div className="w-full h-4 shadow-[0_4px_8px_-4px_rgba(0,0,0,0.30)]" />
+
+              {/* Task box */}
+              <section className="mx-auto mt-6 w-[90%] rounded-[30px] bg-[#223F61] p-4 mb-24">
+                <p className="text-white text-xl font-['Poppins']">
+                  {activeTab === 'starred' ? 'Starred Tasks' : 'My Tasks'}
+                </p>
+                <div className="h-px w-full bg-white/50 my-2" />
+
+                {visibleTasks.length === 0 ? (
+                  <p className="text-white/70 text-center py-8">
+                    {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
+                  </p>
+                ) : (
+                  visibleTasks.map(({ id, text, completed, starred }) => (
+                    <div key={id} className="flex items-center gap-3 py-2">
+                      <button
+                        onClick={() => patchTask(id, { completed: !completed })}
+                        className="relative w-5 h-5 focus:outline-none"
+                      >
+                        <img
+                          src="/unchecked.png"
+                          className={`w-full h-full transition-opacity ${completed ? 'opacity-0' : ''}`}
+                        />
+                        <img
+                          src="/circle-check-white.png"
+                          className={`absolute inset-0 w-full h-full transition-opacity ${completed ? '' : 'opacity-0'}`}
+                        />
+                      </button>
+
+                      <input
+                        value={text}
+                        onChange={e => patchTask(id, { text: e.target.value })}
+                        placeholder="Insert Task"
+                        className="flex-grow bg-transparent outline-none text-white placeholder:text-white/50 text-base font-['Montserrat']"
+                      />
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => patchTask(id, { starred: !starred })}
+                          className="relative w-5 h-5"
+                        >
+                          <img
+                            src="/star.png"
+                            className={`w-full h-full ${starred ? 'opacity-0' : ''}`}
+                          />
+                          <img
+                            src="/star white filled.png"
+                            className={`absolute inset-0 w-full h-full ${starred ? '' : 'opacity-0'}`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => removeTask(id)}
+                          className="text-white text-base"
+                        >
+                          X
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </section>
+
+              {/* floating “add” btn */}
+              <button
+                onClick={() => setShowPopup(true)}
+                className="fixed bottom-6 right-6 w-12 h-12 bg-[#E68C3A] rounded-2xl flex items-center justify-center shadow-lg active:scale-95"
+              >
+                <img src="/plus.png" />
+              </button>
             </div>
+
         </div>
     );
 };

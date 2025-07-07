@@ -604,10 +604,10 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <div className="label flex flex-row justify-between pl-4 pr-4 border-b p-2">
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Invite List
+                  Participant List
                 </div>
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Pay
+                  To Pay
                 </div>
               </div>
               <div className="content p-2 border-b">

@@ -85,6 +85,19 @@ const CalendarComponent: React.FC = () => {
     setShowForm(true);
   };
 
+  // to get the correct date start on clicking or making the event
+  function toLocalDateTimeInputValue(date: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    const yyyy = date.getFullYear();
+    const MM = pad(date.getMonth() + 1);
+    const dd = pad(date.getDate());
+    const hh = pad(date.getHours());
+    const mm = pad(date.getMinutes());
+
+    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+  }
+
   return (
     <div>
       <Calendar
@@ -118,8 +131,8 @@ const CalendarComponent: React.FC = () => {
           >
             <div className="relative rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
               <EventForm
-                start={selectedSlot.start.toISOString().slice(0, 16)}
-                end={selectedSlot.end.toISOString().slice(0, 16)}
+                start={toLocalDateTimeInputValue(selectedSlot.start)}
+                end={toLocalDateTimeInputValue(selectedSlot.end)}
                 onClose={() => setShowForm(false)}
                 onEventCreated={(newEvt) =>
                   setEvents((prev) => [
@@ -138,6 +151,7 @@ const CalendarComponent: React.FC = () => {
         </div>
       )}
 
+      {/* clicking the event */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg">

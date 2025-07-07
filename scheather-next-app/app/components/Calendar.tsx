@@ -52,21 +52,35 @@ const CalendarComponent: React.FC = () => {
 
       try {
         const eventsCollection = collection(db, "events");
-        const q = query(
-          eventsCollection,
-          where("createdBy", "==", currentUser.uid)
-        );
+        const snapshot = await getDocs(eventsCollection);
 
-        const snapshot = await getDocs(q);
-        const eventsData = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title,
-            start: new Date(data.start?.toDate?.() || data.start),
-            end: new Date(data.end?.toDate?.() || data.end),
-          };
-        });
+        const eventsData = snapshot.docs
+          .map((doc) => {
+            const data = doc.data();
+            const inviteList = data.inviteList || [];
+
+            const isAcceptedInvite = inviteList.some(
+              (invite: any) =>
+                invite.uid === currentUser.uid && invite.status === "accepted"
+            );
+
+            const isCreator = data.createdBy === currentUser.uid;
+
+            if (!isCreator && !isAcceptedInvite) return null;
+
+            return {
+              id: doc.id,
+              title: data.title,
+              start: new Date(data.start?.toDate?.() || data.start),
+              end: new Date(data.end?.toDate?.() || data.end),
+            };
+          })
+          .filter(
+            (
+              event
+            ): event is { id: string; title: string; start: Date; end: Date } =>
+              event !== null
+          );
 
         setEvents(eventsData);
       } catch (error) {

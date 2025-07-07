@@ -83,6 +83,18 @@ export default function Home() {
 
   return (
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag("js", new Date());
+      
+                gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       {/*Inside the Container for Desktop*/}
       <div className="hidden lg:flex flex-1 justify-center items-center">
         {/* Header*/}

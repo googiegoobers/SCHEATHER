@@ -17,6 +17,7 @@ import {
   where,
   doc,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm";
@@ -65,6 +66,7 @@ const getStatusClass = (status: string = "") => {
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
+   const [deleting, setDeleting] = useState(false);
 
   /* UI state */
   const [showForm, setShowForm] = useState(false);
@@ -72,8 +74,7 @@ const CalendarComponent: React.FC = () => {
     useState<{ start: Date; end: Date } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
-  const [selectedEvent, setSelectedEvent] =
-    useState<FirestoreEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(null);
 
   /* ---------- Auth listener ---------- */
   useEffect(() => {
@@ -159,7 +160,21 @@ const CalendarComponent: React.FC = () => {
   return local.toISOString().slice(0, 16);
 }
 
-  /* ---------- Render ---------- */
+// Delete event handler
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent?.id) return;
+    setDeleting(true);
+    try {
+      await deleteDoc(doc(db, "events", selectedEvent.id));
+      setEvents((prev) => prev.filter((evt) => evt.id !== selectedEvent.id));
+      setSelectedEvent(null);
+    } catch (err) {
+      alert("Failed to delete event.");
+      console.error(err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div>
@@ -213,10 +228,14 @@ const CalendarComponent: React.FC = () => {
           <div className="bg-white p-6 rounded-[30px] shadow-lg max-w-xl">
             {/* header buttons */}
             <div className="flex ml-90 gap-4 mb-4">
-              <button className="buttonsPencil rounded-full p-1 hover:bg-black/10">
+              {/*<button className="buttonsPencil rounded-full p-1 hover:bg-black/10">
                 <img src="/pencil.png" className="w-6 h-6" />
-              </button>
-              <button className="buttonsTrash rounded-full p-1 hover:bg-black/10">
+              </button>}*/}
+              <button className="buttonsTrash rounded-full p-1 hover:bg-black/10"
+                onClick={handleDeleteEvent}
+                disabled={deleting}
+                title="Delete event"
+              >
                 <img src="/trash.png" className="w-6 h-6" />
               </button>
               <button

@@ -245,7 +245,7 @@ const EventForm: React.FC<EventFormProps> = ({
             </button>
           </div>
           <div className="h-0  w-[97%] relative opacity-50 outline-2 outline-offset-[-1px] outline-stone-900"></div>{" "}
-          <div className="w-full text-stone-900 text-xl md:text-2xl font-bold font-['Montserrat'] px-2 md:px-4 p-2">
+          <div className="w-full text-stone-900 text-xl pt-4 md:text-2xl font-bold font-['Montserrat'] px-2 md:px-4 p-2">
             <input
               name="title"
               type="text"

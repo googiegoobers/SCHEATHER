@@ -14,6 +14,10 @@ import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
+// import { getAnalytics, logEvent } from "firebase/analytics";
+import Notifications from "@/app/components/Notifications";
+import { useAuthState } from "react-firebase-hooks/auth";
+
 //for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
   sunny: { day: "/icons/clear-day.png", night: "/icons/clear-night.png" },
@@ -104,6 +108,8 @@ const iconMap: Record<string, { day: string; night: string }> = {
 
 export default function Dashboard() {
   const router = useRouter();
+  const auth = getAuth();
+  const [user] = useAuthState(auth);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
@@ -117,8 +123,9 @@ export default function Dashboard() {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   //for pofile
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const auth = getAuth();
   const [openInvitePage, setOpenInvitePage] = useState("");
+  //for bell notif
+  const [unreadCount, setUnreadCount] = useState(0);
 
   //creation year for profile
   useEffect(() => {
@@ -349,6 +356,22 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // useEffect(() => {
+  //   const analytics = getAnalytics();
+  //   // Log when the component is mounted
+  //   logEvent(analytics, "dashboard_viewed");
+  // }, []);
+
+  // const [data, setData] = useState(null);
+
+  // useEffect(() => {
+  //   fetch("/api/analytics") // Your API that queries BigQuery
+  //     .then((res) => res.json())
+  //     .then(setData);
+  // }, []);
+
+  // if (!data) return <div>Loading...</div>;
+
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
       <div className="w-full h-screen relative bg-white">
@@ -395,7 +418,9 @@ export default function Dashboard() {
           <div className="relative flex items-center gap-2 sm:gap-4">
             <div className="relative notification-wrapper notification-icon">
               <svg
-                className="w-6 h-6 shrink-0 text-gray-800 cursor-pointer"
+                className={`w-6 h-6 shrink-0 cursor-pointer ${
+                  unreadCount > 0 ? "text-orange-500" : "text-gray-800"
+                }`}
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="#e68c3a"
@@ -405,23 +430,12 @@ export default function Dashboard() {
                 <path d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
               </svg>
 
-              {isNotificationOpen && (
-                <div className=" notification-dropdown absolute right-0 top-10 mt-2 w-64 bg-white/20 backdrop-blur-md rounded-xl shadow-lg border border-white/30 z-50 p-4">
-                  <p className="text-sm text-gray-700 font-medium">
-                    Notifications
-                  </p>
-                  <ul className="mt-2 space-y-2 text-sm text-black">
-                    <li className="hover:bg-gray-100 p-2 rounded">
-                      {/* dynamic ni dri */}
-                      New weather alert
-                    </li>
-                    <li className="hover:bg-gray-100 p-2 rounded">
-                      Reminder: Update profile
-                    </li>
-                    <li className="hover:bg-gray-100 p-2 rounded">
-                      Weekly summary available
-                    </li>
-                  </ul>
+              {isNotificationOpen && user && (
+                <div className="notification-dropdown absolute right-0 top-10 mt-2 w-64 ">
+                  <Notifications
+                    currentUser={user}
+                    setUnreadCount={setUnreadCount}
+                  />
                 </div>
               )}
             </div>
@@ -583,13 +597,12 @@ export default function Dashboard() {
                     Invitations
                   </a>
                 </div>
-                
-                  <Link href="/ToDoList">
-                    <div className="text-white text-xl mb-6 cursor pointer">
-                      To-do list
-                    </div>
-                  </Link>
-                
+
+                <Link href="/ToDoList">
+                  <div className="text-white text-xl mb-6 cursor pointer">
+                    To-do list
+                  </div>
+                </Link>
 
                 <div className="flex-grow"></div>
               </aside>
@@ -683,7 +696,7 @@ export default function Dashboard() {
               <CalendarComponent />
             </div>
             <footer className="w-full bg-[color:#213E60] p-5 text-center text-white">
-              <p>Scheather</p>
+              &copy; 2025 Scheather. All rights reserved.
             </footer>
           </div>
         )}

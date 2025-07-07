@@ -67,7 +67,7 @@ const LocationAutocomplete = ({
         type="text"
         value={value}
         onChange={handleInputChange}
-        placeholder="Enter a location"
+        placeholder="Enter the location"
         className="w-full p-2 border border-gray-300 rounded"
       />
       {showDropdown && suggestions.length > 0 && (

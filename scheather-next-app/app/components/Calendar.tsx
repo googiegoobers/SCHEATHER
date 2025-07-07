@@ -71,6 +71,7 @@ const CalendarComponent: React.FC = () => {
   const [selectedSlot, setSelectedSlot] =
     useState<{ start: Date; end: Date } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
+
   const [selectedEvent, setSelectedEvent] =
     useState<FirestoreEvent | null>(null);
 
@@ -90,6 +91,7 @@ const CalendarComponent: React.FC = () => {
     const fetchEvents = async () => {
 
       try {
+
         const eventsCol = collection(db, "events");
         const q = query(eventsCol, where("createdBy", "==", currentUser.uid));
         const snap = await getDocs(q);
@@ -185,8 +187,8 @@ const CalendarComponent: React.FC = () => {
           >
             <div className="relative pointer-events-auto">
               <EventForm
-                start={selectedSlot.start.toISOString().slice(0, 16)}
-                end={selectedSlot.end.toISOString().slice(0, 16)}
+                start={toLocalDateTimeInputValue(selectedSlot.start)}
+                end={toLocalDateTimeInputValue(selectedSlot.end)}
                 onClose={() => setShowForm(false)}
                 onEventCreated={(newEvt) =>
                   setEvents((prev) => [

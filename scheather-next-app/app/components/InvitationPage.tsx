@@ -20,7 +20,7 @@ interface InviteEvent {
 }
 
 export default function InvitationPage({ onClose }: Props) {
-  const [pendingInvites, setPendingInvites] = useState<InviteEvent[]>([]);
+  const [invites, setInvites] = useState<InviteEvent[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<InviteEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,55 +31,55 @@ export default function InvitationPage({ onClose }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!currentUser) return;
-
-    const fetchInvites = async () => {
-      const eventsSnapshot = await getDocs(collection(db, "events"));
-      const invites: InviteEvent[] = [];
-
-      for (const docSnap of eventsSnapshot.docs) {
-        const data = docSnap.data();
-        const invitee = data.inviteList?.find(
-          (u: any) => u.uid === currentUser.uid && u.status === "pending"
-        );
-
-        if (invitee && data.title) {
-          let creatorName = "Unknown";
-          let creatorAvatar = null;
-
-          if (data.createdBy) {
-            try {
-              const userSnap = await getDoc(doc(db, "users", data.createdBy));
-              if (userSnap.exists()) {
-                const userData = userSnap.data();
-                creatorName =
-                  `${userData.firstName ?? ""} ${
-                    userData.lastName ?? ""
-                  }`.trim() || "Unknown";
-                creatorAvatar = userData.photoURL ?? null; // still keep this in case it's added later
-              }
-            } catch (err) {
-              console.error("Failed to fetch creator:", err);
-            }
-          }
-
-          invites.push({
-            id: docSnap.id,
-            title: data.title,
-            inviteList: data.inviteList,
-            createdBy: data.createdBy,
-            creatorName,
-            creatorAvatar,
-            ...data,
-          });
-        }
-      }
-
-      setPendingInvites(invites);
-    };
-
-    fetchInvites();
+    if (currentUser) {
+      fetchInvites(currentUser.uid);
+    }
   }, [currentUser]);
+
+  const fetchInvites = async (uid: string) => {
+    const eventsSnapshot = await getDocs(collection(db, "events"));
+    const updatedInvites: InviteEvent[] = [];
+
+    for (const docSnap of eventsSnapshot.docs) {
+      const data = docSnap.data();
+      const invitee = data.inviteList?.find((u: any) => u.uid === uid);
+
+      if (invitee && data.title) {
+        let creatorName = "Unknown";
+        let creatorAvatar = null;
+
+        if (data.createdBy) {
+          try {
+            const userSnap = await getDoc(doc(db, "users", data.createdBy));
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              creatorName =
+                userData.displayName ||
+                `${userData.firstName ?? ""} ${
+                  userData.lastName ?? ""
+                }`.trim() ||
+                "Unknown";
+              creatorAvatar = userData.photoURL ?? null;
+            }
+          } catch (err) {
+            console.error("Failed to fetch creator:", err);
+          }
+        }
+
+        updatedInvites.push({
+          id: docSnap.id,
+          title: data.title,
+          inviteList: data.inviteList,
+          createdBy: data.createdBy,
+          creatorName,
+          creatorAvatar,
+          ...data,
+        });
+      }
+    }
+
+    setInvites(updatedInvites);
+  };
 
   const openModal = (event: InviteEvent) => {
     setSelectedEvent(event);
@@ -96,10 +96,8 @@ export default function InvitationPage({ onClose }: Props) {
 
     await updateInviteStatus(selectedEvent.id, currentUser.uid, status);
     closeModal();
-    setPendingInvites((prev) => prev.filter((e) => e.id !== selectedEvent.id));
 
     try {
-      // Send notification to the event creator
       await addDoc(collection(db, "notifications"), {
         userId: selectedEvent.createdBy,
         type: "rsvp",
@@ -111,11 +109,13 @@ export default function InvitationPage({ onClose }: Props) {
     } catch (err) {
       console.error("Error sending RSVP notification:", err);
     }
+
+    // Re-fetch to reflect new status
+    await fetchInvites(currentUser.uid);
   };
 
   return (
     <div className="w-full flex flex-col items-center px-4 sm:px-8 lg:px-20">
-      {/* Back button */}
       <div className="w-full flex items-center gap-2 py-4">
         <button
           onClick={onClose}
@@ -127,41 +127,43 @@ export default function InvitationPage({ onClose }: Props) {
 
       <h2 className="text-xl font-bold mb-2">Invitations</h2>
 
-      {/* Header Bar */}
       <div className="w-full max-w-4xl bg-gray-200 rounded-md px-4 py-2 mb-3 flex justify-between items-center">
         <p className="font-semibold text-sm sm:text-base">Invites</p>
         <p className="font-semibold text-sm sm:text-base text-right">Status</p>
       </div>
 
-      {/* List */}
       <div className="w-full max-w-4xl space-y-3">
-        {pendingInvites.map((event) => (
-          <div
-            key={event.id}
-            onClick={() => openModal(event)}
-            className="flex flex-col sm:flex-row items-center sm:justify-between bg-blue-100 hover:bg-blue-200 transition cursor-pointer border rounded-lg p-4"
-          >
-            <div className="flex flex-row items-center gap-4">
-              <img
-                src={event.creatorAvatar || "/avatar/axolotl.jpg"}
-                alt={event.creatorName}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div className="flex flex-col">
-                <p className="font-semibold text-sm sm:text-base">
-                  {event.creatorName} invited you to{" "}
-                  <strong>{event.title}</strong>
-                </p>
+        {invites.map((event) => {
+          const currentStatus = event.inviteList.find(
+            (u: any) => u.uid === currentUser?.uid
+          )?.status;
+          return (
+            <div
+              key={event.id}
+              onClick={() => openModal(event)}
+              className="flex flex-col sm:flex-row items-center sm:justify-between bg-blue-100 hover:bg-blue-200 transition cursor-pointer border rounded-lg p-4"
+            >
+              <div className="flex flex-row items-center gap-4">
+                <img
+                  src={event.creatorAvatar || "/avatar/axolotl.jpg"}
+                  alt={event.creatorName}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div className="flex flex-col">
+                  <p className="font-semibold text-sm sm:text-base">
+                    {event.creatorName} invited you to{" "}
+                    <strong>{event.title}</strong>
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2 sm:mt-0 text-green-700 text-xs sm:text-sm font-medium capitalize">
+                {currentStatus || "pending"}
               </div>
             </div>
-            <div className="mt-2 sm:mt-0 text-green-700 text-xs sm:text-sm font-medium">
-              Pending
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Modal */}
       {isModalOpen && selectedEvent && (
         <div className="fixed inset-0 bg-transparent backdrop-blur bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
@@ -197,13 +199,13 @@ export default function InvitationPage({ onClose }: Props) {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => handleModalRespond("declined")}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer active:scale-3d"
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
               >
                 Decline
               </button>
               <button
                 onClick={() => handleModalRespond("accepted")}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer active:scale-3d"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Accept
               </button>

@@ -2,17 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
-import React from "react";
-// import { useState, useEffect, useRef } from "react";
-// import { useEffect } from "react";
-// import { analytics } from "@/app/lib/firebaseConfig";
-import { logEvent } from "firebase/analytics";
-
-// useEffect(() => {
-//   if (analytics) {
-//     logEvent(analytics, "admin_dashboard_viewed");
-//   }
-// }, []);
+import React, { useState, useEffect, useRef } from "react";
+import LogAnalytics from "@/app/components/LogAnalytics";
 
 export default function adminPage() {
   return (
@@ -53,6 +44,11 @@ export default function adminPage() {
           </p>
         </div>
       </div>
+
+      <div>
+        <LogAnalytics />
+      </div>
+
       <footer
         className="mt-20 w-full bg-[#301400] text-white px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
         id="contacts"

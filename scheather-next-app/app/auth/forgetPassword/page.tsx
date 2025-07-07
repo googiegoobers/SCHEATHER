@@ -107,26 +107,39 @@ export default function Home() {
 
               <button
                 type="submit"
-                className=" w-full max-w-xs h-10 bg-[#223F61] hover:bg-[#94B7EF] hover:text-[#223F61] rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden text-stone-100 text-xl font-normal font-['Montserrat'] flex items-center justify-center transition-colors duration-300"
+                className=" w-full max-w-xs h-10 bg-[#223F61] hover:bg-[#94B7EF] hover:text-[#223F61] rounded-[30px] outline outline-2 outline-offset-[-2px] outline-cyan-900 overflow-hidden text-stone-100 text-xl font-normal font-['Montserrat'] flex items-center justify-center transition-colors duration-300 cursor-pointer"
               >
                 Submit
               </button>
             </form>
 
-            <div className="w-full flex items-center mb-3 mt-20 text-base lg:text-lg">
-              {!isChangePassword && (
-                <div>
-                  <p className="text-[#223F61] font-normal font-['Poppins'] flex-1">
-                    Already Have an Account?
-                  </p>
-                  <Link href="/auth/login" className="w-auto">
-                    <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right">
-                      Log in
-                    </p>
-                  </Link>
-                </div>
+            <div className="flex flex-col items-left w-full mt-4">
+              {error && (
+                <p className=" text-red-500 text-sm font-['Poppins']">
+                  {error}
+                </p>
+              )}
+
+              {/* Success message */}
+              {success && (
+                <p className=" text-green-500 text-sm font-['Poppins']">
+                  {success}
+                </p>
               )}
             </div>
+
+            {!isChangePassword && (
+              <div className="w-full flex items-center mb-3 mt-7 text-base lg:text-lg">
+                <p className="text-[#223F61] font-normal font-['Poppins'] flex-1 text-s">
+                  Already Have an Account?
+                </p>
+                <Link href="/auth/login" className="w-auto">
+                  <p className="text-[#223F61] font-semibold font-['Poppins'] cursor-pointer hover:underline text-right text-s">
+                    Log in
+                  </p>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* right side */}
@@ -191,11 +204,26 @@ export default function Home() {
               </button>
             </div>
 
+            <div className="flex flex-col items-center w-full mt-4">
+              {error && (
+                <p className=" text-red-500 text-sm font-['Poppins']">
+                  {error}
+                </p>
+              )}
+
+              {/* Success message */}
+              {success && (
+                <p className=" text-green-500 text-sm font-['Poppins']">
+                  {success}
+                </p>
+              )}
+            </div>
+
             <div className="flex flex-col items-center w-full mt-6">
               {!isChangePassword && (
                 <div>
                   <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins']">
-                    Do you have an account?
+                    Already have an account?
                   </p>
 
                   <p className=" text-center justify-start text-[#223F61] text-s font-normal font-['Poppins'] underline">

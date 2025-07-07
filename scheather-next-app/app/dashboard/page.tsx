@@ -14,7 +14,7 @@ import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
-import { getAnalytics, logEvent } from "firebase/analytics";
+// import { getAnalytics, logEvent } from "firebase/analytics";
 import Notifications from "@/app/components/Notifications";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -356,21 +356,21 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const analytics = getAnalytics();
-    // Log when the component is mounted
-    logEvent(analytics, "dashboard_viewed");
-  }, []);
+  // useEffect(() => {
+  //   const analytics = getAnalytics();
+  //   // Log when the component is mounted
+  //   logEvent(analytics, "dashboard_viewed");
+  // }, []);
 
-  const [data, setData] = useState(null);
+  // const [data, setData] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/analytics") // Your API that queries BigQuery
-      .then((res) => res.json())
-      .then(setData);
-  }, []);
+  // useEffect(() => {
+  //   fetch("/api/analytics") // Your API that queries BigQuery
+  //     .then((res) => res.json())
+  //     .then(setData);
+  // }, []);
 
-  if (!data) return <div>Loading...</div>;
+  // if (!data) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">

@@ -653,7 +653,6 @@ const EventForm: React.FC<EventFormProps> = ({
                   </div>
                 )}
               </div>
-            ))
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
                 <div className="total-if-equal">₱{equalMoney}</div>

@@ -13,6 +13,8 @@ import InvitationPage from "@/app/components/InvitationPage";
 import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { getAnalytics, logEvent } from "firebase/analytics";
+// import { Bar } from "react-chartjs-2";
 
 //for the default icons kay blurry ang icons nga gikan sa API
 const iconMap: Record<string, { day: string; night: string }> = {
@@ -349,6 +351,22 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const analytics = getAnalytics();
+    // Log when the component is mounted
+    logEvent(analytics, "dashboard_viewed");
+  }, []);
+
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/analytics") // Your API that queries BigQuery
+      .then((res) => res.json())
+      .then(setData);
+  }, []);
+
+  if (!data) return <div>Loading...</div>;
+
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
       <div className="w-full h-screen relative bg-white">
@@ -583,13 +601,12 @@ export default function Dashboard() {
                     Invitations
                   </a>
                 </div>
-                
-                  <Link href="/ToDoList">
-                    <div className="text-white text-xl mb-6 cursor pointer">
-                      To-do list
-                    </div>
-                  </Link>
-                
+
+                <Link href="/ToDoList">
+                  <div className="text-white text-xl mb-6 cursor pointer">
+                    To-do list
+                  </div>
+                </Link>
 
                 <div className="flex-grow"></div>
               </aside>

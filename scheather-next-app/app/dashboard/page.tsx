@@ -683,7 +683,7 @@ export default function Dashboard() {
               <CalendarComponent />
             </div>
             <footer className="w-full bg-[color:#213E60] p-5 text-center text-white">
-              <p>Scheather</p>
+              &copy; 2025 Scheather. All rights reserved.
             </footer>
           </div>
         )}

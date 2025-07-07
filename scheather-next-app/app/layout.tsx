@@ -3,6 +3,8 @@ import { ClientProviders } from "./ClientProviders";
 import { ReactNode } from "react";
 import Script from "next/script";
 
+import { Analytics } from "@vercel/analytics/next";
+
 import {
   Poppins,
   Montserrat,
@@ -65,6 +67,7 @@ export default function RootLayout({
     >
       <body>
         <ClientProviders>{children}</ClientProviders>
+        <Analytics />
       </body>
     </html>
   );

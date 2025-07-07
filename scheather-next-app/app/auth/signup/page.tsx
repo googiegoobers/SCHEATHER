@@ -3,8 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import "./signup.css";
 import { useState, ChangeEvent, FormEvent } from "react";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/app/lib/firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 interface SignUpFormData {
@@ -62,7 +63,18 @@ const SignUpCard: React.FC = () => {
         displayName: `${formData.firstName} ${formData.lastName}`,
       });
 
-      console.log("✅ User created and profile updated!", user);
+      // Step 3: Create user document in Firestore with role 'user'
+      await setDoc(doc(db, "users", user.uid), {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        role: "user",
+      });
+
+      console.log(
+        "✅ User created, profile updated, and Firestore doc set!",
+        user
+      );
       // setSuccess("User created successfully!");
       router.push("/dashboard");
       // Optional: redirect or show success message here

@@ -273,13 +273,13 @@ export default function Home() {
 
             {/* RIGHT CONTENT - IMAGE */}
             <div className="flex flex-col justify-center items-center flex-1 order-1 lg:order-2 w-full">
-              <Scene scrollProgress={scrollProgress} />
+              {/* <Scene scrollProgress={scrollProgress} /> */}
 
-              {/* <img
+              <img
                 src="/hero-logo.png"
                 alt="Art"
                 className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain"
-              /> */}
+              />
             </div>
           </div>
         </div>
@@ -304,9 +304,10 @@ export default function Home() {
             className="text-[color:#f4f2ef] max-w-xl mx-auto text-base "
             style={{ fontFamily: "Poppins" }}
           >
-            Our platform helps groups effortlessly plan events by 
-            combining real-time weather forecasts with collaborative scheduling tools, 
-            so you can confidently schedule without worrying about unexpected events.
+            Our platform helps groups effortlessly plan events by combining
+            real-time weather forecasts with collaborative scheduling tools, so
+            you can confidently schedule without worrying about unexpected
+            events.
           </p>
         </div>
 
@@ -333,12 +334,16 @@ export default function Home() {
               className="text-white font-lg"
               style={{ fontFamily: "Montserrat" }}
             >
-              We eliminate the stress of organizing events by providing an intelligent, shared solution:
+              We eliminate the stress of organizing events by providing an
+              intelligent, shared solution:
             </p>
             <ul className="list-disc list-inside text-white space-y-1 font-medium">
               <li>Invite you friends, groupmates, and colleagues.</li>
               <li>Easily break down budgets for group events.</li>
-              <li>Stay informed with accurate weather forecasts for events scheduled within the next 7 days.</li>
+              <li>
+                Stay informed with accurate weather forecasts for events
+                scheduled within the next 7 days.
+              </li>
             </ul>
           </div>
         </div>
@@ -443,9 +448,9 @@ export default function Home() {
               color: "#e68c3a",
             }}
           >
-            
             Your reliable planning partner for stress-free group events.
-            <br/>Schedule together according to the weather.
+            <br />
+            Schedule together according to the weather.
           </div>
 
           <div className="text-center lg:text-left w-full lg:w-fit order-2 lg:order-2">

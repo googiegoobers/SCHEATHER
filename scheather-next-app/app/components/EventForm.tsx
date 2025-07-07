@@ -191,6 +191,49 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (!currentUser) {
+  //     alert("You must be logged in to create an event.");
+  //     return;
+  //   }
+
+  //   const eventToSave = {
+  //     ...newEvent,
+  //     inviteList: [
+  //       ...inviteList.map((user) => ({
+  //         uid: user.uid,
+  //         email: user.email,
+  //         displayName: user.displayName,
+  //         status: "pending",
+  //         amount:
+  //           selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
+  //             ? parseFloat(equalMoney) / acceptedUsers.length
+  //             : 0,
+  //       })),
+  //       {
+  //         uid: currentUser.uid,
+  //         email: currentUser.email,
+  //         displayName: currentUser.displayName,
+  //         status: "accepted",
+  //         amount: 0,
+  //       },
+  //     ],
+  //     createdBy: currentUser.uid,
+  //   };
+
+  //   try {
+  //     const docRef = await addDoc(collection(db, "events"), eventToSave);
+  //     onEventCreated({ ...eventToSave, id: docRef.id });
+  //     onClose();
+  //   } catch (err) {
+  //     console.error("Error adding event:", err);
+  //     alert("Failed to create event.");
+  //   }
+  // };
+
+  //modified to store notif
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -201,25 +244,55 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList: inviteList.map((u) => ({
-        uid: u.uid,
-        email: u.email,
-        displayName: u.displayName,
-        status: "pending" // new: default invite status
-      })),
-      budgetList: budgetItems,
+      inviteList: [
+        ...inviteList.map((user) => ({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          status: "pending",
+          amount:
+            selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
+              ? parseFloat(equalMoney) / acceptedUsers.length
+              : 0,
+        })),
+        {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          status: "accepted",
+          amount: 0,
+        },
+      ],
       createdBy: currentUser.uid,
     };
 
     try {
+      // Save event
       const docRef = await addDoc(collection(db, "events"), eventToSave);
-      onEventCreated({ ...eventToSave, id: docRef.id });
+      const savedEvent = { ...eventToSave, id: docRef.id };
+      onEventCreated(savedEvent);
+
+      // Send notifications to invited users (excluding creator)
+      for (const user of eventToSave.inviteList) {
+        if (user.uid !== currentUser.uid) {
+          await addDoc(collection(db, "notifications"), {
+            userId: user.uid,
+            type: "invite",
+            eventId: docRef.id,
+            message: `${currentUser.displayName} invited you to "${eventToSave.title}"`,
+            status: "unread",
+            timestamp: new Date(),
+          });
+        }
+      }
+
       onClose();
     } catch (err) {
       console.error("Error adding event:", err);
       alert("Failed to create event.");
     }
   };
+
   const [estimatedCost, setEstimatedCost] = useState("");
   const acceptedInvitees = inviteList.filter((u) => u.status === "accepted");
   const numberOfAccepted = acceptedInvitees.length || 1; // avoid div by zero

@@ -1,11 +1,68 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db, auth } from "@/app/lib/firebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { updateInviteStatus } from "@/app/lib/inviteUtils";
 
 interface Props {
   onClose: () => void;
 }
 
+interface InviteEvent {
+  id: string;
+  title: string;
+  inviteList: Array<{ uid: string; status: string; [key: string]: any }>;
+  [key: string]: any;
+}
+
+function usePendingInvites() {
+  const [pendingInvites, setPendingInvites] = useState<InviteEvent[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) =>
+      setCurrentUser(user)
+    );
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const fetchInvites = async () => {
+      const eventsSnapshot = await getDocs(collection(db, "events"));
+      const invites: InviteEvent[] = [];
+      eventsSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const invitee = data.inviteList?.find(
+          (u: any) => u.uid === currentUser?.uid && u.status === "pending"
+        );
+        if (invitee && data.title && data.inviteList) {
+          invites.push({
+            id: doc.id,
+            title: data.title,
+            inviteList: data.inviteList,
+            ...data,
+          });
+        }
+      });
+      setPendingInvites(invites);
+    };
+    fetchInvites();
+  }, [currentUser]);
+
+  return { pendingInvites, currentUser };
+}
+
 const InvitationPage: React.FC<Props> = ({ onClose }) => {
+  const { pendingInvites, currentUser } = usePendingInvites();
+
+  const handleRespond = async (eventId: string, status: string) => {
+    if (!currentUser) return;
+    await updateInviteStatus(eventId, currentUser.uid, status);
+    // Optionally, refetch invites or optimistically update UI
+  };
+
   return (
     <div className="wrap-all-contents w-full min-w-full flex flex-col items-center justify-center h-auto px-4 sm:px-8 lg:px-20">
       <div className="text-center w-full min-w-full h-auto">
@@ -68,6 +125,27 @@ const InvitationPage: React.FC<Props> = ({ onClose }) => {
             {/* status */}
           </div>
         </div>
+        {pendingInvites.map((event) => (
+          <div key={event.id} className="mt-4">
+            <div className="text-center">
+              <p className="text-base">{event.title}</p>
+            </div>
+            <div className="flex justify-center items-center gap-2">
+              <button
+                onClick={() => handleRespond(event.id, "accepted")}
+                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => handleRespond(event.id, "declined")}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -201,7 +201,16 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList, // <-- ensure inviteList is saved
+      inviteList: [
+        ...newEvent.inviteList,
+        {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          status: "pending",
+          amount: 0, // (optional, for Kanya-Kanyang Bayad)
+        },
+      ],
       createdBy: currentUser.uid,
     };
 
@@ -224,6 +233,8 @@ const EventForm: React.FC<EventFormProps> = ({
       setShowPopup(true);
     }
   };
+
+  const acceptedUsers = inviteList.filter((u) => u.status === "accepted");
 
   return (
     <div>
@@ -611,17 +622,36 @@ const EventForm: React.FC<EventFormProps> = ({
                 </div>
               </div>
               <div className="content p-2 border-b">
-                <div className="accepted-invites flex flex-row justify-between items-center">
-                  <div className="name">
-                    <p className="text-stone-900/75 text-base font-bold">
-                      Toothless
-                    </p>
-                    <p className="text-stone-900/75 text-sm">
-                      toothless@gmail.com
-                    </p>
+                {/* Dynamically render invited users with their budget (starting at 0) */}
+                {acceptedUsers.length > 0 ? (
+                  acceptedUsers.map((user) => (
+                    <div
+                      key={user.uid}
+                      className="accepted-invites flex flex-row justify-between items-center"
+                    >
+                      <div className="name">
+                        <p className="text-stone-900/75 text-base font-bold">
+                          {user.displayName}
+                        </p>
+                        <p className="text-stone-900/75 text-sm">
+                          {user.email}
+                        </p>
+                      </div>
+                      <div className="bayranan text-black">
+                        {/* Show equal share if there is a total, otherwise 0 */}
+                        {equalMoney && acceptedUsers.length > 0
+                          ? (
+                              parseFloat(equalMoney) / acceptedUsers.length
+                            ).toFixed(2)
+                          : "0.00"}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-center py-2">
+                    No invited users
                   </div>
-                  <div className="bayranan text-black">100.00</div>
-                </div>
+                )}
               </div>
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>

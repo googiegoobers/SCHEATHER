@@ -191,6 +191,49 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (!currentUser) {
+  //     alert("You must be logged in to create an event.");
+  //     return;
+  //   }
+
+  //   const eventToSave = {
+  //     ...newEvent,
+  //     inviteList: [
+  //       ...inviteList.map((user) => ({
+  //         uid: user.uid,
+  //         email: user.email,
+  //         displayName: user.displayName,
+  //         status: "pending",
+  //         amount:
+  //           selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
+  //             ? parseFloat(equalMoney) / acceptedUsers.length
+  //             : 0,
+  //       })),
+  //       {
+  //         uid: currentUser.uid,
+  //         email: currentUser.email,
+  //         displayName: currentUser.displayName,
+  //         status: "accepted",
+  //         amount: 0,
+  //       },
+  //     ],
+  //     createdBy: currentUser.uid,
+  //   };
+
+  //   try {
+  //     const docRef = await addDoc(collection(db, "events"), eventToSave);
+  //     onEventCreated({ ...eventToSave, id: docRef.id });
+  //     onClose();
+  //   } catch (err) {
+  //     console.error("Error adding event:", err);
+  //     alert("Failed to create event.");
+  //   }
+  // };
+
+  //modified to store notif
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -201,20 +244,59 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList, // <-- ensure inviteList is saved
+      inviteList: [
+        ...inviteList.map((user) => ({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          status: "pending",
+          amount:
+            selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
+              ? parseFloat(equalMoney) / acceptedUsers.length
+              : 0,
+        })),
+        {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          status: "accepted",
+          amount: 0,
+        },
+      ],
       createdBy: currentUser.uid,
     };
 
     try {
+      // Save event
       const docRef = await addDoc(collection(db, "events"), eventToSave);
-      onEventCreated({ ...eventToSave, id: docRef.id });
+      const savedEvent = { ...eventToSave, id: docRef.id };
+      onEventCreated(savedEvent);
+
+      // Send notifications to invited users (excluding creator)
+      for (const user of eventToSave.inviteList) {
+        if (user.uid !== currentUser.uid) {
+          await addDoc(collection(db, "notifications"), {
+            userId: user.uid,
+            type: "invite",
+            eventId: docRef.id,
+            message: `${currentUser.displayName} invited you to "${eventToSave.title}"`,
+            status: "unread",
+            timestamp: new Date(),
+          });
+        }
+      }
+
       onClose();
     } catch (err) {
       console.error("Error adding event:", err);
       alert("Failed to create event.");
     }
   };
+
   const [estimatedCost, setEstimatedCost] = useState("");
+  const acceptedInvitees = inviteList.filter((u) => u.status === "accepted");
+  const numberOfAccepted = acceptedInvitees.length || 1; // avoid div by zero
+  const perPersonCost = totalAmount / numberOfAccepted;
   const [showPopup, setShowPopup] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const handleSelect = (option: { label: string; value: string | number }) => {
@@ -224,6 +306,8 @@ const EventForm: React.FC<EventFormProps> = ({
       setShowPopup(true);
     }
   };
+
+  const acceptedUsers = inviteList.filter((u) => u.status === "accepted");
 
   return (
     <div>
@@ -430,7 +514,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
                 {/* Right: Status + Remove Button */}
                 <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
-                  <span className="text-green-700 text-xs sm:text-l font-medium">
+                  <span className="text-yellow-700 text-xs sm:text-l font-medium">
                     Pending
                   </span>
                   <button
@@ -604,28 +688,47 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <div className="label flex flex-row justify-between pl-4 pr-4 border-b p-2">
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Invite List
+                  Participant List
                 </div>
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Pay
+                  To Pay
                 </div>
               </div>
               <div className="content p-2 border-b">
-                <div className="accepted-invites flex flex-row justify-between items-center">
-                  <div className="name">
-                    <p className="text-stone-900/75 text-base font-bold">
-                      Toothless
-                    </p>
-                    <p className="text-stone-900/75 text-sm">
-                      toothless@gmail.com
-                    </p>
+                {/* Dynamically render invited users with their budget (starting at 0) */}
+                {acceptedUsers.length > 0 ? (
+                  acceptedUsers.map((user) => (
+                    <div
+                      key={user.uid}
+                      className="accepted-invites flex flex-row justify-between items-center"
+                    >
+                      <div className="name">
+                        <p className="text-stone-900/75 text-base font-bold">
+                          {user.displayName}
+                        </p>
+                        <p className="text-stone-900/75 text-sm">
+                          {user.email}
+                        </p>
+                      </div>
+                      <div className="bayranan text-black">
+                        {/* Show equal share if there is a total, otherwise 0 */}
+                        {equalMoney && acceptedUsers.length > 0
+                          ? (
+                              parseFloat(equalMoney) / acceptedUsers.length
+                            ).toFixed(2)
+                          : "0.00"}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-center py-2">
+                    No invited users
                   </div>
-                  <div className="bayranan text-black">100.00</div>
-                </div>
+                )}
               </div>
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
-                <div className="total-if-equal">{equalMoney}</div>
+                <div className="total-if-equal">₱{equalMoney}</div>
               </div>
             </div>
           )}

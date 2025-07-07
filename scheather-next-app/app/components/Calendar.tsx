@@ -34,6 +34,9 @@ const CalendarComponent: React.FC = () => {
     end: Date;
   } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(
+    null
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -49,21 +52,35 @@ const CalendarComponent: React.FC = () => {
 
       try {
         const eventsCollection = collection(db, "events");
-        const q = query(
-          eventsCollection,
-          where("createdBy", "==", currentUser.uid)
-        );
+        const snapshot = await getDocs(eventsCollection);
 
-        const snapshot = await getDocs(q);
-        const eventsData = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title,
-            start: new Date(data.start?.toDate?.() || data.start),
-            end: new Date(data.end?.toDate?.() || data.end),
-          };
-        });
+        const eventsData = snapshot.docs
+          .map((doc) => {
+            const data = doc.data();
+            const inviteList = data.inviteList || [];
+
+            const isAcceptedInvite = inviteList.some(
+              (invite: any) =>
+                invite.uid === currentUser.uid && invite.status === "accepted"
+            );
+
+            const isCreator = data.createdBy === currentUser.uid;
+
+            if (!isCreator && !isAcceptedInvite) return null;
+
+            return {
+              id: doc.id,
+              title: data.title,
+              start: new Date(data.start?.toDate?.() || data.start),
+              end: new Date(data.end?.toDate?.() || data.end),
+            };
+          })
+          .filter(
+            (
+              event
+            ): event is { id: string; title: string; start: Date; end: Date } =>
+              event !== null
+          );
 
         setEvents(eventsData);
       } catch (error) {
@@ -82,6 +99,19 @@ const CalendarComponent: React.FC = () => {
     setShowForm(true);
   };
 
+  // to get the correct date start on clicking or making the event
+  function toLocalDateTimeInputValue(date: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    const yyyy = date.getFullYear();
+    const MM = pad(date.getMonth() + 1);
+    const dd = pad(date.getDate());
+    const hh = pad(date.getHours());
+    const mm = pad(date.getMinutes());
+
+    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+  }
+
   return (
     <div>
       <Calendar
@@ -98,6 +128,7 @@ const CalendarComponent: React.FC = () => {
             setShowForm(true);
           }
         }}
+        onSelectEvent={(event) => setSelectedEvent(event)}
         components={{
           toolbar: (props) => <CustomNavCal {...props} />,
         }}
@@ -114,8 +145,8 @@ const CalendarComponent: React.FC = () => {
           >
             <div className="relative rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] mb-8 overflow-hidden absolute inset-0 p-4 pointer-events-auto">
               <EventForm
-                start={selectedSlot.start.toISOString().slice(0, 16)}
-                end={selectedSlot.end.toISOString().slice(0, 16)}
+                start={toLocalDateTimeInputValue(selectedSlot.start)}
+                end={toLocalDateTimeInputValue(selectedSlot.end)}
                 onClose={() => setShowForm(false)}
                 onEventCreated={(newEvt) =>
                   setEvents((prev) => [
@@ -131,6 +162,27 @@ const CalendarComponent: React.FC = () => {
               />
             </div>
           </OutsideClickHandler>
+        </div>
+      )}
+
+      {/* clicking the event */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-2xl font-bold">{selectedEvent.title}</h2>
+            <p>
+              Start: {selectedEvent.start.toString()}
+              <br />
+              End: {selectedEvent.end.toString()}
+            </p>
+            {/* Add more event details here */}
+            <button
+              onClick={() => setSelectedEvent(null)}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

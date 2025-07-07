@@ -60,8 +60,13 @@ export default function Home() {
       const userDoc = await getDoc(userRef);
       let userData = userDoc.data();
       if (!userDoc.exists()) {
-        // Set default role for new Google users
-        await setDoc(userRef, { email: user.email, role: "user" });
+        // Set default fields for new Google users
+        await setDoc(userRef, {
+          displayName: user.displayName || "",
+          email: user.email || "",
+          role: "user",
+          uid: user.uid,
+        });
         userData = { role: "user" };
       }
       if (userData?.role === "admin") {

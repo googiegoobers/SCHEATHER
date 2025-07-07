@@ -67,6 +67,7 @@ const SignUpCard: React.FC = () => {
       await setDoc(doc(db, "users", user.uid), {
         firstName: formData.firstName,
         lastName: formData.lastName,
+        displayName: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         role: "user",
       });

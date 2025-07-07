@@ -16,7 +16,7 @@ const firebaseConfig = {
   storageBucket: "scheather-4c6b7.firebasestorage.app",
   messagingSenderId: "719266527211",
   appId: "1:719266527211:web:e31ccad0961fa999f78bae",
-  measurementId: "G-QJXB8TRPZH"
+  measurementId: "G-QMVC5BR2W3"
 };
 
 // Initialize Firebase only once

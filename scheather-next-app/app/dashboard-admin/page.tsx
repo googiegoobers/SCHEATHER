@@ -8,6 +8,18 @@ import LogAnalytics from "@/app/components/LogAnalytics";
 export default function adminPage() {
   return (
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag("js", new Date());
+
+          gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       <div className="hidden lg:flex flex-1 justify-center items-center">
         <header
           className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"

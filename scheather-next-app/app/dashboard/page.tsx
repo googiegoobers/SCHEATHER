@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Script from "next/script";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -374,6 +375,18 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag("js", new Date());
+
+          gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       <div className="w-full h-screen relative bg-white">
         <header
           className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"

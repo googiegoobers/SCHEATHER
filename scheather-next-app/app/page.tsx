@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -48,6 +49,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full bg-white overflow-x-hidden">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag("js", new Date());
+
+          gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       <div className="w-full h-screen relative bg-white overflow-hidden">
         {/* Header*/}
         <header

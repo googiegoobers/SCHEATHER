@@ -201,7 +201,13 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList, // <-- ensure inviteList is saved
+      inviteList: inviteList.map((u) => ({
+        uid: u.uid,
+        email: u.email,
+        displayName: u.displayName,
+        status: "pending" // new: default invite status
+      })),
+      budgetList: budgetItems,
       createdBy: currentUser.uid,
     };
 
@@ -215,6 +221,9 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
   const [estimatedCost, setEstimatedCost] = useState("");
+  const acceptedInvitees = inviteList.filter((u) => u.status === "accepted");
+  const numberOfAccepted = acceptedInvitees.length || 1; // avoid div by zero
+  const perPersonCost = totalAmount / numberOfAccepted;
   const [showPopup, setShowPopup] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const handleSelect = (option: { label: string; value: string | number }) => {
@@ -430,7 +439,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
                 {/* Right: Status + Remove Button */}
                 <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
-                  <span className="text-green-700 text-xs sm:text-l font-medium">
+                  <span className="text-yellow-700 text-xs sm:text-l font-medium">
                     Pending
                   </span>
                   <button
@@ -610,22 +619,24 @@ const EventForm: React.FC<EventFormProps> = ({
                   To Pay
                 </div>
               </div>
-              <div className="content p-2 border-b">
-                <div className="accepted-invites flex flex-row justify-between items-center">
-                  <div className="name">
-                    <p className="text-stone-900/75 text-base font-bold">
-                      Toothless
-                    </p>
-                    <p className="text-stone-900/75 text-sm">
-                      toothless@gmail.com
-                    </p>
-                  </div>
-                  <div className="bayranan text-black">100.00</div>
+              {acceptedInvitees.map((user) => (
+              <div key={user.uid} className="accepted-invites flex flex-row justify-between items-center p-2 border-b">
+                <div className="name">
+                  <p className="text-stone-900/75 text-base font-bold">
+                    {user.displayName}
+                  </p>
+                  <p className="text-stone-900/75 text-sm">
+                    {user.email}
+                  </p>
+                </div>
+                <div className="bayranan text-black">
+                  ₱{perPersonCost.toFixed(2)}
                 </div>
               </div>
+            ))}
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
-                <div className="total-if-equal">{equalMoney}</div>
+                <div className="total-if-equal">₱{equalMoney}</div>
               </div>
             </div>
           )}

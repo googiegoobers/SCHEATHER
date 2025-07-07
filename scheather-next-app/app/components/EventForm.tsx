@@ -268,13 +268,14 @@ const EventForm: React.FC<EventFormProps> = ({
 
     try {
       // Save event
-      const docRef = await addDoc(collection(db, "events"), eventToSave);
+      const cleanEvent = JSON.parse(JSON.stringify(eventToSave));
+      const docRef = await addDoc(collection(db, "events"), cleanEvent);
       const savedEvent = { ...eventToSave, id: docRef.id };
       onEventCreated(savedEvent);
 
       // Send notifications to invited users (excluding creator)
       for (const user of eventToSave.inviteList) {
-        if (user.uid !== currentUser.uid) {
+        if (user?.uid && user.uid !== currentUser.uid) {
           await addDoc(collection(db, "notifications"), {
             userId: user.uid,
             type: "invite",
@@ -492,7 +493,7 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="flex flex-col gap-4 w-full max-w-2xl">
             {inviteList.map((user) => (
               <div
-                key={user.uid}
+                key={`${user.uid}-${user.email}`}
                 className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border rounded-xl shadow hover:bg-blue-50 transition"
               >
                 {/* Left: Avatar + Name + Email */}

@@ -583,12 +583,13 @@ export default function Dashboard() {
                     Invitations
                   </a>
                 </div>
-
-                <Link href="/ToDoList">
-                  <div className="text-white text-xl mb-6 cursor pointer">
-                    To-do list
-                  </div>
-                </Link>
+                
+                  <Link href="/ToDoList">
+                    <div className="text-white text-xl mb-6 cursor pointer">
+                      To-do list
+                    </div>
+                  </Link>
+                
 
                 <div className="flex-grow"></div>
               </aside>

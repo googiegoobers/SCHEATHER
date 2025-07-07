@@ -201,16 +201,13 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList: [
-        ...newEvent.inviteList,
-        {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          status: "pending",
-          amount: 0, // (optional, for Kanya-Kanyang Bayad)
-        },
-      ],
+      inviteList: inviteList.map((u) => ({
+        uid: u.uid,
+        email: u.email,
+        displayName: u.displayName,
+        status: "pending" // new: default invite status
+      })),
+      budgetList: budgetItems,
       createdBy: currentUser.uid,
     };
 
@@ -224,6 +221,9 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
   const [estimatedCost, setEstimatedCost] = useState("");
+  const acceptedInvitees = inviteList.filter((u) => u.status === "accepted");
+  const numberOfAccepted = acceptedInvitees.length || 1; // avoid div by zero
+  const perPersonCost = totalAmount / numberOfAccepted;
   const [showPopup, setShowPopup] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const handleSelect = (option: { label: string; value: string | number }) => {
@@ -441,7 +441,7 @@ const EventForm: React.FC<EventFormProps> = ({
 
                 {/* Right: Status + Remove Button */}
                 <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
-                  <span className="text-green-700 text-xs sm:text-l font-medium">
+                  <span className="text-yellow-700 text-xs sm:text-l font-medium">
                     Pending
                   </span>
                   <button
@@ -615,10 +615,10 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <div className="label flex flex-row justify-between pl-4 pr-4 border-b p-2">
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Invite List
+                  Participant List
                 </div>
                 <div className="text-[color:#213E60] text-xl font-bold">
-                  Pay
+                  To Pay
                 </div>
               </div>
               <div className="content p-2 border-b">
@@ -655,7 +655,7 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
-                <div className="total-if-equal">{equalMoney}</div>
+                <div className="total-if-equal">₱{equalMoney}</div>
               </div>
             </div>
           )}

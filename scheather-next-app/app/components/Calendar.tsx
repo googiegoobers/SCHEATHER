@@ -188,8 +188,42 @@ const CalendarComponent: React.FC = () => {
   return (
     <div className="relative">
       {isLoading && (
-        <div className="absolute top-0 left-0 w-full h-full bg-white/60 z-50 flex justify-center items-center">
-          <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-white/60 z-50 flex flex-col justify-center items-center">
+          <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-2" />
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-sm text-gray-500">Loading Events...</span>
+            <p className="text-base font-medium animate-pulse mb-1">
+              Please wait a moment
+            </p>
+          </div>
+          <style jsx>{`
+            @keyframes swapText {
+              0%,
+              49% {
+                opacity: 1;
+              }
+              50%,
+              100% {
+                opacity: 0;
+              }
+            }
+            @keyframes swapTextAlt {
+              0%,
+              49% {
+                opacity: 0;
+              }
+              50%,
+              100% {
+                opacity: 1;
+              }
+            }
+            .loading-text {
+              animation: swapText 3s infinite;
+            }
+            .pleasewait-text {
+              animation: swapTextAlt 3s infinite;
+            }
+          `}</style>
         </div>
       )}
       <Calendar

@@ -68,6 +68,25 @@ export default function RootLayout({
       <body>
         <ClientProviders>{children}</ClientProviders>
         <Analytics />
+
+        {/* Google Analytics */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3`}
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+               window.dataLayer = window.dataLayer || [];
+               function gtag(){dataLayer.push(arguments);}
+               gtag('js', new Date());
+               gtag('config', 'G-QMVC5BR2W3', {
+                 page_path: window.location.pathname,
+               });
+             `,
+          }}
+        />
+
       </body>
     </html>
   );

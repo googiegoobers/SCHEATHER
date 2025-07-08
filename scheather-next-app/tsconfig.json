@@ -18,11 +18,11 @@
         "name": "next"
       }
     ],
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./app/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types"],
-  "exclude": ["node_modules"],
-  "baseUrl": "./"
+  "exclude": ["node_modules", "node_modules/**/*", ".next", "out", "dist"]
 }

@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 import { useState, useEffect } from "react";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth } from "../../lib/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import Script from "next/script";
 import { updatePassword } from "firebase/auth";

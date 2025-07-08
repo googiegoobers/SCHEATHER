@@ -5,18 +5,18 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { auth, db } from "@/app/lib/firebaseConfig";
-import CalendarComponent from "@/app/components/Calendar";
-import EventForm from "@/app/components/EventForm";
-import HamburgerCal from "@/app/components/HamburgerCal";
-import ProfileUser from "@/app/components/ProfileUser";
-import InvitationPage from "@/app/components/InvitationPage";
+import { auth, db } from "../lib/firebaseConfig";
+import CalendarComponent from "../components/Calendar";
+import EventForm from "../components/EventForm";
+import HamburgerCal from "../components/HamburgerCal";
+import ProfileUser from "../components/ProfileUser";
+import InvitationPage from "../components/InvitationPage";
 import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
 // import { getAnalytics, logEvent } from "firebase/analytics";
-import Notifications from "@/app/components/Notifications";
+import Notifications from "../components/Notifications";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 //for the default icons kay blurry ang icons nga gikan sa API

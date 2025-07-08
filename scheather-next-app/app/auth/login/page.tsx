@@ -20,6 +20,8 @@ export default function Home() {
   const { user, googleSignIn, logOut } = UserAuth();
   const [googleLoading, setGoogleLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleLogin = async () => {
     if (loading) return;
@@ -41,7 +43,9 @@ export default function Home() {
       }
     } catch (error: any) {
       console.error("Login error:", error.message);
-      alert(`Login failed: ${error.message}`);
+      setError(error.message);
+      setSuccess("");
+      // alert(`Login failed: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -75,7 +79,9 @@ export default function Home() {
         router.push("/dashboard");
       }
     } catch (error: any) {
-      alert(`Google Sign-In failed: ${error.message}`);
+      setError(error.message);
+      setSuccess("");
+      // alert(`Google Sign-In failed: ${error.message}`);
     } finally {
       setGoogleLoading(false);
     }
@@ -128,7 +134,7 @@ export default function Home() {
           className="mt-35 lg:w-[85vw] lg:h-[80vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0"
         >
           {/*Left Side of the Container*/}
-          <div className="hidden lg:flex relative Justify-center flex lg:top-[7vh] lg:px-[5vw] flex-col">
+          <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[5vw] flex-col">
             <Link href="/">
               <h1
                 className=" text-[#223F61] text-xl sm:text-5xl font-medium"
@@ -150,7 +156,7 @@ export default function Home() {
             </h2>
 
             <p
-              className="text-[#223F61] lg:p5px my-2.5 mt-15"
+              className="text-[#223F61] lg:p5px my-2.5 mt-8"
               style={{
                 fontFamily: "Poppins",
               }}
@@ -205,8 +211,21 @@ export default function Home() {
                 />
               </button>
             </div>
-
-            <div className="flex flex-col items-center w-full mt-6 gap-4">
+            <div className="flex items-left w-full mt-4 gap-4">
+              {/* Error message */}
+              {error && (
+                <p className=" text-red-500 text-sm font-['Poppins']">
+                  {error}
+                </p>
+              )}
+              {/* Success message */}
+              {success && (
+                <p className=" text-green-500 text-sm font-['Poppins']">
+                  {success}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col items-center w-full mt-7 gap-4">
               <button
                 type="button"
                 onClick={handleLogin}
@@ -329,6 +348,20 @@ export default function Home() {
             />
           </button>
         </div>
+
+        <div className="flex flex-col items-center w-full mt-4">
+          {error && (
+            <p className=" text-red-500 text-sm font-['Poppins']">{error}</p>
+          )}
+
+          {/* Success message */}
+          {success && (
+            <p className=" text-green-500 text-sm font-['Poppins']">
+              {success}
+            </p>
+          )}
+        </div>
+
         {/* Buttons below textboxes */}
         <div className="flex flex-col items-center w-full mt-6 gap-4">
           <button

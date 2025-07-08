@@ -8,8 +8,8 @@ Built using **Next.js**, **TypeScript**, **Firebase**,and **Tailwind CSS**, Sche
 
 ## 🚀 Features
 - Group event scheduling
-- Weather API integration (dynamic background + smart suggestions)
-- User authentication (Firebase email/password + potential Google login)
+- Weather API integration (dynamic icons + weather forecast)
+- User authentication (Firebase email/password +  login with Google )
 - Password reset via email
 - Collaboration with other users (invite participants)
 - Responsive, modern UI

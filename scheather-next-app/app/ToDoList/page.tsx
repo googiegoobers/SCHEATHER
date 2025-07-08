@@ -7,7 +7,7 @@ import { auth } from "@/app/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
 import { Task, subscribeToTasks, addTask, patchTask, deleteTask } from "@/app/lib/tasksService";
 
-interface Props {
+interface Props { //ni work na yippie
   task: Task;
   onPatch: (id: string, data: Partial<Task>) => void;
   onDelete: (id: string) => void;

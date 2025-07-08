@@ -12,3 +12,4 @@ export async function updateInviteStatus(eventId, userId, newStatus) {
         await updateDoc(eventRef, { inviteList: updatedInviteList });
     }
 }
+//solve

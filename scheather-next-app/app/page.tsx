@@ -4,6 +4,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import Scene from "./components/Scene";
 
 // const Scene = dynamic(() => import("@/app/components/Scene"), { ssr: false });
 
@@ -286,13 +287,12 @@ export default function Home() {
 
             {/* RIGHT CONTENT - IMAGE */}
             <div className="flex flex-col justify-center items-center flex-1 order-1 lg:order-2 w-full">
-              {/* <Scene scrollProgress={scrollProgress} /> */}
-
-              <img
+              <Scene scrollProgress={scrollProgress} />
+              {/* <img
                 src="/hero-logo.png"
                 alt="Art"
                 className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain"
-              />
+              /> */}
             </div>
           </div>
         </div>

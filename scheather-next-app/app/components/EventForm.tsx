@@ -1,6 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import "./Calendar.css";
 import { User } from "firebase/auth";
@@ -12,7 +18,10 @@ interface EventFormProps {
   start: string;
   end: string;
   onClose: () => void;
-  onEventCreated: (event: any) => void;
+  onEventCreated?: (event: any) => void;
+  onEventUpdated?: (event: any) => void;
+  eventId?: string;
+  initialEvent?: any;
   currentUser: User | null;
 }
 
@@ -28,11 +37,16 @@ const EventForm: React.FC<EventFormProps> = ({
   end,
   onClose,
   onEventCreated,
+  onEventUpdated,
+  eventId,
+  initialEvent,
   currentUser,
 }) => {
   const [userQuery, setUserQuery] = useState("");
   const [userResults, setUserResults] = useState<user[]>([]);
-  const [inviteList, setInviteList] = useState<any[]>([]);
+  const [inviteList, setInviteList] = useState<any[]>(
+    initialEvent?.inviteList || []
+  );
   const [allUsers, setAllUsers] = useState<any[]>([]); // <-- store fetched users
 
   // Fetch users from Firestore on mount
@@ -70,30 +84,45 @@ const EventForm: React.FC<EventFormProps> = ({
     { label: "Divide by selected participants", value: "b" },
   ];
 
-  const [newEvent, setNewEvent] = useState({
-    title: "",
-    location: "",
-    start: start,
-    end: end,
-    isAllDay: false,
-    inviteList: [],
-    budgetList: [],
-    participants: [],
-  });
+  const [newEvent, setNewEvent] = useState(() =>
+    initialEvent
+      ? {
+          ...initialEvent,
+          start: initialEvent.start,
+          end: initialEvent.end,
+        }
+      : {
+          title: "",
+          location: "",
+          start: start,
+          end: end,
+          isAllDay: false,
+          inviteList: [],
+          budgetList: [],
+          participants: [],
+        }
+  );
 
   // i-edit ang date (newEvent.start) nga mabasa siya sa weatherapi
-  const eventDateTime = newEvent.start; // e.g. "2025-07-06T14:30"
-  const eventDate = newEvent.start.split("T")[0];
-  const eventHour = new Date(eventDateTime).getHours();
+  const eventDateString =
+    typeof newEvent.start === "string"
+      ? newEvent.start
+      : newEvent.start instanceof Date
+      ? newEvent.start.toISOString().slice(0, 16)
+      : "";
+  const eventDate = eventDateString.split("T")[0];
+  const eventHour = eventDateString
+    ? new Date(eventDateString).getHours()
+    : undefined;
   // for budget nga equal
-  const [equalMoney, setEqualMoney] = useState("");
+  const [equalMoney, setEqualMoney] = useState(initialEvent?.equalMoney || "");
 
   const [budgetItems, setBudgetItems] = useState<
     {
       label: string;
       amount: string;
     }[]
-  >([]);
+  >(initialEvent?.budgetList || []);
 
   // for the lista of the bayranan or mga kagastusan
   const [newItem, setNewItem] = useState({ label: "", amount: "" });
@@ -172,20 +201,20 @@ const EventForm: React.FC<EventFormProps> = ({
         const dd = String(date.getDate()).padStart(2, "0");
         const startOfDay = `${yyyy}-${mm}-${dd}T00:00`;
         const endOfDay = `${yyyy}-${mm}-${dd}T23:59`;
-        setNewEvent((prev) => ({
+        setNewEvent((prev: typeof newEvent) => ({
           ...prev,
           isAllDay: true,
           start: startOfDay,
           end: endOfDay,
         }));
       } else {
-        setNewEvent((prev) => ({
+        setNewEvent((prev: typeof newEvent) => ({
           ...prev,
           isAllDay: false,
         }));
       }
     } else {
-      setNewEvent((prev) => ({
+      setNewEvent((prev: typeof newEvent) => ({
         ...prev,
         [name]: type === "checkbox" ? checked : value,
       }));
@@ -197,59 +226,62 @@ const EventForm: React.FC<EventFormProps> = ({
     e.preventDefault();
 
     if (!currentUser) {
-      alert("You must be logged in to create an event.");
+      alert("You must be logged in to create or edit an event.");
       return;
     }
 
     const eventToSave = {
       ...newEvent,
-      inviteList: [
-        ...inviteList.map((user) => ({
+      inviteList: inviteList
+        .filter((user) => user.uid !== currentUser.uid)
+        .map((user) => ({
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
-          status: "pending",
+          status: user.status || "pending",
           amount:
             selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
               ? parseFloat(equalMoney) / acceptedUsers.length
               : 0,
         })),
-        {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          status: "accepted",
-          amount: 0,
-        },
-      ],
       createdBy: currentUser.uid,
+      budgetList: budgetItems,
     };
 
     try {
-      // Save event
-      const cleanEvent = JSON.parse(JSON.stringify(eventToSave));
-      const docRef = await addDoc(collection(db, "events"), cleanEvent);
-      const savedEvent = { ...eventToSave, id: docRef.id };
-      onEventCreated(savedEvent);
+      if (eventId && onEventUpdated) {
+        // Edit mode: update existing event
+        const eventRef = doc(db, "events", eventId);
+        const cleanEvent = JSON.parse(JSON.stringify(eventToSave));
+        await updateDoc(eventRef, cleanEvent);
+        onEventUpdated({ ...eventToSave, id: eventId });
+        onClose();
+      } else if (onEventCreated) {
+        // Create mode: add new event
+        const cleanEvent = JSON.parse(JSON.stringify(eventToSave));
+        const docRef = await addDoc(collection(db, "events"), cleanEvent);
+        const savedEvent = { ...eventToSave, id: docRef.id };
+        onEventCreated(savedEvent);
 
-      // Send notifications to invited users (excluding creator)
-      for (const user of eventToSave.inviteList) {
-        if (user?.uid && user.uid !== currentUser.uid) {
-          await addDoc(collection(db, "notifications"), {
-            userId: user.uid,
-            type: "invite",
-            eventId: docRef.id,
-            message: `${currentUser.displayName} invited you to "${eventToSave.title}"`,
-            status: "unread",
-            timestamp: new Date(),
-          });
+        // Send notifications to invited users (excluding creator)
+        for (const user of eventToSave.inviteList) {
+          if (user?.uid && user.uid !== currentUser.uid) {
+            await addDoc(collection(db, "notifications"), {
+              userId: user.uid,
+              type: "invite",
+              eventId: docRef.id,
+              message: `${currentUser.displayName} invited you to "${eventToSave.title}"`,
+              status: "unread",
+              timestamp: new Date(),
+            });
+          }
         }
-      }
 
-      onClose();
+        onClose();
+      }
     } catch (err) {
-      console.error("Error adding event:", err);
-      alert("Failed to create event.");
+      console.error("Error saving event:", err);
+      alert("Failed to save event.");
     }
   };
 
@@ -278,7 +310,7 @@ const EventForm: React.FC<EventFormProps> = ({
         <div className="event-creation flex flex-col w-full">
           <div className="flex flex-row justify-between items-center">
             <p className="justify-start text-[color:#213E60] text-5xl font-bold font-['Montserrat'] p-2">
-              EVENT DETAILS
+              {eventId ? "EDIT EVENT" : "EVENT DETAILS"}
             </p>
             <button
               type="button"
@@ -294,7 +326,7 @@ const EventForm: React.FC<EventFormProps> = ({
               name="title"
               type="text"
               placeholder="Event Title"
-              value={newEvent.title}
+              value={newEvent.title || ""}
               onChange={handleChange}
               required
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-full p-2"
@@ -308,7 +340,7 @@ const EventForm: React.FC<EventFormProps> = ({
             <input
               name="start"
               type="datetime-local"
-              value={newEvent.start}
+              value={newEvent.start || ""}
               onChange={handleChange}
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-auto p-2"
               required
@@ -322,7 +354,7 @@ const EventForm: React.FC<EventFormProps> = ({
             <input
               name="end"
               type="datetime-local"
-              value={newEvent.end}
+              value={newEvent.end || ""}
               onChange={handleChange}
               className="event-input-text bg-transparent border-b border-gray-400 focus:outline-none w-auto"
               required
@@ -331,9 +363,12 @@ const EventForm: React.FC<EventFormProps> = ({
           </div>
           <div className="w-auto text-stone-900 text-xl md:text-sm font-['Montserrat'] px-2 md:px-4 ">
             <LocationAutocomplete
-              value={newEvent.location}
+              value={newEvent.location || ""}
               onChange={(val) => {
-                setNewEvent((prev) => ({ ...prev, location: val }));
+                setNewEvent((prev: any) => ({
+                  ...prev,
+                  location: val,
+                }));
 
                 // If mu clear sa location input, clear weather and coords
                 if (val === "") {
@@ -365,7 +400,7 @@ const EventForm: React.FC<EventFormProps> = ({
             <input
               name="isAllDay"
               type="checkbox"
-              checked={newEvent.isAllDay}
+              checked={!!newEvent.isAllDay}
               onChange={handleChange}
               className="font-[Montserrat]"
             />
@@ -698,7 +733,7 @@ const EventForm: React.FC<EventFormProps> = ({
             type="submit"
             className="w-[350px] bg-[#213E60] text-white rounded-[8px] p-2 hover:bg-[#94B6EF] cursor-pointer"
           >
-            Create Event
+            {eventId ? "Save Event" : "Create Event"}
           </button>
         </div>
       </form>

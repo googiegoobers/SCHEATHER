@@ -16,7 +16,7 @@ export async function GET() {
             credentialsPath: process.env.GOOGLE_APPLICATION_CREDENTIALS
         });
 
-        if (!process.env.GOOGLE_APPLICATION_CREDENTIALS || !process.env.GA_PROPERTY_ID) {
+        if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || !process.env.GA_PROPERTY_ID) {
             console.log('Environment variables not set, returning dummy data');
             return NextResponse.json({
                 dailyData: generateDummyDailyData(),

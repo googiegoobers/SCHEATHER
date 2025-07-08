@@ -1,12 +1,11 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 export function createAnalyticsClient() {
-    const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
-        ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
-        : undefined;
-
+    let credentials;
+    if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+        credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+    }
     return new BetaAnalyticsDataClient({
         credentials,
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || '495490473'
     });
 } 

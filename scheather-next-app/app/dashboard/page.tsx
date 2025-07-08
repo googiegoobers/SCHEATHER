@@ -14,6 +14,7 @@ import InvitationPage from "../components/InvitationPage";
 import path from "path";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; //para kuha sa creation date sa user for the profile ako ra ipasa
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 // import { getAnalytics, logEvent } from "firebase/analytics";
 import Notifications from "../components/Notifications";
@@ -127,6 +128,29 @@ export default function Dashboard() {
   const [openInvitePage, setOpenInvitePage] = useState("");
   //for bell notif
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // debugging
+  useEffect(() => {
+    console.log("openInvitePage changed:", openInvitePage);
+  }, [openInvitePage]);
+  useEffect(() => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const unread = snapshot.docs.filter(
+        (doc) => doc.data().status === "unread"
+      ).length;
+
+      setUnreadCount(unread);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   //creation year for profile
   useEffect(() => {
@@ -431,24 +455,58 @@ export default function Dashboard() {
           <div className="relative flex items-center gap-2 sm:gap-4">
             <div className="relative notification-wrapper notification-icon">
               <svg
-                className={`w-6 h-6 shrink-0 cursor-pointer ${
+                className={`w-6 h-6 shrink-0 cursor-pointer transition-colors ${
                   unreadCount > 0 ? "text-orange-500" : "text-gray-800"
                 }`}
-                aria-hidden="true"
+                aria-label={`Notifications${
+                  unreadCount > 0 ? ` (${unreadCount} unread)` : ""
+                }`}
+                role="button"
+                tabIndex={0}
                 xmlns="http://www.w3.org/2000/svg"
-                fill="#e68c3a"
+                fill="currentColor"
                 viewBox="0 0 24 24"
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setIsNotificationOpen(!isNotificationOpen);
+                  }
+                }}
               >
                 <path d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
               </svg>
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-0 transform translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full z-10" />
+              )}
 
               {isNotificationOpen && user && (
-                <div className="notification-dropdown absolute right-0 top-10 mt-2 w-64 ">
-                  <Notifications
-                    currentUser={user}
-                    setUnreadCount={setUnreadCount}
-                  />
+                <div className="notification-dropdown absolute top-full mt-2 z-20 ml-2">
+                  {/* Mobile: center aligned */}
+                  <div className="block sm:hidden left-1/2 -translate-x-1/2 w-[90vw] max-w-sm absolute px-4">
+                    <Notifications
+                      currentUser={user}
+                      onShowInvitations={() => {
+                        setOpenInvitePage("invitation");
+                        setIsNotificationOpen(false);
+                      }}
+                    />
+                  </div>
+
+                  {/* Desktop: right aligned */}
+                  <div className="hidden sm:block right-1 w-96 absolute">
+                    <Notifications
+                      currentUser={user}
+                      onShowInvitations={() => {
+                        setOpenInvitePage("invitation");
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              {openInvitePage == "invitation" && (
+                <div className="call-the-component absolute inset-0 top-30 bg-white z-30 overflow-auto flex items-center justify-center">
+                  <InvitationPage onClose={() => setOpenInvitePage("")} />
                 </div>
               )}
             </div>
@@ -628,6 +686,7 @@ export default function Dashboard() {
             <InvitationPage onClose={() => setOpenInvitePage("")} />
           </div>
         )}
+
         {openInvitePage != "invitation" && (
           <div>
             {/* // Main content area/ */}

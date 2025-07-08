@@ -27,15 +27,16 @@ interface Notification {
 interface NotificationPanelProps {
   currentUser: User | null;
   setUnreadCount?: (count: number) => void;
+  onShowInvitations?: () => void;
 }
 
 const NotificationPanel: React.FC<NotificationPanelProps> = ({
   currentUser,
+  onShowInvitations,
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showInvitations, setShowInvitations] = useState(false);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -92,8 +93,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
               }`}
               onClick={() => {
                 markAsRead(notif.id);
-                if (["rsvp", "invite"].includes(notif.type.toLowerCase())) {
-                  setShowInvitations(true);
+                if (["invite"].includes(notif.type.toLowerCase())) {
+                  onShowInvitations?.(); // ← Trigger parent logic
                 }
               }}
             >
@@ -104,13 +105,6 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
             </li>
           ))}
         </ul>
-      )}
-      {showInvitations && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center">
-          <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-4xl p-6 overflow-y-auto max-h-[90vh]">
-            <InvitationPage onClose={() => setShowInvitations(false)} />
-          </div>
-        </div>
       )}
     </div>
   );

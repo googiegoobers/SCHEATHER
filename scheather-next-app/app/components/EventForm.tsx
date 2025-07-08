@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
-import { db } from "@/app/lib/firebaseConfig";
+import { db } from "@/lib/firebaseConfig";
 import "./Calendar.css";
 import { User } from "firebase/auth";
 import LocationAutocomplete from "./LocationAutocomplete";

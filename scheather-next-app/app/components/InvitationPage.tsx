@@ -65,7 +65,7 @@ export default function InvitationPage({ onClose }: Props) {
                     userData.lastName ?? ""
                   }`.trim() ||
                   "Unknown";
-                creatorAvatar = userData.photoURL ?? null;
+                creatorAvatar = userData.avatarPath ?? null;
               }
             } catch (err) {
               console.error("Failed to fetch creator:", err);
@@ -158,7 +158,7 @@ export default function InvitationPage({ onClose }: Props) {
       >
         <div className="flex flex-row items-center gap-4">
           <img
-            src={event.avatarPath || "/avatar/axolotl.jpg"}
+            src={event.creatorAvatar || "/avatar/axolotl.jpg"}
             alt={event.creatorName}
             className="w-12 h-12 rounded-full object-cover"
           />

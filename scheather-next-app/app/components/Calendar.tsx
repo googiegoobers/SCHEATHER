@@ -40,14 +40,12 @@ async function fetchUserProfile(uid: string) {
 
 const localizer = momentLocalizer(moment);
 
-/* ---------- Types ---------- */
-
 interface Invitee {
   uid?: string;
   displayName?: string;
   email?: string;
   avatarPath?: string;
-  status?: string; // "accepted" | "pending" | "declined" | …
+  status?: string;
   [key: string]: any;
 }
 
@@ -65,9 +63,13 @@ interface FirestoreEvent {
   inviteList?: Invitee[];
   budgetList?: budgetItem[];
   createdBy?: string;
+  weather?: {
+    temp_c: number;
+    condition?: { text: string };
+    icon: string;
+  };
 }
 
-/* ---------- Helper: coloured badge per status ---------- */
 const getStatusClass = (status: string = "") => {
   switch (status.toLowerCase()) {
     case "accepted":
@@ -81,8 +83,6 @@ const getStatusClass = (status: string = "") => {
       return "bg-gray-100 text-gray-800";
   }
 };
-
-/* ---------- Component ---------- */
 
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
@@ -172,6 +172,7 @@ const CalendarComponent: React.FC = () => {
             inviteList: inviteArr,
             budgetList: budgetArr,
             createdBy: data.createdBy,
+            weather: data.weather || null,
           });
         }
       }
@@ -388,29 +389,28 @@ const CalendarComponent: React.FC = () => {
             {/* header buttons */}
             <div className="flex gap-2 sm:gap-4 mb-4 items-center">
               <div className="wrapperBTN space-x-3 ml-auto">
-              {isOwner && (
+                {isOwner && (
+                  <button
+                    className="buttonsPencil  rounded-full p-1 hover:bg-black/10 cursor-pointer"
+                    title="Edit Event Details"
+                    onClick={() => {
+                      setSelectedEvent(null); // Close event details modal
+                      setEventToEdit(selectedEvent); // Store the event to edit
+                      setEditMode(true);
+                      setShowForm(true);
+                    }}
+                  >
+                    <img src="/pencil.png" className="w-6 h-6" alt="Edit" />
+                  </button>
+                )}
                 <button
-                  className="buttonsPencil  rounded-full p-1 hover:bg-black/10 cursor-pointer"
-
-                  title="Edit Event Details"
-                  onClick={() => {
-                    setSelectedEvent(null); // Close event details modal
-                    setEventToEdit(selectedEvent); // Store the event to edit
-                    setEditMode(true);
-                    setShowForm(true);
-                  }}
+                  className="buttonsTrash rounded-full p-1 hover:bg-black/10 cursor-pointer"
+                  onClick={handleDeleteEvent}
+                  disabled={deleting}
+                  title="Delete event"
                 >
-                  <img src="/pencil.png" className="w-6 h-6" alt="Edit" />
+                  <img src="/trash.png" className="w-6 h-6" />
                 </button>
-              )}
-              <button
-                className="buttonsTrash rounded-full p-1 hover:bg-black/10 cursor-pointer"
-                onClick={handleDeleteEvent}
-                disabled={deleting}
-                title="Delete event"
-              >
-                <img src="/trash.png" className="w-6 h-6" />
-              </button> 
               </div>
               <button
                 onClick={() => setSelectedEvent(null)}
@@ -439,6 +439,20 @@ const CalendarComponent: React.FC = () => {
               {selectedEvent.location
                 ? selectedEvent.location.replace(/(.{60})/g, "$1\n")
                 : "No location provided"}
+              {/* Weather (if saved) */}
+              {selectedEvent.weather && (
+                <div className="mt-1 flex items-center gap-2 text-sm text-gray-700">
+                  <img
+                    src={selectedEvent.weather.icon}
+                    alt={selectedEvent.weather.condition?.text || "Weather"}
+                    className="w-5 h-5"
+                  />
+                  <span>
+                    {selectedEvent.weather.condition?.text},{" "}
+                    {selectedEvent.weather.temp_c}°C
+                  </span>
+                </div>
+              )}
             </div>
 
             <hr className="my-4 border-gray-300" />
@@ -450,43 +464,44 @@ const CalendarComponent: React.FC = () => {
                 <ul className="list-disc list-inside mt-1 space-y-1">
                   {Array.isArray(selectedEvent.inviteList) &&
                   selectedEvent.inviteList.length ? (
-                    selectedEvent.inviteList.filter((user) => user.status !== "accepted")
-                    .map((user, idx) => (
-                      <li key={idx} className="flex items-center gap-2">
-                        {/* Show avatar if available, else default */}
-                        <img
-                          src={
-                            user.avatarPath && user.avatarPath.trim() !== ""
-                              ? user.avatarPath
-                              : "/avatar/axolotl.jpg"
-                          }
-                          alt={user.displayName || user.email || "User"}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                        {/* name + badge + email */}
-                        <span className="flex flex-col">
-                          <span className="flex items-center gap-2">
-                            <span className="text-[#213E60] font-semibold text-xs sm:text-base">
-                              {user.displayName || "Unknown User"}
+                    selectedEvent.inviteList
+                      .filter((user) => user.status !== "accepted")
+                      .map((user, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          {/* Show avatar if available, else default */}
+                          <img
+                            src={
+                              user.avatarPath && user.avatarPath.trim() !== ""
+                                ? user.avatarPath
+                                : "/avatar/axolotl.jpg"
+                            }
+                            alt={user.displayName || user.email || "User"}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                          {/* name + badge + email */}
+                          <span className="flex flex-col">
+                            <span className="flex items-center gap-2">
+                              <span className="text-[#213E60] font-semibold text-xs sm:text-base">
+                                {user.displayName || "Unknown User"}
+                              </span>
+                              {user.status && (
+                                <span
+                                  className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
+                                    user.status
+                                  )}`}
+                                >
+                                  {user.status}
+                                </span>
+                              )}
                             </span>
-                            {user.status && (
-                              <span
-                                className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
-                                  user.status
-                                )}`}
-                              >
-                                {user.status}
+                            {user.email && (
+                              <span className="text-xs sm:text-sm text-gray-500">
+                                {user.email}
                               </span>
                             )}
                           </span>
-                          {user.email && (
-                            <span className="text-xs sm:text-sm text-gray-500">
-                              {user.email}
-                            </span>
-                          )}
-                        </span>
-                      </li>
-                    ))
+                        </li>
+                      ))
                   ) : (
                     <li>No invites</li>
                   )}
@@ -514,7 +529,8 @@ const CalendarComponent: React.FC = () => {
                       (u) =>
                         u.uid === currentUser.uid && u.status === "declined"
                     )
-                  }>
+                  }
+                >
                   Back Out
                 </button>
               )}
@@ -522,53 +538,85 @@ const CalendarComponent: React.FC = () => {
 
             {/* --- Budget & Participants Breakdown (Readonly) --- */}
             <div className="mt-6 p-4 border rounded-xl bg-gray-50">
-              <h3 className="font-bold text-lg text-[#213E60] mb-2">Budget Breakdown</h3>
-              {Array.isArray(selectedEvent.budgetList) && selectedEvent.budgetList.length > 0 ? (
+              <h3 className="font-bold text-lg text-[#213E60] mb-2">
+                Budget Breakdown
+              </h3>
+              {Array.isArray(selectedEvent.budgetList) &&
+              selectedEvent.budgetList.length > 0 ? (
                 <>
                   <div className="mb-2">
-                    <span className="font-semibold">Total Budget:</span> ₱{
-                      selectedEvent.budgetList.reduce((sum, item) => sum + parseFloat(item.amount ? item.amount : "0"), 0).toFixed(2)
-                    }
+                    <span className="font-semibold">Total Budget:</span> ₱
+                    {selectedEvent.budgetList
+                      .reduce(
+                        (sum, item) =>
+                          sum + parseFloat(item.amount ? item.amount : "0"),
+                        0
+                      )
+                      .toFixed(2)}
                   </div>
                   <div className="mb-2">
                     <span className="font-semibold">Items:</span>
                   </div>
                   <ul className="list-inside space-y-1">
-                  {selectedEvent.budgetList.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <span className="text-[#213E60] font-semibold">{item.label}: </span>
-                      <span className="ml-auto text-sm text-gray-700">
-                      ₱{parseFloat(item.amount).toFixed(2)}
-                      </span>
-                    </li>
-                  ))}
+                    {selectedEvent.budgetList.map((item, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <span className="text-[#213E60] font-semibold">
+                          {item.label}:{" "}
+                        </span>
+                        <span className="ml-auto text-sm text-gray-700">
+                          ₱{parseFloat(item.amount).toFixed(2)}
+                        </span>
+                      </li>
+                    ))}
                   </ul>
                 </>
               ) : (
-                <div className="text-center text-gray-600">No budget set for this event.</div>
+                <div className="text-center text-gray-600">
+                  No budget set for this event.
+                </div>
               )}
               <div className="mt-4">
                 <span className="font-semibold">Participants:</span>
                 <ul className="list-inside space-y-1">
-                  {Array.isArray(selectedEvent.inviteList) && selectedEvent.inviteList.filter(u => u.status === "accepted").length > 0 ? (
+                  {Array.isArray(selectedEvent.inviteList) &&
+                  selectedEvent.inviteList.filter(
+                    (u) => u.status === "accepted"
+                  ).length > 0 ? (
                     (() => {
-                      const accepted = selectedEvent.inviteList.filter(u => u.status === "accepted");
-                      const totalBudget = Array.isArray(selectedEvent.budgetList)
-                        ? selectedEvent.budgetList.reduce((sum, item) => sum + (parseFloat(item.amount || "0") || 0), 0)
+                      const accepted = selectedEvent.inviteList.filter(
+                        (u) => u.status === "accepted"
+                      );
+                      const totalBudget = Array.isArray(
+                        selectedEvent.budgetList
+                      )
+                        ? selectedEvent.budgetList.reduce(
+                            (sum, item) =>
+                              sum + (parseFloat(item.amount || "0") || 0),
+                            0
+                          )
                         : 0;
-                      const perPerson = accepted.length > 0 ? (totalBudget / accepted.length) : 0;
+                      const perPerson =
+                        accepted.length > 0 ? totalBudget / accepted.length : 0;
                       return accepted.map((user, idx) => (
                         <li key={idx} className="flex items-center gap-2">
-                          {user.avatarPath && typeof user.avatarPath === "string" && user.avatarPath.trim() !== "" && (
-                            <img
-                              src={user.avatarPath}
-                              alt={user.displayName || user.email || "User"}
-                              className="w-6 h-6 rounded-full object-cover"
-                            />
-                          )}
-                          <span className="text-[#213E60] font-semibold">{user.displayName || user.email || "Unknown User"}</span>
-                          <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Accepted</span>
-                          <span className="ml-auto text-sm text-blue-700 font-semibold">₱{perPerson.toFixed(2)}</span>
+                          {user.avatarPath &&
+                            typeof user.avatarPath === "string" &&
+                            user.avatarPath.trim() !== "" && (
+                              <img
+                                src={user.avatarPath}
+                                alt={user.displayName || user.email || "User"}
+                                className="w-6 h-6 rounded-full object-cover"
+                              />
+                            )}
+                          <span className="text-[#213E60] font-semibold">
+                            {user.displayName || user.email || "Unknown User"}
+                          </span>
+                          <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
+                            Accepted
+                          </span>
+                          <span className="ml-auto text-sm text-blue-700 font-semibold">
+                            ₱{perPerson.toFixed(2)}
+                          </span>
                         </li>
                       ));
                     })()

@@ -23,6 +23,20 @@ import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm";
 import OutsideClickHandler from "react-outside-click-handler";
 import { onAuthStateChanged } from "firebase/auth";
+import { updateInviteStatus } from "@/lib/inviteUtils";
+
+// Helper to fetch user profile by uid
+async function fetchUserProfile(uid: string) {
+  try {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    if (userDoc.exists()) {
+      return userDoc.data();
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
 
 const localizer = momentLocalizer(moment);
 
@@ -44,6 +58,7 @@ interface FirestoreEvent {
   end: Date;
   location?: string;
   inviteList?: Invitee[];
+  createdBy?: string; // <-- add this
 }
 
 /* ---------- Helper: coloured badge per status ---------- */
@@ -82,6 +97,10 @@ const CalendarComponent: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(
     null
   );
+
+  // For editing events
+  const [editMode, setEditMode] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<FirestoreEvent | null>(null);
 
   /* ---------- Auth listener ---------- */
   useEffect(() => {
@@ -141,6 +160,7 @@ const CalendarComponent: React.FC = () => {
             end: new Date(data.end?.seconds ? data.end.toDate() : data.end),
             location: data.location,
             inviteList: inviteArr,
+            createdBy: data.createdBy, // <-- ensure this is present
           });
         }
       }
@@ -152,7 +172,43 @@ const CalendarComponent: React.FC = () => {
     return () => unsubscribe();
   }, [currentUser]);
 
+  // When selectedEvent changes, update inviteList avatars from DB
+  useEffect(() => {
+    async function updateAvatars() {
+      if (!selectedEvent || !selectedEvent.inviteList) return;
+      const updatedInviteList = await Promise.all(
+        selectedEvent.inviteList.map(async (user) => {
+          if (user.uid) {
+            const profile = await fetchUserProfile(user.uid);
+            if (profile && profile.avatarPath) {
+              return { ...user, avatarPath: profile.avatarPath };
+            }
+          }
+          return user;
+        })
+      );
+      setSelectedEvent((prev) =>
+        prev ? { ...prev, inviteList: updatedInviteList } : prev
+      );
+    }
+    updateAvatars();
+    // Only run when selectedEvent changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEvent]);
+
   /* ---------- Handlers ---------- */
+
+  // Role detection helpers for modal actions
+  const isOwner =
+    selectedEvent &&
+    currentUser &&
+    "createdBy" in selectedEvent &&
+    (selectedEvent as any).createdBy === currentUser.uid;
+  const isInvitee =
+    selectedEvent &&
+    currentUser &&
+    Array.isArray(selectedEvent.inviteList) &&
+    selectedEvent.inviteList.some((u) => u.uid === currentUser.uid);
 
   const handleSelectSlot = (slotInfo: any) => {
     if (!slotManuallySelected) return;
@@ -160,9 +216,11 @@ const CalendarComponent: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleSelectEvent = (evt: CalendarEvent) =>
-    setSelectedEvent(evt as unknown as FirestoreEvent);
-
+  const handleSelectEvent = (evt: CalendarEvent) => {
+    // evt.id may be string or number, ensure type matches
+    const found = events.find((e) => e.id === (evt as FirestoreEvent).id);
+    setSelectedEvent(found || (evt as unknown as FirestoreEvent));
+  };
   function toLocalDateTimeInputValue(date: Date) {
     const offset = date.getTimezoneOffset();
     const local = new Date(date.getTime() - offset * 60 * 1000);
@@ -239,32 +297,71 @@ const CalendarComponent: React.FC = () => {
       />
 
       {/* ---- Create‑Event modal ---- */}
-      {showForm && selectedSlot && (
+      {showForm && (selectedSlot || (editMode && eventToEdit)) && (
         <div className="fixed inset-0 bg-[#383734]/50 backdrop-blur-sm flex justify-center items-center z-50 pointer-events-none">
           <OutsideClickHandler
             onOutsideClick={() => {
               setSlotManuallySelected(false);
               setShowForm(false);
+              setEditMode(false);
+              setEventToEdit(null);
               setTimeout(() => setSlotManuallySelected(true), 100);
             }}
           >
             <div className="relative pointer-events-auto">
-              <EventForm
-                start={toLocalDateTimeInputValue(selectedSlot.start)}
-                end={toLocalDateTimeInputValue(selectedSlot.end)}
-                onClose={() => setShowForm(false)}
-                onEventCreated={(newEvt) =>
-                  setEvents((prev) => [
-                    ...prev,
-                    {
-                      ...newEvt,
-                      start: new Date(newEvt.start),
-                      end: new Date(newEvt.end),
-                    },
-                  ])
-                }
-                currentUser={currentUser}
-              />
+              {editMode && eventToEdit ? (
+                <EventForm
+                  start={toLocalDateTimeInputValue(eventToEdit.start)}
+                  end={toLocalDateTimeInputValue(eventToEdit.end)}
+                  eventId={eventToEdit.id}
+                  initialEvent={eventToEdit}
+                  onClose={() => {
+                    setShowForm(false);
+                    setEditMode(false);
+                    setEventToEdit(null);
+                  }}
+                  onEventUpdated={(updatedEvt: any) => {
+                    setEvents((prev) =>
+                      prev.map((evt) =>
+                        evt.id === updatedEvt.id
+                          ? {
+                              ...updatedEvt,
+                              start: new Date(updatedEvt.start),
+                              end: new Date(updatedEvt.end),
+                            }
+                          : evt
+                      )
+                    );
+                    setShowForm(false);
+                    setEditMode(false);
+                    setEventToEdit({
+                      ...updatedEvt,
+                      start: new Date(updatedEvt.start),
+                      end: new Date(updatedEvt.end),
+                    });
+                  }}
+                  currentUser={currentUser}
+                />
+              ) : (
+                selectedSlot && (
+                  <EventForm
+                    start={toLocalDateTimeInputValue(selectedSlot.start)}
+                    end={toLocalDateTimeInputValue(selectedSlot.end)}
+                    onClose={() => setShowForm(false)}
+                    onEventCreated={(newEvt) =>
+                      setEvents((prev) => [
+                        ...prev,
+                        {
+                          ...newEvt,
+                          start: new Date(newEvt.start),
+                          end: new Date(newEvt.end),
+                        },
+                      ])
+                    }
+                    currentUser={currentUser}
+                  />
+                )
+              )}
             </div>
           </OutsideClickHandler>
         </div>
@@ -276,11 +373,22 @@ const CalendarComponent: React.FC = () => {
           <div className="bg-white p-6 rounded-[30px] shadow-lg max-w-xl">
             {/* header buttons */}
             <div className="flex ml-90 gap-4 mb-4">
-              {/*<button className="buttonsPencil rounded-full p-1 hover:bg-black/10">
-                <img src="/pencil.png" className="w-6 h-6" />
-              </button>}*/}
+              {isOwner && (
+                <button
+                  className="buttonsPencil rounded-full p-1 hover:bg-black/10 cursor-pointer"
+                  title="Edit Event Details"
+                  onClick={() => {
+                    setSelectedEvent(null); // Close event details modal
+                    setEventToEdit(selectedEvent); // Store the event to edit
+                    setEditMode(true);
+                    setShowForm(true);
+                  }}
+                >
+                  <img src="/pencil.png" className="w-6 h-6" alt="Edit" />
+                </button>
+              )}
               <button
-                className="buttonsTrash rounded-full p-1 hover:bg-black/10"
+                className="buttonsTrash rounded-full p-1 hover:bg-black/10 cursor-pointer"
                 onClick={handleDeleteEvent}
                 disabled={deleting}
                 title="Delete event"
@@ -326,17 +434,16 @@ const CalendarComponent: React.FC = () => {
                 selectedEvent.inviteList.length ? (
                   selectedEvent.inviteList.map((user, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      {/* Only show avatar if avatarPath is a non-empty string */}
-                      {user.avatarPath &&
-                        typeof user.avatarPath === "string" &&
-                        user.avatarPath.trim() !== "" && (
-                          <img
-                            src={user.avatarPath}
-                            alt={user.displayName || user.email || "User"}
-                            className="w-6 h-6 rounded-full object-cover"
-                          />
-                        )}
-
+                      {/* Show avatar if available, else default */}
+                      <img
+                        src={
+                          user.avatarPath && user.avatarPath.trim() !== ""
+                            ? user.avatarPath
+                            : "/avatar/axolotl.jpg"
+                        }
+                        alt={user.displayName || user.email || "User"}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
                       {/* name + badge + email */}
                       <span className="flex flex-col">
                         <span className="flex items-center gap-2">
@@ -365,6 +472,33 @@ const CalendarComponent: React.FC = () => {
                   <li>No invites</li>
                 )}
               </ul>
+            </div>
+
+            <div className="flex flex-col items-center gap-2 mt-4">
+              {/* Only show Back Out if user is an invitee and NOT the owner */}
+              {isInvitee && !isOwner && (
+                <button
+                  className="bg-yellow-500 text-white w-full max-w-xs h-10 flex flex-col items-center rounded cursor-pointer"
+                  onClick={async () => {
+                    if (!selectedEvent?.id || !currentUser?.uid) return;
+                    await updateInviteStatus(
+                      selectedEvent.id,
+                      currentUser.uid,
+                      "declined"
+                    );
+                    setSelectedEvent(null); // close modal
+                  }}
+                  disabled={
+                    Array.isArray(selectedEvent?.inviteList) &&
+                    !!selectedEvent.inviteList.find(
+                      (u) =>
+                        u.uid === currentUser.uid && u.status === "declined"
+                    )
+                  }
+                >
+                  Back Out
+                </button>
+              )}
             </div>
           </div>
         </div>

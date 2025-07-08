@@ -59,7 +59,7 @@ const EventForm: React.FC<EventFormProps> = ({
         (user: any) =>
           user.email &&
           user.email.toLowerCase().includes(userQuery.toLowerCase()) &&
-          user.email !== currentUser?.email && // Exclude current user when searching
+          user.email !== currentUser?.email && // Exclude current user when searching for invitees
           !inviteList.some((inv) => inv.email === user.email)
       )
     );

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getClientAnalytics } from "@/app/lib/firebaseConfig";
+import { getClientAnalytics } from "../lib/firebaseConfig";
 
 // Dummy data for demonstration. Replace with real data fetching from Firebase Analytics or Firestore.
 const dummyAnalytics = {
@@ -26,7 +26,7 @@ const LogAnalytics = () => {
 
   useEffect(() => {
     // Log analytics event
-    import("@/app/lib/firebaseConfig").then(async (mod) => {
+    import("../lib/firebaseConfig").then(async (mod) => {
       const analytics = await mod.getClientAnalytics();
       if (analytics) {
         const { logEvent } = await import("firebase/analytics");

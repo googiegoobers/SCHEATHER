@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
-const Scene = dynamic(() => import("@/app/components/Scene"), { ssr: false });
+// const Scene = dynamic(() => import("@/app/components/Scene"), { ssr: false });
 
 export default function Home() {
   const router = useRouter();

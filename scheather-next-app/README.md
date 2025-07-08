@@ -1,24 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Scheather - Next.js Calendar & Analytics App
+
+This is a [Next.js](https://nextjs.org) project with Google Analytics integration, calendar functionality, and user management.
+
+## Features
+
+- 📊 **Real-time Analytics Dashboard** - Google Analytics 4 integration
+- 📅 **Calendar Management** - Event scheduling and management
+- 👥 **User Authentication** - Firebase Auth integration
+- 📱 **Responsive Design** - Works on all devices
+- 🎨 **Modern UI** - Beautiful, intuitive interface
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- Google Analytics 4 property
+- Firebase project (for authentication)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <your-repo-url>
+cd scheather-next-app
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Set up environment variables**
+```bash
+# Copy the example environment file
+cp env.example .env.local
+
+# Edit .env.local with your actual values
+```
+
+4. **Set up Google Analytics**
+   - Create a service account in Google Cloud Console
+   - Download the service account key as `service-account-key.json`
+   - Add the service account email to your GA4 property with "Viewer" permissions
+   - Update `GA_PROPERTY_ID` in `.env.local`
+
+5. **Run the development server**
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `env.example` to `.env.local` and fill in your values:
+
+- `GOOGLE_APPLICATION_CREDENTIALS` - Path to your service account key file
+- `GA_PROPERTY_ID` - Your Google Analytics 4 Property ID
+
+## Security Notes
+
+⚠️ **Never commit sensitive files:**
+- `service-account-key.json` - Contains API credentials
+- `.env.local` - Contains environment variables
+- Any other files with API keys or secrets
+
+These files are automatically ignored by Git.
 
 ## Learn More
 

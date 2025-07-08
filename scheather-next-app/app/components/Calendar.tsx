@@ -18,6 +18,7 @@ import {
   getDoc,
   deleteDoc,
   onSnapshot,
+  addDoc,
 } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm";
@@ -521,6 +522,21 @@ const CalendarComponent: React.FC = () => {
                       currentUser.uid,
                       "declined"
                     );
+
+                    // Send notification to event owner
+                    try {
+                      await addDoc(collection(db, "notifications"), {
+                        userId: selectedEvent.createdBy,
+                        type: "rsvp",
+                        eventId: selectedEvent.id,
+                        message: `${currentUser.displayName} has declined your invitation to "${selectedEvent.title}"`,
+                        status: "unread",
+                        timestamp: new Date(),
+                      });
+                    } catch (err) {
+                      console.error("Error sending decline notification:", err);
+                    }
+
                     setSelectedEvent(null); // close modal
                   }}
                   disabled={

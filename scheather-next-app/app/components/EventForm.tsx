@@ -93,24 +93,35 @@ const EventForm: React.FC<EventFormProps> = ({
     { label: "Divide by selected participants", value: "b" },
   ];
 
-  const [newEvent, setNewEvent] = useState(() =>
-    initialEvent
-      ? {
-          ...initialEvent,
-          start: initialEvent.start,
-          end: initialEvent.end,
-        }
-      : {
-          title: "",
-          location: "",
-          start: start,
-          end: end,
-          isAllDay: false,
-          inviteList: [],
-          budgetList: [],
-          participants: [],
-        }
-  );
+  const [newEvent, setNewEvent] = useState(() => {
+    if (initialEvent) {
+      // Use the start/end props if provided (already formatted for input)
+      return {
+        ...initialEvent,
+        start:
+          start ||
+          (initialEvent.start instanceof Date
+            ? initialEvent.start.toISOString().slice(0, 16)
+            : initialEvent.start),
+        end:
+          end ||
+          (initialEvent.end instanceof Date
+            ? initialEvent.end.toISOString().slice(0, 16)
+            : initialEvent.end),
+      };
+    } else {
+      return {
+        title: "",
+        location: "",
+        start: start,
+        end: end,
+        isAllDay: false,
+        inviteList: [],
+        budgetList: [],
+        participants: [],
+      };
+    }
+  });
 
   // i-edit ang date (newEvent.start) nga mabasa siya sa weatherapi
   const eventDateString =

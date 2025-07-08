@@ -3,9 +3,9 @@
 import Link from "next/link";
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
-import { Task, subscribeToTasks, addTask, patchTask, deleteTask } from "@/app/lib/tasksService";
+import { Task, subscribeToTasks, addTask, patchTask, deleteTask } from "@/lib/tasksService";
 
 interface Props {
   task: Task;

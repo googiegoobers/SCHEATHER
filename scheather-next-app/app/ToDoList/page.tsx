@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import React from "react";
-import { useState, useEffect, useRef } from "react";;
+import { useState, useEffect, useRef } from "react";
 import { auth } from "@/app/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
+import { Task, subscribeToTasks, addTask, patchTask, deleteTask } from "@/app/lib/tasksService";
 
-interface Task {
-  id: string;
-  text: string;
-  completed: boolean;
-  starred: boolean;
+interface Props {
+  task: Task;
+  onPatch: (id: string, data: Partial<Task>) => void;
+  onDelete: (id: string) => void;
 }
 
 function ToDoList()
@@ -51,38 +51,50 @@ function ToDoList()
   const [newTitle, setNewTitle]   = useState('');
 
   const [activeTab, setActiveTab] = useState<'all' | 'starred'>('all');
-  //para sa tasks
- const addTask = () => {
-    if (!newTitle.trim()) return;
-    const newTask: Task = {
-      id: Date.now().toString(),        // or nanoid()
-      text: newTitle.trim(),
-      completed: false,
-      starred: false,
-    };
-    setTasks(t => [...t, newTask]);
-    setNewTitle('');
-    setShowPopup(false);
 
-    // TODO: POST /tasks  (newTask)    <-- call your backend here
+  // Subscribe to Firestore tasks
+  useEffect(() => {
+    const unsubscribe = subscribeToTasks((tasks) => {
+      setTasks(tasks);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
+  //para sa tasks
+ const handleAddTask = async () => {
+    if (!newTitle.trim()) return;
+    
+    try {
+      await addTask(newTitle.trim());
+      setNewTitle('');
+      setShowPopup(false);
+    } catch (error) {
+      console.error('Error adding task:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
-const patchTask = (id: string, data: Partial<Task>) => {
-    setTasks(t =>
-      t.map(task => (task.id === id ? { ...task, ...data } : task))
-    );
-
-    // TODO: PATCH /tasks/{id}  (data)  <-- sync this change
+const handlePatchTask = async (id: string, data: Partial<Task>) => {
+    try {
+      await patchTask(id, data);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      // You might want to show an error message to the user here
+    }
   };
   
   //filter para sa starred tasks
   const visibleTasks =
     activeTab === 'starred' ? tasks.filter(t => t.starred) : tasks;
 
-  const removeTask = (id: string) => {
-    setTasks(t => t.filter(task => task.id !== id));
-
-    // TODO: DELETE /tasks/{id}
+  const handleRemoveTask = async (id: string) => {
+    try {
+      await deleteTask(id);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   
@@ -240,11 +252,14 @@ const patchTask = (id: string, data: Partial<Task>) => {
                   {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
                 </p>
               ) : (
-                visibleTasks.map(({ id, text, completed, starred }) => (
+                visibleTasks.map((task) => {
+                  if (!task.id) return null; // Skip tasks without id
+                  const { id, text, completed, starred } = task;
+                  return (
                   <div key={id} className="flex items-center gap-3 py-2">
                     {/* Checkbox */}
                     <button
-                      onClick={() => patchTask(id, { completed: !completed })}
+                      onClick={() => handlePatchTask(id, { completed: !completed })}
                       className="relative h-5 w-5 focus:outline-none"
                     >
                       <img
@@ -264,7 +279,7 @@ const patchTask = (id: string, data: Partial<Task>) => {
                     {/* Task Text Input */}
                     <input
                       value={text}
-                      onChange={(e) => patchTask(id, { text: e.target.value })}
+                      onChange={(e) => handlePatchTask(id, { text: e.target.value })}
                       placeholder="Insert Task"
                       className="flex-grow bg-transparent text-base text-white placeholder:text-white/50 outline-none font-['Montserrat']"
                     />
@@ -273,7 +288,7 @@ const patchTask = (id: string, data: Partial<Task>) => {
                     <div className="flex items-center gap-4">
                       <button
                       
-                        onClick={() => patchTask(id, { starred: !starred })}
+                        onClick={() => handlePatchTask(id, { starred: !starred })}
                         className="relative h-5 w-5">
                         <img
                           src="/star.png"
@@ -288,14 +303,15 @@ const patchTask = (id: string, data: Partial<Task>) => {
                       </button>
 
                       <button
-                        onClick={() => removeTask(id)}
+                        onClick={() => handleRemoveTask(id)}
                         className="text-base text-white"
                       >
                         X
                       </button>
                     </div>
                   </div>
-                ))
+                  );
+                }).filter(Boolean)
               )}
             </section>
 
@@ -346,7 +362,7 @@ const patchTask = (id: string, data: Partial<Task>) => {
                   {/* primary action */}
                   <div className="flex justify-center">
                     <button
-                      onClick={addTask}
+                      onClick={handleAddTask}
                       className="rounded-[20px] bg-[#E68C3A] px-4 py-2 text-white transition-colors hover:bg-[#d27d2c]"
                     >
                       Add Task
@@ -417,10 +433,13 @@ const patchTask = (id: string, data: Partial<Task>) => {
                     {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
                   </p>
                 ) : (
-                  visibleTasks.map(({ id, text, completed, starred }) => (
+                  visibleTasks.map((task) => {
+                    if (!task.id) return null; // Skip tasks without id
+                    const { id, text, completed, starred } = task;
+                    return (
                     <div key={id} className="flex items-center gap-3 py-2">
                       <button
-                        onClick={() => patchTask(id, { completed: !completed })}
+                        onClick={() => handlePatchTask(id, { completed: !completed })}
                         className="relative w-5 h-5 focus:outline-none"
                       >
                         <img
@@ -435,14 +454,14 @@ const patchTask = (id: string, data: Partial<Task>) => {
 
                       <input
                         value={text}
-                        onChange={e => patchTask(id, { text: e.target.value })}
+                        onChange={e => handlePatchTask(id, { text: e.target.value })}
                         placeholder="Insert Task"
                         className="flex-grow bg-transparent outline-none text-white placeholder:text-white/50 text-base font-['Montserrat']"
                       />
 
                       <div className="flex items-center gap-4">
                         <button
-                          onClick={() => patchTask(id, { starred: !starred })}
+                          onClick={() => handlePatchTask(id, { starred: !starred })}
                           className="relative w-5 h-5"
                         >
                           <img
@@ -455,14 +474,15 @@ const patchTask = (id: string, data: Partial<Task>) => {
                           />
                         </button>
                         <button
-                          onClick={() => removeTask(id)}
+                          onClick={() => handleRemoveTask(id)}
                           className="text-white text-base"
                         >
                           X
                         </button>
                       </div>
                     </div>
-                  ))
+                    );
+                  }).filter(Boolean)
                 )}
               </section>
 

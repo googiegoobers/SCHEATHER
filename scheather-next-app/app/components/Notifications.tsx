@@ -108,9 +108,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
       {showInvitations && (
         <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center">
           <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-4xl p-6 overflow-y-auto max-h-[90vh]">
-            <Suspense fallback={<p>Loading invitation...</p>}>
-              <InvitationPage onClose={() => setShowInvitations(false)} />
-            </Suspense>
+            <InvitationPage onClose={() => setShowInvitations(false)} />
           </div>
         </div>
       )}

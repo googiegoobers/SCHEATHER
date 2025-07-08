@@ -502,8 +502,7 @@ const CalendarComponent: React.FC = () => {
                       (u) =>
                         u.uid === currentUser.uid && u.status === "declined"
                     )
-                  }
-                >
+                  }>
                   Back Out
                 </button>
               )}

@@ -35,4 +35,5 @@ Scheather uses live weather data to:
    npm run dev
    Open http://localhost:3000 with your browser to see the result.
 
+
 Built by 👥 Team A — Computer Engineering students for the Modern Systems Analysis and Design course.

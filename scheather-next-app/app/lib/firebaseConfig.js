@@ -30,6 +30,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //   });
 // }
 
+// cleanup();
 
 // Export the auth & storage services if needed
 // Do NOT export analytics at the top level! Use getClientAnalytics below for client-only analytics.

@@ -1,4 +1,4 @@
-import CalendarComponent from "@/app/components/Calendar";
+import CalendarComponent from "@/components/Calendar";
 
 export default function EventsPage() {
   return <CalendarComponent />;

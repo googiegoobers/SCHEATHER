@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
   const date = searchParams.get("date");
+  const time = searchParams.get("time"); // hour (0–23)
 
   const key = process.env.WEATHER_API_KEY;
   if (!key || !lat || !lon || !date) {
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${key}&q=${lat},${lon}&dt=${date}&days=7`;
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${key}&q=${lat},${lon}&dt=${date}&days=1`;
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -21,16 +22,24 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
+    const forecastDay = data?.forecast?.forecastday?.find((d: any) => d.date === date);
 
-    const forecast = data?.forecast?.forecastday?.find((d: any) => d.date === date);
-
-    if (!forecast || !data.location) {
+    if (!forecastDay || !data.location) {
       return new Response("No forecast data found", { status: 404 });
+    }
+
+    let matchedHour = null;
+    if (time !== null) {
+      const hourInt = parseInt(time);
+      matchedHour = forecastDay.hour.find(
+        (h: any) => new Date(h.time).getHours() === hourInt
+      );
     }
 
     return Response.json({
       location: data.location,
-      forecast,
+      forecast: forecastDay,
+      hourly: matchedHour ?? null, // provide matched hour if available
     });
   } catch (e) {
     return new Response("Failed to fetch", { status: 500 });

@@ -168,7 +168,15 @@ export default function InvitationPage({ onClose }: Props) {
             </p>
           </div>
         </div>
-        <div className="mt-2 sm:mt-0 text-green-700 text-xs sm:text-sm font-medium capitalize">
+        <div
+          className={`mt-2 sm:mt-0 text-xs sm:text-sm font-medium capitalize ${
+            currentStatus?.toLowerCase() === "declined"
+              ? "text-red-600"
+              : currentStatus?.toLowerCase() === "pending"
+              ? "text-blue-600"
+              : "text-green-700"
+          }`}
+        >
           {currentStatus || "pending"}
         </div>
       </div>

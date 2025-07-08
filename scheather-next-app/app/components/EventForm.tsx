@@ -49,6 +49,15 @@ const EventForm: React.FC<EventFormProps> = ({
   );
   const [allUsers, setAllUsers] = useState<any[]>([]); // <-- store fetched users
 
+  const formatTo12Hour = (dateTimeString: string) => {
+    const date = new Date(dateTimeString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   // Fetch users from Firestore on mount
   useEffect(() => {
     const fetchUsers = async () => {
@@ -161,26 +170,31 @@ const EventForm: React.FC<EventFormProps> = ({
 
       try {
         const res = await fetch(
-          `/api/weather/days?lat=${coordinates.lat}&lon=${coordinates.lon}&date=${eventDate}`
+          `/api/weather/days?lat=${coordinates.lat}&lon=${coordinates.lon}&date=${eventDate}&time=${eventHour}`
         );
 
         if (!res.ok) {
-          throw new Error("No forecast available for that day.");
+          const errorText = await res.text();
+          console.error("Weather API error:", errorText);
+          setWeather(null);
+          return;
         }
 
         const data = await res.json();
 
-        const hourData = data?.forecast?.hour?.[eventHour];
+        const hourData = data?.hourly;
         if (!hourData) {
-          throw new Error("No forecast available for that day.");
+          setWeatherError(
+            "No weather forecast available for the selected time."
+          );
+          setWeather(null);
           return;
         }
-
-        setWeather(hourData);
         setWeatherError(null);
-      } catch (err: any) {
+        setWeather(hourData);
+      } catch (err) {
+        console.error("Client fetch failed:", err);
         setWeather(null);
-        setWeatherError(err.message || "Weather information unavailable.");
       }
     };
 
@@ -394,7 +408,11 @@ const EventForm: React.FC<EventFormProps> = ({
             ) : (
               weather && (
                 <div className="flex items-center gap-2 text-sm text-black">
-                  <img src={weather.condition.icon} alt="Weather Icon" />
+                  <img
+                    src={weather?.condition.icon}
+                    alt={weather?.condition.text}
+                  />
+
                   <p>
                     {weather.condition.text}, {weather.temp_c}°C
                   </p>

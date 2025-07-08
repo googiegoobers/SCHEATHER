@@ -49,8 +49,8 @@
 
 /* Month tiles in column format */
 .react-calendar__year-view__months {
-  display: flex !important;
-  flex-direction: column;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
   gap: 5px;
   align-items: center;
 }
@@ -120,7 +120,7 @@
 
 .today-text-color {
   color: #213e60 !important;
-  font-weight: bold;
+  font-weight: 60;
 }
 
 /* Responsive adjustments */

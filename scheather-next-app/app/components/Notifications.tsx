@@ -9,7 +9,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "@/app/lib/firebaseConfig";
+import { db } from "@/lib/firebaseConfig";
 import { User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import InvitationPage from "./InvitationPage";

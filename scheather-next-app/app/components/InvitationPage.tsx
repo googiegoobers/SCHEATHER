@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, doc, getDoc, addDoc } from "firebase/firestore";
-import { db, auth } from "@/app/lib/firebaseConfig";
+import { db, auth } from "@/lib/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { updateInviteStatus } from "@/app/lib/inviteUtils";
+import { updateInviteStatus } from "@/lib/inviteUtils";
 import { div } from "three/src/nodes/TSL.js";
 
 interface Props {

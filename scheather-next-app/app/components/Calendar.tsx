@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "./Calendar.css";
-
 import {
   Calendar,
   momentLocalizer,
@@ -17,6 +16,8 @@ import {
   where,
   doc,
   getDoc,
+  deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm";
@@ -32,7 +33,7 @@ interface Invitee {
   displayName?: string;
   email?: string;
   avatarPath?: string;
-  status?: string;          // "accepted" | "pending" | "declined" | …
+  status?: string; // "accepted" | "pending" | "declined" | …
   [key: string]: any;
 }
 
@@ -65,19 +66,28 @@ const getStatusClass = (status: string = "") => {
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // for loading
+  const [isLoading, setIsLoading] = useState(true);
 
   /* UI state */
   const [showForm, setShowForm] = useState(false);
-  const [selectedSlot, setSelectedSlot] =
-    useState<{ start: Date; end: Date } | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
-  const [selectedEvent, setSelectedEvent] =
-    useState<FirestoreEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(
+    null
+  );
 
   /* ---------- Auth listener ---------- */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) =>
+      setCurrentUser(user)
+    );
     return () => unsubscribe();
   }, []);
 
@@ -88,58 +98,58 @@ const CalendarComponent: React.FC = () => {
       return;
     }
 
-    const fetchEvents = async () => {
+    const eventsCol = collection(db, "events");
 
-      try {
+    setIsLoading(true);
 
-        const eventsCol = collection(db, "events");
-        const q = query(eventsCol, where("createdBy", "==", currentUser.uid));
-        const snap = await getDocs(q);
+    const unsubscribe = onSnapshot(eventsCol, async (snapshot) => {
+      const eventsData: FirestoreEvent[] = [];
 
-        const eventsData: FirestoreEvent[] = await Promise.all(
-          snap.docs.map(async (docSnap) => {
-            const data = docSnap.data();
+      for (const docSnap of snapshot.docs) {
+        const data = docSnap.data();
+        let inviteArr = Array.isArray(data.inviteList)
+          ? data.inviteList
+          : Object.values(data.inviteList ?? {});
 
-            /* normalise inviteList */
-            const raw = data.inviteList ?? [];
-            let inviteArr: Invitee[] = Array.isArray(raw)
-              ? raw
-              : Object.values(raw);
-
-            /* optionally fetch avatarPath from /users/<uid> */
-            inviteArr = await Promise.all(
-              inviteArr.map(async (inv) => {
-                if (inv.avatarPath || !inv.uid) return inv;
-                try {
-                  const profileSnap = await getDoc(doc(db, "users", inv.uid));
-                  const avatarPath = profileSnap.exists()
-                    ? profileSnap.data().avatarPath
-                    : "";
-                  return { ...inv, avatarPath };
-                } catch {
-                  return inv;
-                }
-              })
-            );
-
-            return {
-              id: docSnap.id,
-              title: data.title,
-              start: new Date(data.start?.toDate?.() || data.start),
-              end: new Date(data.end?.toDate?.() || data.end),
-              location: data.location,
-              inviteList: inviteArr,
-            };
+        inviteArr = await Promise.all(
+          inviteArr.map(async (inv) => {
+            if (inv.avatarPath || !inv.uid) return inv;
+            try {
+              const profileSnap = await getDoc(doc(db, "users", inv.uid));
+              const avatarPath = profileSnap.exists()
+                ? profileSnap.data().avatarPath
+                : "";
+              return { ...inv, avatarPath };
+            } catch {
+              return inv;
+            }
           })
         );
 
-        setEvents(eventsData);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-      }
-    };
+        const isCreator = data.createdBy === currentUser.uid;
+        const isAcceptedInvitee = inviteArr.some(
+          (inv) => inv.uid === currentUser.uid && inv.status === "accepted"
+        );
 
-    fetchEvents();
+        if (isCreator || isAcceptedInvitee) {
+          eventsData.push({
+            id: docSnap.id,
+            title: data.title,
+            start: new Date(
+              data.start?.seconds ? data.start.toDate() : data.start
+            ),
+            end: new Date(data.end?.seconds ? data.end.toDate() : data.end),
+            location: data.location,
+            inviteList: inviteArr,
+          });
+        }
+      }
+
+      setEvents(eventsData);
+      setIsLoading(false); // ← stop spinner
+    });
+
+    return () => unsubscribe();
   }, [currentUser]);
 
   /* ---------- Handlers ---------- */
@@ -154,15 +164,68 @@ const CalendarComponent: React.FC = () => {
     setSelectedEvent(evt as unknown as FirestoreEvent);
 
   function toLocalDateTimeInputValue(date: Date) {
-  const offset = date.getTimezoneOffset();
-  const local = new Date(date.getTime() - offset * 60 * 1000);
-  return local.toISOString().slice(0, 16);
-}
+    const offset = date.getTimezoneOffset();
+    const local = new Date(date.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 16);
+  }
 
-  /* ---------- Render ---------- */
+  // Delete event handler
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent?.id) return;
+    setDeleting(true);
+    try {
+      await deleteDoc(doc(db, "events", selectedEvent.id));
+      setEvents((prev) => prev.filter((evt) => evt.id !== selectedEvent.id));
+      setSelectedEvent(null);
+    } catch (err) {
+      alert("Failed to delete event.");
+      console.error(err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/60 z-50 flex flex-col justify-center items-center">
+          <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-2" />
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-sm text-gray-500">Loading Events...</span>
+            <p className="text-base font-medium animate-pulse mb-1">
+              Please wait a moment
+            </p>
+          </div>
+          <style jsx>{`
+            @keyframes swapText {
+              0%,
+              49% {
+                opacity: 1;
+              }
+              50%,
+              100% {
+                opacity: 0;
+              }
+            }
+            @keyframes swapTextAlt {
+              0%,
+              49% {
+                opacity: 0;
+              }
+              50%,
+              100% {
+                opacity: 1;
+              }
+            }
+            .loading-text {
+              animation: swapText 3s infinite;
+            }
+            .pleasewait-text {
+              animation: swapTextAlt 3s infinite;
+            }
+          `}</style>
+        </div>
+      )}
       <Calendar
         localizer={localizer}
         events={events}
@@ -213,10 +276,15 @@ const CalendarComponent: React.FC = () => {
           <div className="bg-white p-6 rounded-[30px] shadow-lg max-w-xl">
             {/* header buttons */}
             <div className="flex ml-90 gap-4 mb-4">
-              <button className="buttonsPencil rounded-full p-1 hover:bg-black/10">
+              {/*<button className="buttonsPencil rounded-full p-1 hover:bg-black/10">
                 <img src="/pencil.png" className="w-6 h-6" />
-              </button>
-              <button className="buttonsTrash rounded-full p-1 hover:bg-black/10">
+              </button>}*/}
+              <button
+                className="buttonsTrash rounded-full p-1 hover:bg-black/10"
+                onClick={handleDeleteEvent}
+                disabled={deleting}
+                title="Delete event"
+              >
                 <img src="/trash.png" className="w-6 h-6" />
               </button>
               <button
@@ -254,44 +322,49 @@ const CalendarComponent: React.FC = () => {
             <div className="mt-4">
               <span className="font-semibold">Invited Users:</span>
               <ul className="list-disc list-inside mt-1 space-y-1">
-              {Array.isArray(selectedEvent.inviteList) && selectedEvent.inviteList.length ? (
-                selectedEvent.inviteList.map((user, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    {/* Only show avatar if avatarPath is a non-empty string */}
-                    {user.avatarPath && typeof user.avatarPath === "string" && user.avatarPath.trim() !== "" && (
-                      <img
-                        src={user.avatarPath}
-                        alt={user.displayName || user.email || "User"}
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
-                    )}
+                {Array.isArray(selectedEvent.inviteList) &&
+                selectedEvent.inviteList.length ? (
+                  selectedEvent.inviteList.map((user, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      {/* Only show avatar if avatarPath is a non-empty string */}
+                      {user.avatarPath &&
+                        typeof user.avatarPath === "string" &&
+                        user.avatarPath.trim() !== "" && (
+                          <img
+                            src={user.avatarPath}
+                            alt={user.displayName || user.email || "User"}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        )}
 
-                    {/* name + badge + email */}
-                    <span className="flex flex-col">
-                      <span className="flex items-center gap-2">
-                        <span className="text-[#213E60] font-semibold">{user.displayName || "Unknown User"}</span>
-                        {user.status && (
-                          <span
-                            className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
-                              user.status
-                            )}`}
-                          >
-                            {user.status}
+                      {/* name + badge + email */}
+                      <span className="flex flex-col">
+                        <span className="flex items-center gap-2">
+                          <span className="text-[#213E60] font-semibold">
+                            {user.displayName || "Unknown User"}
+                          </span>
+                          {user.status && (
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
+                                user.status
+                              )}`}
+                            >
+                              {user.status}
+                            </span>
+                          )}
+                        </span>
+                        {user.email && (
+                          <span className="text-sm text-gray-500">
+                            {user.email}
                           </span>
                         )}
                       </span>
-                      {user.email && (
-                        <span className="text-sm text-gray-500">
-                          {user.email}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <li>No invites</li>
-              )}
-            </ul>
+                    </li>
+                  ))
+                ) : (
+                  <li>No invites</li>
+                )}
+              </ul>
             </div>
           </div>
         </div>

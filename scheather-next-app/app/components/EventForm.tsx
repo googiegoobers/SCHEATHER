@@ -191,48 +191,6 @@ const EventForm: React.FC<EventFormProps> = ({
     }
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!currentUser) {
-  //     alert("You must be logged in to create an event.");
-  //     return;
-  //   }
-
-  //   const eventToSave = {
-  //     ...newEvent,
-  //     inviteList: [
-  //       ...inviteList.map((user) => ({
-  //         uid: user.uid,
-  //         email: user.email,
-  //         displayName: user.displayName,
-  //         status: "pending",
-  //         amount:
-  //           selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
-  //             ? parseFloat(equalMoney) / acceptedUsers.length
-  //             : 0,
-  //       })),
-  //       {
-  //         uid: currentUser.uid,
-  //         email: currentUser.email,
-  //         displayName: currentUser.displayName,
-  //         status: "accepted",
-  //         amount: 0,
-  //       },
-  //     ],
-  //     createdBy: currentUser.uid,
-  //   };
-
-  //   try {
-  //     const docRef = await addDoc(collection(db, "events"), eventToSave);
-  //     onEventCreated({ ...eventToSave, id: docRef.id });
-  //     onClose();
-  //   } catch (err) {
-  //     console.error("Error adding event:", err);
-  //     alert("Failed to create event.");
-  //   }
-  // };
-
   //modified to store notif
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,13 +226,14 @@ const EventForm: React.FC<EventFormProps> = ({
 
     try {
       // Save event
-      const docRef = await addDoc(collection(db, "events"), eventToSave);
+      const cleanEvent = JSON.parse(JSON.stringify(eventToSave));
+      const docRef = await addDoc(collection(db, "events"), cleanEvent);
       const savedEvent = { ...eventToSave, id: docRef.id };
       onEventCreated(savedEvent);
 
       // Send notifications to invited users (excluding creator)
       for (const user of eventToSave.inviteList) {
-        if (user.uid !== currentUser.uid) {
+        if (user?.uid && user.uid !== currentUser.uid) {
           await addDoc(collection(db, "notifications"), {
             userId: user.uid,
             type: "invite",
@@ -492,7 +451,7 @@ const EventForm: React.FC<EventFormProps> = ({
           <div className="flex flex-col gap-4 w-full max-w-2xl">
             {inviteList.map((user) => (
               <div
-                key={user.uid}
+                key={`${user.uid}-${user.email}`}
                 className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border rounded-xl shadow hover:bg-blue-50 transition"
               >
                 {/* Left: Avatar + Name + Email */}

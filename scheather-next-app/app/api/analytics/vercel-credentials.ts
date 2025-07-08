@@ -1,16 +1,12 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 export function createAnalyticsClient() {
-    // Check if we're in Vercel with base64 credentials
-    if (process.env.GOOGLE_CREDENTIALS_BASE64) {
-        const credentials = Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString();
-        return new BetaAnalyticsDataClient({
-            credentials: JSON.parse(credentials)
-        });
-    }
+    const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+        ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+        : undefined;
 
-    // Fallback to file-based credentials (local development)
     return new BetaAnalyticsDataClient({
-        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS || './service-account-key.json',
+        credentials,
+        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || '495490473'
     });
 } 

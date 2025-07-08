@@ -4,7 +4,7 @@ import { createAnalyticsClient } from './vercel-credentials';
 // Initialize Google Analytics Data API v1 (GA4)
 const analyticsDataClient = createAnalyticsClient();
 
-const propertyId = process.env.GA_PROPERTY_ID || 'your-property-id-here';
+const propertyId = process.env.GA_PROPERTY_ID || '495490473';
 
 export async function GET() {
     try {

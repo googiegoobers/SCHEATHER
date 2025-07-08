@@ -7,17 +7,17 @@ export async function GET() {
 
         // Check environment variables
         console.log('Environment check:', {
-            hasCredentials: !!process.env.GOOGLE_APPLICATION_CREDENTIALS,
+            hasCredentials: !!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
             hasPropertyId: !!process.env.GA_PROPERTY_ID,
             propertyId: process.env.GA_PROPERTY_ID
         });
 
-        if (!process.env.GOOGLE_APPLICATION_CREDENTIALS || !process.env.GA_PROPERTY_ID) {
+        if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || !process.env.GA_PROPERTY_ID) {
             return NextResponse.json({
                 success: false,
                 error: 'Environment variables not set',
                 instructions: [
-                    '1. Make sure GOOGLE_APPLICATION_CREDENTIALS is set to your service account key file path',
+                    '1. Make sure GOOGLE_APPLICATION_CREDENTIALS_JSON is set to your service account key JSON string',
                     '2. Make sure GA_PROPERTY_ID is set to your Google Analytics Property ID'
                 ]
             });
@@ -29,15 +29,9 @@ export async function GET() {
         // Try a simple query to test the connection
         const [response] = await analyticsDataClient.runReport({
             property: `properties/${process.env.GA_PROPERTY_ID}`,
-            dateRanges: [
-                {
-                    startDate: 'today',
-                    endDate: 'today',
-                },
-            ],
-            metrics: [
-                { name: 'activeUsers' },
-            ],
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            metrics: [{ name: 'activeUsers' }],
+            dimensions: [{ name: 'date' }],
         });
 
         return NextResponse.json({

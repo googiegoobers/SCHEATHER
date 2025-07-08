@@ -6,7 +6,7 @@ import Script from "next/script";
 // import {AuthContextProvider} from "@/app/context/AuthContext";
 
 import React, { useState } from "react";
-import { auth, db } from "../../lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";

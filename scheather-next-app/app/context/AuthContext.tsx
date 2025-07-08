@@ -11,7 +11,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { auth } from "../lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 import type { User } from "firebase/auth";
 
 const AuthContext = createContext<{

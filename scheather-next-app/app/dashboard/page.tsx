@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { auth, db } from "../lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import CalendarComponent from "../components/Calendar";
 import EventForm from "../components/EventForm";
 import HamburgerCal from "../components/HamburgerCal";

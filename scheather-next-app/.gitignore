@@ -46,4 +46,14 @@ next-env.d.ts
 # Firebase admin scripts and keys (never commit these!)
 app/lib/backfill-users.cjs
 app/lib/backfill-users.js
-app/lib/serviceAccountKey.json 
+app/lib/serviceAccountKey.json
+
+# Google Analytics service account keys (never commit these!)
+service-account-key.json
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!next-env.d.ts
+!postcss.config.js
+!tailwind.config.js 

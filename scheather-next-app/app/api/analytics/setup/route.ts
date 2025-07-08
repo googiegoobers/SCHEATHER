@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { BetaAnalyticsDataClient } from '@google-analytics/data';
+import { createAnalyticsClient } from '../vercel-credentials';
 
 export async function GET() {
     try {
@@ -24,9 +24,7 @@ export async function GET() {
         }
 
         // Test the connection
-        const analyticsDataClient = new BetaAnalyticsDataClient({
-            keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-        });
+        const analyticsDataClient = createAnalyticsClient();
 
         // Try a simple query to test the connection
         const [response] = await analyticsDataClient.runReport({

@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import { BetaAnalyticsDataClient } from '@google-analytics/data';
+import { createAnalyticsClient } from './vercel-credentials';
 
 // Initialize Google Analytics Data API v1 (GA4)
-const analyticsDataClient = new BetaAnalyticsDataClient({
-    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS || './service-account-key.json',
-});
+const analyticsDataClient = createAnalyticsClient();
 
 const propertyId = process.env.GA_PROPERTY_ID || 'your-property-id-here';
 

@@ -37,6 +37,11 @@ interface Invitee {
   [key: string]: any;
 }
 
+interface budgetItem {
+  label: string;
+  amount: string;
+}
+
 interface FirestoreEvent {
   id?: string;
   title: string;
@@ -44,6 +49,11 @@ interface FirestoreEvent {
   end: Date;
   location?: string;
   inviteList?: Invitee[];
+  budget?: {
+    mode: "kkb" | "divide";
+    total: number;
+  };
+  budgetList?: budgetItem[];
 }
 
 /* ---------- Helper: coloured badge per status ---------- */
@@ -126,6 +136,10 @@ const CalendarComponent: React.FC = () => {
           })
         );
 
+        let budgetArr = Array.isArray(data.budgetList)
+          ? data.budgetList
+          : Object.values(data.budgetList ?? {});
+
         const isCreator = data.createdBy === currentUser.uid;
         const isAcceptedInvitee = inviteArr.some(
           (inv) => inv.uid === currentUser.uid && inv.status === "accepted"
@@ -141,6 +155,7 @@ const CalendarComponent: React.FC = () => {
             end: new Date(data.end?.seconds ? data.end.toDate() : data.end),
             location: data.location,
             inviteList: inviteArr,
+            budgetList: budgetArr,
           });
         }
       }
@@ -324,47 +339,97 @@ const CalendarComponent: React.FC = () => {
               <ul className="list-disc list-inside mt-1 space-y-1">
                 {Array.isArray(selectedEvent.inviteList) &&
                 selectedEvent.inviteList.length ? (
-                  selectedEvent.inviteList.map((user, idx) => (
+                  selectedEvent.inviteList
+                    .filter((user) => user.status !== "accepted")
+                    .map((user, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        {user.avatarPath &&
+                          typeof user.avatarPath === "string" &&
+                          user.avatarPath.trim() !== "" && (
+                            <img
+                              src={user.avatarPath}
+                              alt={user.displayName || user.email || "User"}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          )}
+                        <span className="flex flex-col">
+                          <span className="flex items-center gap-2">
+                            <span className="text-[#213E60] font-semibold">
+                              {user.displayName || "Unknown User"}
+                            </span>
+                            {user.status && (
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
+                                  user.status
+                                )}`}
+                              >
+                                {user.status}
+                              </span>
+                            )}
+                          </span>
+                          {user.email && (
+                            <span className="text-sm text-gray-500">
+                              {user.email}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))
+                ) : (
+                  <li>No invites</li>
+                )}
+              </ul>
+            </div>
+
+            {/* --- Budget & Participants Breakdown (Readonly) --- */}
+            <div className="mt-6 p-4 border rounded-xl bg-gray-50">
+              <h3 className="font-bold text-lg text-[#213E60] mb-2">Budget Breakdown</h3>
+              {Array.isArray(selectedEvent.budgetList) && selectedEvent.budgetList.length > 0 ? (
+                <>
+                  <div className="mb-2">
+                    <span className="font-semibold">Total Budget:</span> ₱{
+                      selectedEvent.budgetList.reduce((sum, item) => sum + parseFloat(item.amount ? item.amount : "0"), 0).toFixed(2)
+                    }
+                  </div>
+                  <div className="mb-2">
+                    <span className="font-semibold">Items:</span>
+                  </div>
+                  <ul className="list-inside space-y-1">
+                  {selectedEvent.budgetList.map((item, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      {/* Only show avatar if avatarPath is a non-empty string */}
-                      {user.avatarPath &&
-                        typeof user.avatarPath === "string" &&
-                        user.avatarPath.trim() !== "" && (
+                      <span className="text-[#213E60] font-semibold">{item.label}: </span>
+                      <span className="ml-auto text-sm text-gray-700">
+                      ₱{parseFloat(item.amount).toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                  </ul>
+                </>
+              ) : (
+                <div className="text-center text-gray-600">No budget set for this event.</div>
+              )}
+              <div className="mt-4">
+                <span className="font-semibold">Participants:</span>
+                <ul className="list-inside space-y-1">
+                  {Array.isArray(selectedEvent.inviteList) && selectedEvent.inviteList.filter(u => u.status === "accepted").length > 0 ? (
+                    selectedEvent.inviteList.filter(u => u.status === "accepted").map((user, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        {user.avatarPath && typeof user.avatarPath === "string" && user.avatarPath.trim() !== "" && (
                           <img
                             src={user.avatarPath}
                             alt={user.displayName || user.email || "User"}
                             className="w-6 h-6 rounded-full object-cover"
                           />
                         )}
-
-                      {/* name + badge + email */}
-                      <span className="flex flex-col">
-                        <span className="flex items-center gap-2">
-                          <span className="text-[#213E60] font-semibold">
-                            {user.displayName || "Unknown User"}
-                          </span>
-                          {user.status && (
-                            <span
-                              className={`px-2 py-0.5 rounded text-xs capitalize font-semibold ${getStatusClass(
-                                user.status
-                              )}`}
-                            >
-                              {user.status}
-                            </span>
-                          )}
-                        </span>
-                        {user.email && (
-                          <span className="text-sm text-gray-500">
-                            {user.email}
-                          </span>
-                        )}
-                      </span>
-                    </li>
-                  ))
-                ) : (
-                  <li>No invites</li>
-                )}
-              </ul>
+                        <span className="text-[#213E60] font-semibold">{user.displayName || user.email || "Unknown User"}</span>
+                        <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Accepted</span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No participants.</li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

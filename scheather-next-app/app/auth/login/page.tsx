@@ -6,11 +6,11 @@ import Script from "next/script";
 // import {AuthContextProvider} from "@/app/context/AuthContext";
 
 import React, { useState } from "react";
-import { auth, db } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { UserAuth } from "@/app/context/AuthContext";
+import { UserAuth } from "../../context/AuthContext";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -60,8 +60,13 @@ export default function Home() {
       const userDoc = await getDoc(userRef);
       let userData = userDoc.data();
       if (!userDoc.exists()) {
-        // Set default role for new Google users
-        await setDoc(userRef, { email: user.email, role: "user" });
+        // Set default fields for new Google users
+        await setDoc(userRef, {
+          displayName: user.displayName || "",
+          email: user.email || "",
+          role: "user",
+          uid: user.uid,
+        });
         userData = { role: "user" };
       }
       if (userData?.role === "admin") {
@@ -78,6 +83,18 @@ export default function Home() {
 
   return (
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag("js", new Date());
+      
+                gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       {/*Inside the Container for Desktop*/}
       <div className="hidden lg:flex flex-1 justify-center items-center">
         {/* Header*/}

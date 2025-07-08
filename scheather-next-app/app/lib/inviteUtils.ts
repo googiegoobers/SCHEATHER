@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/app/lib/firebaseConfig";
+import { db } from "@/lib/firebaseConfig";
 
 export async function updateInviteStatus(eventId: string, userId: string, newStatus: string) {
     const eventRef = doc(db, "events", eventId);

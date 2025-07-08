@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 
 const months = [
   "January",

@@ -2,8 +2,9 @@
 import Link from "next/link";
 
 import { useState, useEffect } from "react";
-import { auth } from "@/app/lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
+import Script from "next/script";
 import { updatePassword } from "firebase/auth";
 import { useSearchParams } from "next/navigation";
 import { div } from "three/tsl";
@@ -47,6 +48,18 @@ export default function Home() {
 
   return (
     <div className="bg-white flex flex-col min-h-screen overflow-auto">
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3"
+      ></Script>
+      <Script id="google-analytics">
+        {`window.dataLayer = window.dataLayer || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag("js", new Date());
+
+          gtag("config", "G-QMVC5BR2W3");`}
+      </Script>
       {/*Inside the Container for Desktop*/}
       <div className="hidden lg:flex flex-1 justify-center items-center">
         {/* Header*/}

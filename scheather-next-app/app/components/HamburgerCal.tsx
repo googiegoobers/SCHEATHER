@@ -1,8 +1,7 @@
-
-import { useState, useEffect } from 'react';
-import Calendar from 'react-calendar';
-import "./HamburgerCal.css"
-import { auth, db } from "@/app/lib/firebaseConfig";
+import { useState, useEffect } from "react";
+import Calendar from "react-calendar";
+import "./HamburgerCal.css";
+import { auth, db } from "@/lib/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -37,15 +36,17 @@ interface FirestoreEvent {
 
 function HamburgerCal() {
   const [value, onChange] = useState<Value>(new Date());
-  
+
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const today = new Date();
-  
+
   // Auth listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) =>
+      setCurrentUser(user)
+    );
     return () => unsubscribe();
   }, []);
 
@@ -107,7 +108,7 @@ function HamburgerCal() {
 
     fetchEvents();
   }, [currentUser]);
-  
+
   const hasEventOnDate = (date: Date) => {
     return events.some(
       (event) => new Date(event.start).toDateString() === date.toDateString()
@@ -115,19 +116,23 @@ function HamburgerCal() {
   };
 
   return (
+
     <div data-layer="the body" className="bg-[#94B7EF] rounded p-4 w-[60vw] min-h-[200px] max-w-[95vw] md:min-h-[50vh] md:w-[80vw] lg:w-[20vw] lg:min-h-[28vh] xl:w-[16vw] 2xl:w-[12vw]">
       <Calendar 
         onChange={onChange} 
+
         value={value}
         calendarType="gregory"
         showNeighboringCentury={false}
         showNeighboringDecade={false}
+
         formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, {weekday: 'narrow'})}
         tileContent={({ date, view }) =>
           view === "month" && hasEventOnDate(date) ? (
             <div className="event-indicator" />
           ) : null
         }
+
         tileClassName={({ date, view }) => {
           if (
             date.getDate() === today.getDate() &&
@@ -136,11 +141,13 @@ function HamburgerCal() {
           ) {
             return "today-text-color";
           }
+
           return undefined;
+
         }}
       />
     </div>
   );
-};
+}
 
 export default HamburgerCal;

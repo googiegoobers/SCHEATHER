@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "./Calendar.css";
-
 import {
   Calendar,
   momentLocalizer,
@@ -9,7 +8,7 @@ import {
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { auth, db } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -18,11 +17,26 @@ import {
   doc,
   getDoc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import CustomNavCal from "./CustomNavCal";
 import EventForm from "./EventForm";
 import OutsideClickHandler from "react-outside-click-handler";
 import { onAuthStateChanged } from "firebase/auth";
+import { updateInviteStatus } from "@/lib/inviteUtils";
+
+// Helper to fetch user profile by uid
+async function fetchUserProfile(uid: string) {
+  try {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    if (userDoc.exists()) {
+      return userDoc.data();
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
 
 const localizer = momentLocalizer(moment);
 
@@ -33,7 +47,7 @@ interface Invitee {
   displayName?: string;
   email?: string;
   avatarPath?: string;
-  status?: string;          // "accepted" | "pending" | "declined" | …
+  status?: string; // "accepted" | "pending" | "declined" | …
   [key: string]: any;
 }
 
@@ -44,6 +58,7 @@ interface FirestoreEvent {
   end: Date;
   location?: string;
   inviteList?: Invitee[];
+  createdBy?: string; // <-- add this
 }
 
 /* ---------- Helper: coloured badge per status ---------- */
@@ -66,19 +81,32 @@ const getStatusClass = (status: string = "") => {
 const CalendarComponent: React.FC = () => {
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
-   const [deleting, setDeleting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // for loading
+  const [isLoading, setIsLoading] = useState(true);
 
   /* UI state */
   const [showForm, setShowForm] = useState(false);
-  const [selectedSlot, setSelectedSlot] =
-    useState<{ start: Date; end: Date } | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
   const [slotManuallySelected, setSlotManuallySelected] = useState(true);
 
-  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<FirestoreEvent | null>(
+    null
+  );
+
+  // For editing events
+  const [editMode, setEditMode] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<FirestoreEvent | null>(null);
 
   /* ---------- Auth listener ---------- */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) =>
+      setCurrentUser(user)
+    );
     return () => unsubscribe();
   }, []);
 
@@ -89,61 +117,98 @@ const CalendarComponent: React.FC = () => {
       return;
     }
 
-    const fetchEvents = async () => {
+    const eventsCol = collection(db, "events");
 
-      try {
+    setIsLoading(true);
 
-        const eventsCol = collection(db, "events");
-        const q = query(eventsCol, where("createdBy", "==", currentUser.uid));
-        const snap = await getDocs(q);
+    const unsubscribe = onSnapshot(eventsCol, async (snapshot) => {
+      const eventsData: FirestoreEvent[] = [];
 
-        const eventsData: FirestoreEvent[] = await Promise.all(
-          snap.docs.map(async (docSnap) => {
-            const data = docSnap.data();
+      for (const docSnap of snapshot.docs) {
+        const data = docSnap.data();
+        let inviteArr = Array.isArray(data.inviteList)
+          ? data.inviteList
+          : Object.values(data.inviteList ?? {});
 
-            /* normalise inviteList */
-            const raw = data.inviteList ?? [];
-            let inviteArr: Invitee[] = Array.isArray(raw)
-              ? raw
-              : Object.values(raw);
-
-            /* optionally fetch avatarPath from /users/<uid> */
-            inviteArr = await Promise.all(
-              inviteArr.map(async (inv) => {
-                if (inv.avatarPath || !inv.uid) return inv;
-                try {
-                  const profileSnap = await getDoc(doc(db, "users", inv.uid));
-                  const avatarPath = profileSnap.exists()
-                    ? profileSnap.data().avatarPath
-                    : "";
-                  return { ...inv, avatarPath };
-                } catch {
-                  return inv;
-                }
-              })
-            );
-
-            return {
-              id: docSnap.id,
-              title: data.title,
-              start: new Date(data.start?.toDate?.() || data.start),
-              end: new Date(data.end?.toDate?.() || data.end),
-              location: data.location,
-              inviteList: inviteArr,
-            };
+        inviteArr = await Promise.all(
+          inviteArr.map(async (inv) => {
+            if (inv.avatarPath || !inv.uid) return inv;
+            try {
+              const profileSnap = await getDoc(doc(db, "users", inv.uid));
+              const avatarPath = profileSnap.exists()
+                ? profileSnap.data().avatarPath
+                : "";
+              return { ...inv, avatarPath };
+            } catch {
+              return inv;
+            }
           })
         );
 
-        setEvents(eventsData);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-      }
-    };
+        const isCreator = data.createdBy === currentUser.uid;
+        const isAcceptedInvitee = inviteArr.some(
+          (inv) => inv.uid === currentUser.uid && inv.status === "accepted"
+        );
 
-    fetchEvents();
+        if (isCreator || isAcceptedInvitee) {
+          eventsData.push({
+            id: docSnap.id,
+            title: data.title,
+            start: new Date(
+              data.start?.seconds ? data.start.toDate() : data.start
+            ),
+            end: new Date(data.end?.seconds ? data.end.toDate() : data.end),
+            location: data.location,
+            inviteList: inviteArr,
+            createdBy: data.createdBy, // <-- ensure this is present
+          });
+        }
+      }
+
+      setEvents(eventsData);
+      setIsLoading(false); // ← stop spinner
+    });
+
+    return () => unsubscribe();
   }, [currentUser]);
 
+  // When selectedEvent changes, update inviteList avatars from DB
+  useEffect(() => {
+    async function updateAvatars() {
+      if (!selectedEvent || !selectedEvent.inviteList) return;
+      const updatedInviteList = await Promise.all(
+        selectedEvent.inviteList.map(async (user) => {
+          if (user.uid) {
+            const profile = await fetchUserProfile(user.uid);
+            if (profile && profile.avatarPath) {
+              return { ...user, avatarPath: profile.avatarPath };
+            }
+          }
+          return user;
+        })
+      );
+      setSelectedEvent((prev) =>
+        prev ? { ...prev, inviteList: updatedInviteList } : prev
+      );
+    }
+    updateAvatars();
+    // Only run when selectedEvent changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEvent]);
+
   /* ---------- Handlers ---------- */
+
+  // Role detection helpers for modal actions
+  const isOwner =
+    selectedEvent &&
+    currentUser &&
+    "createdBy" in selectedEvent &&
+    (selectedEvent as any).createdBy === currentUser.uid;
+  const isInvitee =
+    selectedEvent &&
+    currentUser &&
+    Array.isArray(selectedEvent.inviteList) &&
+    selectedEvent.inviteList.some((u) => u.uid === currentUser.uid);
 
   const handleSelectSlot = (slotInfo: any) => {
     if (!slotManuallySelected) return;
@@ -151,16 +216,18 @@ const CalendarComponent: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleSelectEvent = (evt: CalendarEvent) =>
-    setSelectedEvent(evt as unknown as FirestoreEvent);
-
+  const handleSelectEvent = (evt: CalendarEvent) => {
+    // evt.id may be string or number, ensure type matches
+    const found = events.find((e) => e.id === (evt as FirestoreEvent).id);
+    setSelectedEvent(found || (evt as unknown as FirestoreEvent));
+  };
   function toLocalDateTimeInputValue(date: Date) {
-  const offset = date.getTimezoneOffset();
-  const local = new Date(date.getTime() - offset * 60 * 1000);
-  return local.toISOString().slice(0, 16);
-}
+    const offset = date.getTimezoneOffset();
+    const local = new Date(date.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 16);
+  }
 
-// Delete event handler
+  // Delete event handler
   const handleDeleteEvent = async () => {
     if (!selectedEvent?.id) return;
     setDeleting(true);
@@ -177,7 +244,46 @@ const CalendarComponent: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/60 z-50 flex flex-col justify-center items-center">
+          <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-2" />
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-sm text-gray-500">Loading Events...</span>
+            <p className="text-base font-medium animate-pulse mb-1">
+              Please wait a moment
+            </p>
+          </div>
+          <style jsx>{`
+            @keyframes swapText {
+              0%,
+              49% {
+                opacity: 1;
+              }
+              50%,
+              100% {
+                opacity: 0;
+              }
+            }
+            @keyframes swapTextAlt {
+              0%,
+              49% {
+                opacity: 0;
+              }
+              50%,
+              100% {
+                opacity: 1;
+              }
+            }
+            .loading-text {
+              animation: swapText 3s infinite;
+            }
+            .pleasewait-text {
+              animation: swapTextAlt 3s infinite;
+            }
+          `}</style>
+        </div>
+      )}
       <Calendar
         localizer={localizer}
         events={events}
@@ -191,32 +297,71 @@ const CalendarComponent: React.FC = () => {
       />
 
       {/* ---- Create‑Event modal ---- */}
-      {showForm && selectedSlot && (
+      {showForm && (selectedSlot || (editMode && eventToEdit)) && (
         <div className="fixed inset-0 bg-[#383734]/50 backdrop-blur-sm flex justify-center items-center z-50 pointer-events-none">
           <OutsideClickHandler
             onOutsideClick={() => {
               setSlotManuallySelected(false);
               setShowForm(false);
+              setEditMode(false);
+              setEventToEdit(null);
               setTimeout(() => setSlotManuallySelected(true), 100);
             }}
           >
             <div className="relative pointer-events-auto">
-              <EventForm
-                start={toLocalDateTimeInputValue(selectedSlot.start)}
-                end={toLocalDateTimeInputValue(selectedSlot.end)}
-                onClose={() => setShowForm(false)}
-                onEventCreated={(newEvt) =>
-                  setEvents((prev) => [
-                    ...prev,
-                    {
-                      ...newEvt,
-                      start: new Date(newEvt.start),
-                      end: new Date(newEvt.end),
-                    },
-                  ])
-                }
-                currentUser={currentUser}
-              />
+              {editMode && eventToEdit ? (
+                <EventForm
+                  start={toLocalDateTimeInputValue(eventToEdit.start)}
+                  end={toLocalDateTimeInputValue(eventToEdit.end)}
+                  eventId={eventToEdit.id}
+                  initialEvent={eventToEdit}
+                  onClose={() => {
+                    setShowForm(false);
+                    setEditMode(false);
+                    setEventToEdit(null);
+                  }}
+                  onEventUpdated={(updatedEvt: any) => {
+                    setEvents((prev) =>
+                      prev.map((evt) =>
+                        evt.id === updatedEvt.id
+                          ? {
+                              ...updatedEvt,
+                              start: new Date(updatedEvt.start),
+                              end: new Date(updatedEvt.end),
+                            }
+                          : evt
+                      )
+                    );
+                    setShowForm(false);
+                    setEditMode(false);
+                    setEventToEdit({
+                      ...updatedEvt,
+                      start: new Date(updatedEvt.start),
+                      end: new Date(updatedEvt.end),
+                    });
+                  }}
+                  currentUser={currentUser}
+                />
+              ) : (
+                selectedSlot && (
+                  <EventForm
+                    start={toLocalDateTimeInputValue(selectedSlot.start)}
+                    end={toLocalDateTimeInputValue(selectedSlot.end)}
+                    onClose={() => setShowForm(false)}
+                    onEventCreated={(newEvt) =>
+                      setEvents((prev) => [
+                        ...prev,
+                        {
+                          ...newEvt,
+                          start: new Date(newEvt.start),
+                          end: new Date(newEvt.end),
+                        },
+                      ])
+                    }
+                    currentUser={currentUser}
+                  />
+                )
+              )}
             </div>
           </OutsideClickHandler>
         </div>
@@ -235,6 +380,7 @@ const CalendarComponent: React.FC = () => {
               {isOwner && (
                 <button
                   className="buttonsPencil  rounded-full p-1 hover:bg-black/10 cursor-pointer"
+
                   title="Edit Event Details"
                   onClick={() => {
                     setSelectedEvent(null); // Close event details modal

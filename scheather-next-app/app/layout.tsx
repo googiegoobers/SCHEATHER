@@ -3,6 +3,8 @@ import { ClientProviders } from "./ClientProviders";
 import { ReactNode } from "react";
 import Script from "next/script";
 
+import { Analytics } from "@vercel/analytics/next";
+
 import {
   Poppins,
   Montserrat,
@@ -65,6 +67,24 @@ export default function RootLayout({
     >
       <body>
         <ClientProviders>{children}</ClientProviders>
+        <Analytics />
+        {/* Google Analytics */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=G-QMVC5BR2W3`}
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+               window.dataLayer = window.dataLayer || [];
+               function gtag(){dataLayer.push(arguments);}
+               gtag('js', new Date());
+               gtag('config', 'G-QMVC5BR2W3', {
+                 page_path: window.location.pathname,
+               });
+             `,
+          }}
+        />
       </body>
     </html>
   );

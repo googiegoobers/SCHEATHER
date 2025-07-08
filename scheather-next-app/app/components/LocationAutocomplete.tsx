@@ -72,9 +72,9 @@ const LocationAutocomplete = ({
       />
       {showDropdown && suggestions.length > 0 && (
         <ul className="absolute z-10 bg-white border border-gray-300 font-sm w-full mt-1 rounded shadow-md">
-          {suggestions.map((item) => (
+          {suggestions.map((item, index) => (
             <li
-              key={`${item.place_id}-${item.lat}-${item.lon}`}
+              key={`${item?.place_id ?? "unknown"}-${index}`}
               onClick={() => handleSelect(item.display_name)}
               className="px-4 py-2 cursor-pointer hover:bg-gray-100"
             >

@@ -8,7 +8,7 @@ import {
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { auth, db } from "@/app/lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import {
   collection,
   getDocs,

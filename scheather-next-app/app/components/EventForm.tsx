@@ -266,6 +266,13 @@ const EventForm: React.FC<EventFormProps> = ({
       ],
       budgetList: budgetItems,
       createdBy: currentUser.uid,
+      weather: weather
+        ? {
+            condition: weather.condition,
+            temp_c: weather.temp_c,
+            icon: weather.condition.icon,
+          }
+        : null, // Optional: if weather is not available
     };
 
     try {

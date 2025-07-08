@@ -21,7 +21,6 @@ export default function AdminPage() {
 
           gtag("config", "G-QMVC5BR2W3");`}
       </Script>
-
       {/* Fixed Header */}
       <header
         className="w-full h-20 bg-white shadow-[0px_1.5px_15px_0px_rgba(0,0,0,0.20)] fixed top-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-20"

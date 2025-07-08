@@ -5,12 +5,12 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { auth } from "@/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
+import { Task, subscribeToTasks, addTask, patchTask, deleteTask } from "@/lib/tasksService";
 
-interface Task {
-  id: string;
-  text: string;
-  completed: boolean;
-  starred: boolean;
+interface Props {
+  task: Task;
+  onPatch: (id: string, data: Partial<Task>) => void;
+  onDelete: (id: string) => void;
 }
 
 function ToDoList() {
@@ -49,39 +49,53 @@ function ToDoList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"all" | "starred">("all");
-  //para sa tasks
-  const addTask = () => {
-    if (!newTitle.trim()) return;
-    const newTask: Task = {
-      id: Date.now().toString(), // or nanoid()
-      text: newTitle.trim(),
-      completed: false,
-      starred: false,
-    };
-    setTasks((t) => [...t, newTask]);
-    setNewTitle("");
-    setShowPopup(false);
 
-    // TODO: POST /tasks  (newTask)    <-- call your backend here
+  const [activeTab, setActiveTab] = useState<'all' | 'starred'>('all');
+
+  // Subscribe to Firestore tasks
+  useEffect(() => {
+    const unsubscribe = subscribeToTasks((tasks) => {
+      setTasks(tasks);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
+  //para sa tasks
+ const handleAddTask = async () => {
+    if (!newTitle.trim()) return;
+    
+    try {
+      await addTask(newTitle.trim());
+      setNewTitle('');
+      setShowPopup(false);
+    } catch (error) {
+      console.error('Error adding task:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
-  const patchTask = (id: string, data: Partial<Task>) => {
-    setTasks((t) =>
-      t.map((task) => (task.id === id ? { ...task, ...data } : task))
-    );
+const handlePatchTask = async (id: string, data: Partial<Task>) => {
+    try {
+      await patchTask(id, data);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      // You might want to show an error message to the user here
+    }
 
-    // TODO: PATCH /tasks/{id}  (data)  <-- sync this change
   };
 
   //filter para sa starred tasks
   const visibleTasks =
     activeTab === "starred" ? tasks.filter((t) => t.starred) : tasks;
 
-  const removeTask = (id: string) => {
-    setTasks((t) => t.filter((task) => task.id !== id));
-
-    // TODO: DELETE /tasks/{id}
+  const handleRemoveTask = async (id: string) => {
+    try {
+      await deleteTask(id);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   return (
@@ -301,18 +315,92 @@ function ToDoList() {
                   </button>
                 </div>
               </div>
-            ))
-          )}
-        </section>
-      </div>
 
-      {/* Popup Modal */}
-      {showPopup && (
-        /* ───── overlay ───── */
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          {/* ───── dialog ───── */}
-          <div
-            className="
+
+            {/* ─── TASK PANEL: BOTH TABS ─── */}
+            <section className="ml-100 mt-60 w-[65%] rounded-[30px] bg-[#223F61] p-4 mb-24">
+              <p className="text-white text-xl font-['Poppins']">
+                {activeTab === 'starred' ? 'Starred Tasks' : 'My Tasks'}
+              </p>
+              <div className="my-2 h-px w-full bg-white/50" />
+
+              {visibleTasks.length === 0 ? (
+                <p className="py-8 text-center text-white/70">
+                  {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
+                </p>
+              ) : (
+                visibleTasks.map((task) => {
+                  if (!task.id) return null; // Skip tasks without id
+                  const { id, text, completed, starred } = task;
+                  return (
+                  <div key={id} className="flex items-center gap-3 py-2">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => handlePatchTask(id, { completed: !completed })}
+                      className="relative h-5 w-5 focus:outline-none"
+                    >
+                      <img
+                        src="/unchecked.png"
+                        className={`h-full w-full transition-opacity ${completed ? 'opacity-0' : ''}`}
+                        alt=""
+                      />
+                      <img
+                        src="/circle-check-white.png"
+                        className={`absolute inset-0 h-full w-full transition-opacity ${
+                          completed ? '' : 'opacity-0'
+                        }`}
+                        alt=""
+                      />
+                    </button>
+
+                    {/* Task Text Input */}
+                    <input
+                      value={text}
+                      onChange={(e) => handlePatchTask(id, { text: e.target.value })}
+                      placeholder="Insert Task"
+                      className="flex-grow bg-transparent text-base text-white placeholder:text-white/50 outline-none font-['Montserrat']"
+                    />
+
+                    {/* Star & Delete Buttons */}
+                    <div className="flex items-center gap-4">
+                      <button
+                      
+                        onClick={() => handlePatchTask(id, { starred: !starred })}
+                        className="relative h-5 w-5">
+                        <img
+                          src="/star.png"
+                          className={`h-full w-full ${starred ? 'opacity-0' : ''}`}
+                          alt=""
+                        />
+                        <img
+                          src="/star white filled.png"
+                          className={`absolute inset-0 h-full w-full ${starred ? '' : 'opacity-0'}`}
+                          alt=""
+                        />
+                      </button>
+
+                      <button
+                        onClick={() => handleRemoveTask(id)}
+                        className="text-base text-white"
+                      >
+                        X
+                      </button>
+                    </div>
+                  </div>
+                  );
+                }).filter(Boolean)
+              )}
+            </section>
+
+            </div>
+
+              {/* Popup Modal */}
+              {showPopup && (
+                /* ───── overlay ───── */
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+                {/* ───── dialog ───── */}
+                <div
+                  className="
                     relative rounded-lg bg-white p-6 shadow-lg
                     w-[90vw]  max-w-sm
                     sm:w-[75vw] sm:max-w-md
@@ -350,119 +438,50 @@ function ToDoList() {
               </p>
             </div>
 
-            {/* primary action */}
-            <div className="flex justify-center">
-              <button
-                onClick={addTask}
-                className="rounded-[20px] bg-[#E68C3A] px-4 py-2 text-white transition-colors hover:bg-[#d27d2c]"
-              >
-                Add Task
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                  {/* input */}
+                  <div className="mx-auto mb-4 w-full rounded-[30px] bg-stone-100 px-2 outline outline-2 outline-offset-[-2px] outline-zinc-600">
+                    <input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="Add Title"
+                      className="w-full rounded-[30px] bg-transparent px-2 py-2 font-['Montserrat'] text-stone-900 placeholder:text-stone-900/50 focus:outline-none"
+                    />
+                  </div>
 
-      {/* Mobile */}
-      <div className="block lg:hidden w-full min-h-screen bg-white overflow-y-auto">
-        {/* Header */}
-        <header className="flex flex-col px-6 pt-6 space-y-3">
-          {/* title */}
-          <div className="flex items-center m-5 space-x-4">
-            <Link href="/dashboard">
-              <img src="/left arrow.svg" className="w-6 h-6" alt="Back" />
-            </Link>
-            <p className="text-[#223F61] ml-20 text-2xl font-normal font-['Poppins']">
-              Tasks
-            </p>
-          </div>
+                  {/* hint text */}
+                  <div className="flex justify-center">
+                    <p className="mb-4 text-sm text-gray-600 text-center">
+                      This is where you can add your Tasks.
+                    </p>
+                  </div>
 
-          {/* starred ug My Tasks */}
-          <div className="flex items-center justify-center space-x-20">
-            <button
-              onClick={() => setActiveTab("starred")}
-              className="relative w-5 h-5 focus:outline-none"
-            >
-              <img
-                src="/star filled.png"
-                alt="star"
-                className={`w-full h-full transition-opacity duration-150
-                                  ${
-                                    activeTab === "starred"
-                                      ? "opacity-0"
-                                      : "opacity-100"
-                                  }`}
-              />
-              <img
-                src="/star filled light blue.png"
-                alt="star active"
-                className={`absolute inset-0 w-full h-full transition-opacity duration-150
-                                  ${
-                                    activeTab === "starred"
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  }`}
-              />
-            </button>
+                  {/* primary action */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleAddTask}
+                      className="rounded-[20px] bg-[#E68C3A] px-4 py-2 text-white transition-colors hover:bg-[#d27d2c]"
+                    >
+                      Add Task
+                    </button>
+                  </div>
+                </div>
+              
+              </div>
+              )}
 
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`
-                      text-base font-normal font-['Poppins']
-                      transition-colors duration-150
-                      ${
-                        activeTab === "all" ? "text-blue-300" : "text-[#223F61]"
-                      }`}
-            >
-              My Tasks
-            </button>
-          </div>
-        </header>
-
-        {/* Divider shadow */}
-        <div className="w-full h-4 shadow-[0_4px_8px_-4px_rgba(0,0,0,0.30)]" />
-
-        {/* Task box */}
-        <section className="mx-auto mt-6 w-[90%] rounded-[30px] bg-[#223F61] p-4 mb-24">
-          <p className="text-white text-xl font-['Poppins']">
-            {activeTab === "starred" ? "Starred Tasks" : "My Tasks"}
-          </p>
-          <div className="h-px w-full bg-white/50 my-2" />
-
-          {visibleTasks.length === 0 ? (
-            <p className="text-white/70 text-center py-8">
-              {activeTab === "starred"
-                ? "No starred tasks yet."
-                : "No tasks yet."}
-            </p>
-          ) : (
-            visibleTasks.map(({ id, text, completed, starred }) => (
-              <div key={id} className="flex items-center gap-3 py-2">
-                <button
-                  onClick={() => patchTask(id, { completed: !completed })}
-                  className="relative w-5 h-5 focus:outline-none"
-                >
-                  <img
-                    src="/unchecked.png"
-                    className={`w-full h-full transition-opacity ${
-                      completed ? "opacity-0" : ""
-                    }`}
-                  />
-                  <img
-                    src="/circle-check-white.png"
-                    className={`absolute inset-0 w-full h-full transition-opacity ${
-                      completed ? "" : "opacity-0"
-                    }`}
-                  />
-                </button>
-
-                <input
-                  value={text}
-                  onChange={(e) => patchTask(id, { text: e.target.value })}
-                  placeholder="Insert Task"
-                  className="flex-grow bg-transparent outline-none text-white placeholder:text-white/50 text-base font-['Montserrat']"
-                />
-
+           {/* Mobile */}
+            <div className="block lg:hidden w-full min-h-screen bg-white overflow-y-auto">
+              {/* Header */}
+              <header className="flex flex-col px-6 pt-6 space-y-3">
+                {/* title */}
+                <div className="flex items-center m-5 space-x-4">
+                  <Link href="/dashboard">
+                    <img src="/left arrow.svg" className="w-6 h-6" alt="Back" />
+                  </Link>
+                  <p className="text-[#223F61] ml-20 text-2xl font-normal font-['Poppins']">
+                    Tasks
+                  </p>
+                </div>
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => patchTask(id, { starred: !starred })}
@@ -486,6 +505,90 @@ function ToDoList() {
                     X
                   </button>
                 </div>
+
+              </header>
+
+              {/* Divider shadow */}
+              <div className="w-full h-4 shadow-[0_4px_8px_-4px_rgba(0,0,0,0.30)]" />
+
+              {/* Task box */}
+              <section className="mx-auto mt-6 w-[90%] rounded-[30px] bg-[#223F61] p-4 mb-24">
+                <p className="text-white text-xl font-['Poppins']">
+                  {activeTab === 'starred' ? 'Starred Tasks' : 'My Tasks'}
+                </p>
+                <div className="h-px w-full bg-white/50 my-2" />
+
+                {visibleTasks.length === 0 ? (
+                  <p className="text-white/70 text-center py-8">
+                    {activeTab === 'starred' ? 'No starred tasks yet.' : 'No tasks yet.'}
+                  </p>
+                ) : (
+                  visibleTasks.map((task) => {
+                    if (!task.id) return null; // Skip tasks without id
+                    const { id, text, completed, starred } = task;
+                    return (
+                    <div key={id} className="flex items-center gap-3 py-2">
+                      <button
+                        onClick={() => handlePatchTask(id, { completed: !completed })}
+                        className="relative w-5 h-5 focus:outline-none"
+                      >
+                        <img
+                          src="/unchecked.png"
+                          className={`w-full h-full transition-opacity ${completed ? 'opacity-0' : ''}`}
+                        />
+                        <img
+                          src="/circle-check-white.png"
+                          className={`absolute inset-0 w-full h-full transition-opacity ${completed ? '' : 'opacity-0'}`}
+                        />
+                      </button>
+
+                      <input
+                        value={text}
+                        onChange={e => handlePatchTask(id, { text: e.target.value })}
+                        placeholder="Insert Task"
+                        className="flex-grow bg-transparent outline-none text-white placeholder:text-white/50 text-base font-['Montserrat']"
+                      />
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => handlePatchTask(id, { starred: !starred })}
+                          className="relative w-5 h-5"
+                        >
+                          <img
+                            src="/star.png"
+                            className={`w-full h-full ${starred ? 'opacity-0' : ''}`}
+                          />
+                          <img
+                            src="/star white filled.png"
+                            className={`absolute inset-0 w-full h-full ${starred ? '' : 'opacity-0'}`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleRemoveTask(id)}
+                          className="text-white text-base"
+                        >
+                          X
+                        </button>
+                      </div>
+                    </div>
+                    );
+                  }).filter(Boolean)
+                )}
+              </section>
+
+              {/* floating “add” btn */}
+              <button
+                onClick={() => setShowPopup(true)}
+                className="fixed bottom-6 right-6 w-12 h-12 bg-[#E68C3A] rounded-2xl flex items-center justify-center shadow-lg active:scale-95"
+              >
+                <img src="/plus.png" />
+              </button>
+            </div>
+
+        </div>
+    );
+};
+
               </div>
             ))
           )}
@@ -502,5 +605,6 @@ function ToDoList() {
     </div>
   );
 }
+
 
 export default ToDoList;

@@ -45,7 +45,7 @@ const SignUpCard: React.FC = () => {
     // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       console.log("Passwords do not match! Try Again.");
-      alert("Signup failed! \nPasswords do not match.");
+      // alert("Signup failed! \nPasswords do not match.");
       setError("Passwords do not match.");
       return;
     }
@@ -82,7 +82,7 @@ const SignUpCard: React.FC = () => {
       // Optional: redirect or show success message here
     } catch (err: any) {
       console.error("❌ Error during signup:", err.message);
-      alert(`Login failed: ${err.message}`);
+      // alert(`Login failed: ${err.message}`);
       setError(err.message || "Signup failed");
       // Optional: show error message to user
     }
@@ -130,7 +130,7 @@ const SignUpCard: React.FC = () => {
             </Link>
           </div>
         </header>
-        <div className="mt-30 lg:w-[85vw] lg:h-[85vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0">
+        <div className="mt-30 lg:w-[85vw] lg:h-[90vh] bg-white rounded-[2.5vh] shadow-[0px_1vh_0.4vh_0px_rgba(34,63,97,0.25)] border-[0.4vh] border-[#223F61] flex flex-row initial=scale1.0">
           {/*Left Side of the Container*/}
           <div className="hidden lg:flex relative Justify-center flex lg:top-[5vh] lg:px-[9vw] flex-col">
             <form onSubmit={handleSubmit}>
@@ -280,9 +280,22 @@ const SignUpCard: React.FC = () => {
                 </button>
               </div>
 
-              {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+              <div className="flex items-left w-full mt-2 gap-4">
+                {/* Error message */}
+                {error && (
+                  <p className=" text-red-500 text-sm font-['Poppins']">
+                    {error}
+                  </p>
+                )}
+                {/* Success message */}
+                {success && (
+                  <p className=" text-green-500 text-sm font-['Poppins']">
+                    {success}
+                  </p>
+                )}
+              </div>
 
-              <div className="flex flex-col items-center w-full mt-6 gap-4">
+              <div className="flex flex-col items-center w-full mt-4 gap-4">
                 <button
                   type="submit"
                   className="w-full max-w-xs h-10 bg-[#223F61] text-stone-100 rounded-[30px] outline-2 
@@ -418,11 +431,22 @@ const SignUpCard: React.FC = () => {
             </button>
           </div>
 
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          <div className="flex flex-col items-center w-full mt-2">
+            {error && (
+              <p className=" text-red-500 text-sm font-['Poppins']">{error}</p>
+            )}
+
+            {/* Success message */}
+            {success && (
+              <p className=" text-green-500 text-sm font-['Poppins']">
+                {success}
+              </p>
+            )}
+          </div>
 
           <button
             type="submit"
-            className="w-full h-12 mt-4 bg-cyan-900 text-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-cyan-900 flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
+            className="w-full h-12 mt-2 bg-cyan-900 text-stone-100 rounded-[30px] outline-2 outline-offset-[-2px] outline-cyan-900 flex items-center justify-center text-lg font-normal font-['Montserrat'] transition-colors duration-300 hover:bg-[#94B7EF] hover:text-[#223F61] cursor-pointer"
           >
             Sign up
           </button>

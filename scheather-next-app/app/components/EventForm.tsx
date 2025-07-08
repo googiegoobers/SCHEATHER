@@ -232,20 +232,26 @@ const EventForm: React.FC<EventFormProps> = ({
 
     const eventToSave = {
       ...newEvent,
-      inviteList: inviteList
-        .filter((user) => user.uid !== currentUser.uid)
-        .map((user) => ({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          status: user.status || "pending",
-          amount:
-            selectedOption === "Equal" && equalMoney && acceptedUsers.length > 0
-              ? parseFloat(equalMoney) / acceptedUsers.length
-              : 0,
-        })),
-      createdBy: currentUser.uid,
+      inviteList: [
+        // Add all invitees (except creator) as pending or their current status
+        ...inviteList
+          .filter((u) => u.uid !== currentUser.uid)
+          .map((u) => ({
+            uid: u.uid,
+            email: u.email,
+            displayName: u.displayName,
+            status: u.status || "pending"
+          })),
+        // Always add creator as accepted
+        {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          status: "accepted"
+        }
+      ],
       budgetList: budgetItems,
+      createdBy: currentUser.uid,
     };
 
     try {

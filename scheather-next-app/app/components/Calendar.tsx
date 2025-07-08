@@ -51,6 +51,11 @@ interface Invitee {
   [key: string]: any;
 }
 
+interface budgetItem {
+  label: string;
+  amount: string;
+}
+
 interface FirestoreEvent {
   id?: string;
   title: string;
@@ -58,7 +63,8 @@ interface FirestoreEvent {
   end: Date;
   location?: string;
   inviteList?: Invitee[];
-  createdBy?: string; // <-- add this
+  budgetList?: budgetItem[];
+  createdBy?: string;
 }
 
 /* ---------- Helper: coloured badge per status ---------- */
@@ -145,6 +151,10 @@ const CalendarComponent: React.FC = () => {
           })
         );
 
+        let budgetArr = Array.isArray(data.budgetList)
+          ? data.budgetList
+          : Object.values(data.budgetList ?? {});
+
         const isCreator = data.createdBy === currentUser.uid;
         const isAcceptedInvitee = inviteArr.some(
           (inv) => inv.uid === currentUser.uid && inv.status === "accepted"
@@ -160,7 +170,8 @@ const CalendarComponent: React.FC = () => {
             end: new Date(data.end?.seconds ? data.end.toDate() : data.end),
             location: data.location,
             inviteList: inviteArr,
-            createdBy: data.createdBy, // <-- ensure this is present
+            budgetList: budgetArr,
+            createdBy: data.createdBy,
           });
         }
       }
@@ -439,7 +450,8 @@ const CalendarComponent: React.FC = () => {
                 <ul className="list-disc list-inside mt-1 space-y-1">
                   {Array.isArray(selectedEvent.inviteList) &&
                   selectedEvent.inviteList.length ? (
-                    selectedEvent.inviteList.map((user, idx) => (
+                    selectedEvent.inviteList.filter((user) => user.status !== "accepted")
+                    .map((user, idx) => (
                       <li key={idx} className="flex items-center gap-2">
                         {/* Show avatar if available, else default */}
                         <img
@@ -506,6 +518,65 @@ const CalendarComponent: React.FC = () => {
                   Back Out
                 </button>
               )}
+            </div>
+
+            {/* --- Budget & Participants Breakdown (Readonly) --- */}
+            <div className="mt-6 p-4 border rounded-xl bg-gray-50">
+              <h3 className="font-bold text-lg text-[#213E60] mb-2">Budget Breakdown</h3>
+              {Array.isArray(selectedEvent.budgetList) && selectedEvent.budgetList.length > 0 ? (
+                <>
+                  <div className="mb-2">
+                    <span className="font-semibold">Total Budget:</span> ₱{
+                      selectedEvent.budgetList.reduce((sum, item) => sum + parseFloat(item.amount ? item.amount : "0"), 0).toFixed(2)
+                    }
+                  </div>
+                  <div className="mb-2">
+                    <span className="font-semibold">Items:</span>
+                  </div>
+                  <ul className="list-inside space-y-1">
+                  {selectedEvent.budgetList.map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <span className="text-[#213E60] font-semibold">{item.label}: </span>
+                      <span className="ml-auto text-sm text-gray-700">
+                      ₱{parseFloat(item.amount).toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                  </ul>
+                </>
+              ) : (
+                <div className="text-center text-gray-600">No budget set for this event.</div>
+              )}
+              <div className="mt-4">
+                <span className="font-semibold">Participants:</span>
+                <ul className="list-inside space-y-1">
+                  {Array.isArray(selectedEvent.inviteList) && selectedEvent.inviteList.filter(u => u.status === "accepted").length > 0 ? (
+                    (() => {
+                      const accepted = selectedEvent.inviteList.filter(u => u.status === "accepted");
+                      const totalBudget = Array.isArray(selectedEvent.budgetList)
+                        ? selectedEvent.budgetList.reduce((sum, item) => sum + (parseFloat(item.amount || "0") || 0), 0)
+                        : 0;
+                      const perPerson = accepted.length > 0 ? (totalBudget / accepted.length) : 0;
+                      return accepted.map((user, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          {user.avatarPath && typeof user.avatarPath === "string" && user.avatarPath.trim() !== "" && (
+                            <img
+                              src={user.avatarPath}
+                              alt={user.displayName || user.email || "User"}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          )}
+                          <span className="text-[#213E60] font-semibold">{user.displayName || user.email || "Unknown User"}</span>
+                          <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Accepted</span>
+                          <span className="ml-auto text-sm text-blue-700 font-semibold">₱{perPerson.toFixed(2)}</span>
+                        </li>
+                      ));
+                    })()
+                  ) : (
+                    <li className="text-gray-500">No participants.</li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

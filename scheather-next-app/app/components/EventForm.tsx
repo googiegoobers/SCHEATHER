@@ -254,15 +254,15 @@ const EventForm: React.FC<EventFormProps> = ({
             uid: u.uid,
             email: u.email,
             displayName: u.displayName,
-            status: u.status || "pending"
+            status: u.status || "pending",
           })),
         // Always add creator as accepted
         {
           uid: currentUser.uid,
           email: currentUser.email,
           displayName: currentUser.displayName,
-          status: "accepted"
-        }
+          status: "accepted",
+        },
       ],
       budgetList: budgetItems,
       createdBy: currentUser.uid,
@@ -320,6 +320,12 @@ const EventForm: React.FC<EventFormProps> = ({
   };
 
   const acceptedUsers = inviteList.filter((u) => u.status === "accepted");
+  const perUserAmount = (() => {
+    const total = Number(totalAmount);
+    const count = acceptedUsers.length;
+    if (!total || isNaN(total) || count === 0) return "0.00";
+    return (total / count).toFixed(2);
+  })();
 
   return (
     <div>
@@ -497,16 +503,6 @@ const EventForm: React.FC<EventFormProps> = ({
             </div> */}
           </div>
         </div>
-        {/* Header Row
-        <div className="hidden sm:flex flex-row border-b pb-2 px-4">
-          <div className="text-sm flex-1 font-semibold text-gray-700 uppercase tracking-wide">
-            Invited Members
-          </div>
-          <div className="text-sm flex-1 font-semibold text-gray-700 uppercase tracking-wide text-right">
-            Status
-          </div>
-        </div> */}
-        {/* Invite List */}
         <div className="w-full flex justify-center">
           <div className="flex flex-col gap-4 w-full max-w-2xl">
             {inviteList.map((user) => (
@@ -533,8 +529,16 @@ const EventForm: React.FC<EventFormProps> = ({
 
                 {/* Right: Status + Remove Button */}
                 <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
-                  <span className="text-yellow-700 text-xs sm:text-l font-medium">
-                    Pending
+                  <span
+                    className={`text-xs sm:text-sm font-medium capitalize ${
+                      user.status === "accepted"
+                        ? "text-green-700"
+                        : user.status === "declined"
+                        ? "text-red-600"
+                        : "text-blue-600"
+                    }`}
+                  >
+                    {user.status || "pending"}
                   </span>
                   <button
                     onClick={() =>
@@ -552,28 +556,6 @@ const EventForm: React.FC<EventFormProps> = ({
             ))}
           </div>
         </div>
-        {/* showing of the invited people */}
-        {/* <div className="space-y-2">
-          {userResults.map((user) => (
-            <div
-              key={user.uid}
-              className="flex items-center gap-4 p-4 border rounded-xl hover:bg-blue-50 cursor-pointer"
-              onClick={() => {
-                setInviteList(inviteList.filter((u) => u.email !== user.email));
-              }}
-            >
-              <img
-                src={user.avatarPath || "/default-avatar.png"}
-                alt={user.displayName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <p className="font-semibold">{user.displayName}</p>
-                <p className="text-sm text-gray-500">{user.email}</p>
-              </div>
-            </div>
-          ))}
-        </div> */}
         <div className="budget-container p-4">
           <div className="button-budget flex flex-row justify-between items-center  p-1 ">
             <div className="flex flex-row gap-2 items-center">
@@ -731,11 +713,7 @@ const EventForm: React.FC<EventFormProps> = ({
                       </div>
                       <div className="bayranan text-black">
                         {/* Show equal share if there is a total, otherwise 0 */}
-                        {equalMoney && acceptedUsers.length > 0
-                          ? (
-                              parseFloat(equalMoney) / acceptedUsers.length
-                            ).toFixed(2)
-                          : "0.00"}
+                        {perUserAmount}
                       </div>
                     </div>
                   ))
@@ -747,7 +725,7 @@ const EventForm: React.FC<EventFormProps> = ({
               </div>
               <div className="total-below p-2 flex flex-row justify-between">
                 <div className="label-total">TOTAL</div>
-                <div className="total-if-equal">₱{equalMoney}</div>
+                <div className="total-if-equal">₱{totalAmount}</div>
               </div>
             </div>
           )}

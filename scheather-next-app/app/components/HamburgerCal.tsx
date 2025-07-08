@@ -115,31 +115,30 @@ function HamburgerCal() {
   };
 
   return (
-    <div data-layer="the body" className=" bg-[#94B7EF] rounded p-4 lg:w-[18vw] lg:h-[42vh] xl:w-[12vw] xl:h-[28vh]">
+    <div data-layer="the body" className="bg-[#94B7EF] rounded p-4 w-[60vw] min-h-[200px] max-w-[95vw] md:min-h-[50vh] md:w-[80vw] lg:w-[20vw] lg:min-h-[28vh] xl:w-[16vw] 2xl:w-[12vw]">
       <Calendar 
-      onChange={onChange} 
-      value={value}
-      calendarType= "gregory"
-      showNeighboringCentury={false}
-      showNeighboringDecade={false}
-      formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, {weekday: 'narrow'})}
-      
-      //if naay events within that day mo gawas siya ug orange circle
-      tileContent={({ date, view }) => 
-            view === "month" && hasEventOnDate(date) ? (
+        onChange={onChange} 
+        value={value}
+        calendarType="gregory"
+        showNeighboringCentury={false}
+        showNeighboringDecade={false}
+        formatShortWeekday={(locale, date) => date.toLocaleDateString(locale, {weekday: 'narrow'})}
+        tileContent={({ date, view }) =>
+          view === "month" && hasEventOnDate(date) ? (
             <div className="event-indicator" />
-            ) : null
+          ) : null
         }
-      tileClassName={({ date, view }) => {
-        if (
-          date.getDate() === today.getDate() &&
-          date.getMonth() === today.getMonth() &&
-          date.getFullYear() === today.getFullYear()
-           ) {
-          return "today-text-color";
-        }
-      }}
-        />
+        tileClassName={({ date, view }) => {
+          if (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+          ) {
+            return "today-text-color";
+          }
+          return undefined;
+        }}
+      />
     </div>
   );
 };

@@ -71,6 +71,7 @@ const SignUpCard: React.FC = () => {
         displayName: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         role: "user",
+        uid: user.uid,
       });
 
       console.log(

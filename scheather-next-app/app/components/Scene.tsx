@@ -19,11 +19,17 @@ function Loader() {
 export default function Scene({ scrollProgress }: { scrollProgress: number }) {
   return (
     <Canvas
-      camera={{ fov: 30, position: [-10, 0, 10] }}
-      style={{ width: 850, height: 850 }}
+      camera={{ fov: 30, position: [0, 10, 0] }} // Camera above, looking down
+      style={{
+        width: "100%",
+        maxWidth: 800,
+        height: "60vw",
+        maxHeight: 800,
+        minHeight: 200,
+      }}
     >
-      <ambientLight intensity={5} />
-      <Model scrollProgress={scrollProgress} />
+      <ambientLight intensity={0.5} />
+      <Model />
     </Canvas>
   );
 }

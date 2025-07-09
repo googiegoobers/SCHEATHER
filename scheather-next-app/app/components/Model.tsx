@@ -8,7 +8,7 @@ export default function Model({
 }: Partial<ComponentProps<"primitive">>) {
   const group = useRef<Group>(null);
   // Load the model and animations
-  const { scene, animations } = useGLTF("/herologowsun.glb");
+  const { scene, animations } = useGLTF("/herologlow.glb");
   const { actions } = useAnimations(animations, group);
 
   useEffect(() => {
